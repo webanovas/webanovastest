@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
+import PageHero from "@/components/PageHero";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Clock, User } from "lucide-react";
@@ -47,26 +48,27 @@ const teachers = [
 const Schedule = () => {
   return (
     <Layout>
-      {/* Header */}
-      <section className="bg-yoga-sage-light py-16 md:py-20">
-        <div className="container mx-auto px-4">
-          <h1 className="font-heading text-4xl md:text-5xl font-bold mb-4">מערכת שעות ומורים</h1>
-          <p className="text-muted-foreground text-lg">הצטרפו לשיעור שמתאים לכם – בסטודיו או בזום</p>
-        </div>
-      </section>
+      <PageHero
+        label="לוח שיעורים"
+        title="מערכת שעות ומורים"
+        subtitle="הצטרפו לשיעור שמתאים לכם – בסטודיו או בזום"
+      />
 
       {/* Schedule */}
-      <section className="py-16 md:py-24">
+      <section className="py-20 md:py-32">
         <div className="container mx-auto px-4">
-          <h2 className="font-heading text-3xl font-bold text-center mb-10">לוח שיעורים שבועי</h2>
+          <div className="text-center mb-12">
+            <span className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">שבועי</span>
+            <h2 className="font-heading text-3xl md:text-4xl font-bold">לוח שיעורים</h2>
+          </div>
 
           <Tabs defaultValue="ראשון" dir="rtl" className="max-w-3xl mx-auto">
-            <TabsList className="flex flex-wrap justify-center gap-1 mb-8 h-auto bg-transparent">
+            <TabsList className="flex flex-wrap justify-center gap-1.5 mb-10 h-auto bg-transparent">
               {days.map((day) => (
                 <TabsTrigger
                   key={day}
                   value={day}
-                  className="px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full"
+                  className="px-5 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl font-medium"
                 >
                   {day}
                 </TabsTrigger>
@@ -78,19 +80,19 @@ const Schedule = () => {
                 <motion.div initial="hidden" animate="visible" variants={stagger} className="flex flex-col gap-4">
                   {scheduleData[day]?.map((cls, i) => (
                     <motion.div key={i} variants={fadeUp}>
-                      <Card className="border-border/50 hover:shadow-md transition-shadow">
-                        <CardContent className="p-5">
-                          <div className="flex items-start justify-between flex-wrap gap-2">
+                      <Card className="glass-card rounded-2xl border-border/30 hover-lift">
+                        <CardContent className="p-6">
+                          <div className="flex items-start justify-between flex-wrap gap-3">
                             <div>
                               <h3 className="font-heading font-semibold text-lg">{cls.name}</h3>
                               <p className="text-sm text-muted-foreground mt-1">{cls.desc}</p>
                             </div>
-                            <div className="flex flex-col items-end gap-1 text-sm text-muted-foreground">
-                              <span className="flex items-center gap-1">
-                                <Clock className="h-4 w-4" /> {cls.time}
+                            <div className="flex flex-col items-end gap-1.5 text-sm text-muted-foreground">
+                              <span className="flex items-center gap-2 bg-accent px-3 py-1 rounded-lg">
+                                <Clock className="h-3.5 w-3.5" /> {cls.time}
                               </span>
-                              <span className="flex items-center gap-1">
-                                <User className="h-4 w-4" /> {cls.teacher}
+                              <span className="flex items-center gap-2">
+                                <User className="h-3.5 w-3.5" /> {cls.teacher}
                               </span>
                             </div>
                           </div>
@@ -106,9 +108,13 @@ const Schedule = () => {
       </section>
 
       {/* Teachers */}
-      <section className="py-16 md:py-24 bg-yoga-cream">
+      <section className="py-20 md:py-32 bg-yoga-cream relative">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
         <div className="container mx-auto px-4">
-          <h2 className="font-heading text-3xl font-bold text-center mb-10">המורים שלנו</h2>
+          <div className="text-center mb-12">
+            <span className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">הצוות</span>
+            <h2 className="font-heading text-3xl md:text-4xl font-bold">המורים שלנו</h2>
+          </div>
 
           <motion.div
             initial="hidden"
@@ -119,9 +125,9 @@ const Schedule = () => {
           >
             {teachers.map((t) => (
               <motion.div key={t.name} variants={fadeUp}>
-                <Card className="text-center h-full border-border/50">
-                  <CardContent className="pt-8 pb-6 flex flex-col items-center gap-3">
-                    <div className="w-24 h-24 rounded-full bg-accent flex items-center justify-center mb-2">
+                <Card className="text-center h-full glass-card rounded-2xl border-border/30 hover-lift">
+                  <CardContent className="pt-10 pb-8 flex flex-col items-center gap-4">
+                    <div className="w-24 h-24 rounded-2xl bg-accent flex items-center justify-center">
                       <span className="text-muted-foreground text-xs">תמונה</span>
                     </div>
                     <h3 className="font-heading font-semibold text-lg">{t.name}</h3>

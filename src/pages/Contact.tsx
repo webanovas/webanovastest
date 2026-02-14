@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
+import PageHero from "@/components/PageHero";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,49 +18,51 @@ const stagger = {
 const Contact = () => {
   return (
     <Layout>
-      <section className="bg-yoga-sage-light py-16 md:py-20">
-        <div className="container mx-auto px-4">
-          <h1 className="font-heading text-4xl md:text-5xl font-bold mb-4">צור קשר</h1>
-          <p className="text-muted-foreground text-lg">נשמח לשמוע מכם ולענות על כל שאלה</p>
-        </div>
-      </section>
+      <PageHero
+        label="נשמח לשמוע"
+        title="צור קשר"
+        subtitle="נשמח לשמוע מכם ולענות על כל שאלה"
+      />
 
-      <section className="py-16 md:py-24">
+      <section className="py-20 md:py-32">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-14 max-w-4xl mx-auto">
             {/* Contact info */}
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
-              <motion.h2 variants={fadeUp} className="font-heading text-2xl font-bold mb-6">
+              <motion.span variants={fadeUp} className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">
+                פרטים
+              </motion.span>
+              <motion.h2 variants={fadeUp} className="font-heading text-2xl font-bold mb-8">
                 פרטי התקשרות
               </motion.h2>
 
-              <motion.div variants={fadeUp} className="flex flex-col gap-4 mb-8">
-                <a href="tel:0501234567" className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
-                  <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
+              <motion.div variants={fadeUp} className="flex flex-col gap-5 mb-10">
+                <a href="tel:0501234567" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
+                  <div className="w-11 h-11 rounded-xl bg-accent flex items-center justify-center">
                     <Phone className="h-5 w-5 text-primary" />
                   </div>
                   050-123-4567
                 </a>
-                <a href="https://wa.me/972501234567" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
-                  <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
+                <a href="https://wa.me/972501234567" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
+                  <div className="w-11 h-11 rounded-xl bg-accent flex items-center justify-center">
                     <MessageCircle className="h-5 w-5 text-primary" />
                   </div>
                   וואטסאפ
                 </a>
-                <a href="mailto:info@yogabamoshava.co.il" className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
-                  <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
+                <a href="mailto:info@yogabamoshava.co.il" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
+                  <div className="w-11 h-11 rounded-xl bg-accent flex items-center justify-center">
                     <Mail className="h-5 w-5 text-primary" />
                   </div>
                   info@yogabamoshava.co.il
                 </a>
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
-                  <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
+                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
+                  <div className="w-11 h-11 rounded-xl bg-accent flex items-center justify-center">
                     <Instagram className="h-5 w-5 text-primary" />
                   </div>
                   @yogabamoshava
                 </a>
-                <div className="flex items-center gap-3 text-foreground">
-                  <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
+                <div className="flex items-center gap-4 text-foreground/70">
+                  <div className="w-11 h-11 rounded-xl bg-accent flex items-center justify-center">
                     <MapPin className="h-5 w-5 text-primary" />
                   </div>
                   כיכר המושבה, הוד השרון
@@ -67,40 +70,43 @@ const Contact = () => {
               </motion.div>
 
               {/* Map placeholder */}
-              <motion.div variants={fadeUp} className="bg-accent rounded-xl aspect-video flex items-center justify-center">
+              <motion.div variants={fadeUp} className="bg-accent rounded-2xl aspect-video flex items-center justify-center border border-border/30">
                 <span className="text-muted-foreground text-sm">מפת Google</span>
               </motion.div>
             </motion.div>
 
             {/* Form */}
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
-              <motion.h2 variants={fadeUp} className="font-heading text-2xl font-bold mb-6">
+              <motion.span variants={fadeUp} className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">
+                טופס
+              </motion.span>
+              <motion.h2 variants={fadeUp} className="font-heading text-2xl font-bold mb-8">
                 השאירו פרטים
               </motion.h2>
 
               <form onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-4">
                 <motion.div variants={fadeUp}>
-                  <Input placeholder="שם מלא" />
+                  <Input placeholder="שם מלא" className="rounded-xl h-12" />
                 </motion.div>
                 <motion.div variants={fadeUp}>
-                  <Input type="email" placeholder="אימייל" />
+                  <Input type="email" placeholder="אימייל" className="rounded-xl h-12" />
                 </motion.div>
                 <motion.div variants={fadeUp}>
-                  <Input type="tel" placeholder="טלפון" />
+                  <Input type="tel" placeholder="טלפון" className="rounded-xl h-12" />
                 </motion.div>
                 <motion.div variants={fadeUp}>
-                  <Textarea placeholder="הודעה" rows={5} />
+                  <Textarea placeholder="הודעה" rows={5} className="rounded-xl" />
                 </motion.div>
                 <motion.div variants={fadeUp}>
-                  <Button type="submit" className="w-full gap-2">
+                  <Button type="submit" className="w-full gap-2 rounded-xl h-12 text-base shadow-lg shadow-primary/20">
                     <Send className="h-4 w-4" />
                     שלחו הודעה
                   </Button>
                 </motion.div>
               </form>
 
-              <motion.div variants={fadeUp} className="mt-6">
-                <Button variant="outline" asChild className="w-full gap-2">
+              <motion.div variants={fadeUp} className="mt-5">
+                <Button variant="outline" asChild className="w-full gap-2 rounded-xl h-12">
                   <a href="https://wa.me/972501234567" target="_blank" rel="noopener noreferrer">
                     <MessageCircle className="h-4 w-4" />
                     שלחו הודעה בוואטסאפ
