@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
+import PageHero from "@/components/PageHero";
 import { Card, CardContent } from "@/components/ui/card";
-import { Quote } from "lucide-react";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -24,14 +24,13 @@ const testimonials = [
 const Testimonials = () => {
   return (
     <Layout>
-      <section className="bg-yoga-sage-light py-16 md:py-20">
-        <div className="container mx-auto px-4">
-          <h1 className="font-heading text-4xl md:text-5xl font-bold mb-4">מילים חמות</h1>
-          <p className="text-muted-foreground text-lg">מה אומרים המתרגלים שלנו</p>
-        </div>
-      </section>
+      <PageHero
+        label="המלצות"
+        title="מילים חמות"
+        subtitle="מה אומרים המתרגלים שלנו"
+      />
 
-      <section className="py-16 md:py-24">
+      <section className="py-20 md:py-32">
         <div className="container mx-auto px-4">
           <motion.div
             initial="hidden"
@@ -42,11 +41,13 @@ const Testimonials = () => {
           >
             {testimonials.map((t, i) => (
               <motion.div key={i} variants={fadeUp}>
-                <Card className="h-full border-border/50">
-                  <CardContent className="pt-6">
-                    <Quote className="h-6 w-6 text-primary/30 mb-3" />
-                    <p className="text-muted-foreground text-sm leading-relaxed mb-4">{t.text}</p>
-                    <p className="font-heading font-semibold text-primary">— {t.name}</p>
+                <Card className="h-full glass-card rounded-2xl border-border/30 hover-lift">
+                  <CardContent className="pt-8 pb-6">
+                    <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center mb-4">
+                      <span className="text-primary text-lg">"</span>
+                    </div>
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-5">{t.text}</p>
+                    <p className="font-heading font-semibold text-primary text-sm">— {t.name}</p>
                   </CardContent>
                 </Card>
               </motion.div>

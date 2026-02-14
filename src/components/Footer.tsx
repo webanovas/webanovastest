@@ -1,41 +1,54 @@
 import { Link } from "react-router-dom";
-import { Instagram, Phone, MapPin } from "lucide-react";
+import { Instagram, Phone, MapPin, ArrowUp } from "lucide-react";
 
 const Footer = () => {
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
   return (
-    <footer className="bg-primary text-primary-foreground py-10">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <footer className="relative bg-yoga-dark text-primary-foreground">
+      {/* Organic top shape */}
+      <div className="absolute -top-px left-0 right-0 overflow-hidden">
+        <svg viewBox="0 0 1440 40" className="w-full h-8 md:h-10" preserveAspectRatio="none">
+          <path d="M0,40 C480,0 960,0 1440,40 L1440,0 L0,0 Z" fill="hsl(var(--background))" />
+        </svg>
+      </div>
+
+      <div className="container mx-auto px-4 pt-16 pb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
           {/* Brand */}
           <div>
-            <h3 className="font-heading text-xl font-semibold mb-3">יוגה במושבה</h3>
-            <p className="text-primary-foreground/80 text-sm font-body leading-relaxed">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-2xl bg-primary-foreground/10 flex items-center justify-center">
+                <span className="text-primary-foreground font-heading font-bold text-lg">י</span>
+              </div>
+              <h3 className="font-heading text-xl font-bold">יוגה במושבה</h3>
+            </div>
+            <p className="text-primary-foreground/60 text-sm font-body leading-relaxed max-w-xs">
               סטודיו יוגה בכיכר המושבה, הוד השרון.
-              <br />
               מקום של שקט, נשימה וחיבור.
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-heading font-semibold mb-3">קישורים</h4>
-            <nav className="flex flex-col gap-2 text-sm">
-              <Link to="/about" className="hover:underline text-primary-foreground/80">על הסטודיו</Link>
-              <Link to="/schedule" className="hover:underline text-primary-foreground/80">מערכת שעות</Link>
-              <Link to="/workshops" className="hover:underline text-primary-foreground/80">סדנאות</Link>
-              <Link to="/contact" className="hover:underline text-primary-foreground/80">צור קשר</Link>
+            <h4 className="font-heading font-semibold mb-4 text-primary-foreground/90">ניווט</h4>
+            <nav className="flex flex-col gap-2.5 text-sm">
+              <Link to="/about" className="text-primary-foreground/50 hover:text-primary-foreground transition-colors">על הסטודיו</Link>
+              <Link to="/schedule" className="text-primary-foreground/50 hover:text-primary-foreground transition-colors">מערכת שעות</Link>
+              <Link to="/workshops" className="text-primary-foreground/50 hover:text-primary-foreground transition-colors">סדנאות</Link>
+              <Link to="/contact" className="text-primary-foreground/50 hover:text-primary-foreground transition-colors">צור קשר</Link>
             </nav>
           </div>
 
           {/* Contact */}
           <div>
-            <h4 className="font-heading font-semibold mb-3">צרו קשר</h4>
-            <div className="flex flex-col gap-2 text-sm text-primary-foreground/80">
-              <a href="tel:0501234567" className="flex items-center gap-2 hover:underline">
+            <h4 className="font-heading font-semibold mb-4 text-primary-foreground/90">צרו קשר</h4>
+            <div className="flex flex-col gap-3 text-sm">
+              <a href="tel:0501234567" className="flex items-center gap-3 text-primary-foreground/50 hover:text-primary-foreground transition-colors">
                 <Phone className="h-4 w-4" />
                 050-123-4567
               </a>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3 text-primary-foreground/50">
                 <MapPin className="h-4 w-4" />
                 כיכר המושבה, הוד השרון
               </div>
@@ -43,7 +56,7 @@ const Footer = () => {
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 hover:underline"
+                className="flex items-center gap-3 text-primary-foreground/50 hover:text-primary-foreground transition-colors"
               >
                 <Instagram className="h-4 w-4" />
                 @yogabamoshava
@@ -52,8 +65,17 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-primary-foreground/20 mt-8 pt-6 text-center text-xs text-primary-foreground/60">
-          © {new Date().getFullYear()} יוגה במושבה – כל הזכויות שמורות
+        <div className="flex items-center justify-between border-t border-primary-foreground/10 pt-6">
+          <p className="text-xs text-primary-foreground/40">
+            © {new Date().getFullYear()} יוגה במושבה – כל הזכויות שמורות
+          </p>
+          <button
+            onClick={scrollToTop}
+            className="w-9 h-9 rounded-xl bg-primary-foreground/10 flex items-center justify-center hover:bg-primary-foreground/20 transition-colors"
+            aria-label="חזרה למעלה"
+          >
+            <ArrowUp className="h-4 w-4 text-primary-foreground/60" />
+          </button>
         </div>
       </div>
     </footer>
