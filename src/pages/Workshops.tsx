@@ -22,6 +22,7 @@ const activeWorkshops = [
     time: "10:00-13:00",
     desc: "שילוב של תרגול יוגה עם כתיבה יוצרת – חוויה מחברת לגוף ולנפש.",
     location: "סטודיו יוגה במושבה",
+    image: "/placeholder.svg",
   },
   {
     title: "סדנת נשימות פרנאיאמה",
@@ -29,13 +30,14 @@ const activeWorkshops = [
     time: "09:00-11:00",
     desc: "סדנה מעמיקה בטכניקות נשימה עתיקות לשקט פנימי ובריאות.",
     location: "סטודיו יוגה במושבה",
+    image: "/placeholder.svg",
   },
 ];
 
 const pastWorkshops = [
-  { title: "סדנת יוגה ומדיטציה", date: "דצמבר 2025" },
-  { title: "יוגה בשקיעה – אירוע מיוחד", date: "אוקטובר 2025" },
-  { title: "סדנת יין יוגה", date: "ספטמבר 2025" },
+  { title: "סדנת יוגה ומדיטציה", date: "דצמבר 2025", image: "/placeholder.svg" },
+  { title: "יוגה בשקיעה – אירוע מיוחד", date: "אוקטובר 2025", image: "/placeholder.svg" },
+  { title: "סדנת יין יוגה", date: "ספטמבר 2025", image: "/placeholder.svg" },
 ];
 
 const Workshops = () => {
@@ -64,9 +66,9 @@ const Workshops = () => {
           >
             {activeWorkshops.map((w) => (
               <motion.div key={w.title} variants={fadeUp}>
-                <Card className="h-full glass-card rounded-2xl border-border/30 overflow-hidden hover-lift">
-                  <div className="bg-accent aspect-video flex items-center justify-center">
-                    <span className="text-muted-foreground text-sm">תמונת סדנה</span>
+                <Card className="h-full rounded-2xl border-border/30 overflow-hidden hover-lift">
+                  <div className="aspect-video overflow-hidden">
+                    <img src={w.image} alt={w.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
                   </div>
                   <CardContent className="pt-6">
                     <h3 className="font-heading font-semibold text-xl mb-3">{w.title}</h3>
@@ -95,12 +97,15 @@ const Workshops = () => {
             <span className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">ארכיון</span>
             <h2 className="font-heading text-3xl md:text-4xl font-bold">סדנאות שהיו</h2>
           </div>
-          <div className="max-w-2xl mx-auto flex flex-col gap-3">
+          <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
             {pastWorkshops.map((w) => (
-              <Card key={w.title} className="glass-card rounded-2xl border-border/30">
-                <CardContent className="p-5 flex justify-between items-center">
-                  <span className="font-heading font-medium">{w.title}</span>
-                  <span className="text-sm text-muted-foreground bg-accent px-3 py-1 rounded-lg">{w.date}</span>
+              <Card key={w.title} className="rounded-2xl border-border/30 overflow-hidden">
+                <div className="aspect-video overflow-hidden">
+                  <img src={w.image} alt={w.title} className="w-full h-full object-cover opacity-70" />
+                </div>
+                <CardContent className="p-4">
+                  <span className="font-heading font-medium text-sm">{w.title}</span>
+                  <span className="text-xs text-muted-foreground block mt-1">{w.date}</span>
                 </CardContent>
               </Card>
             ))}

@@ -69,9 +69,9 @@ const Contact = () => {
                 </div>
               </motion.div>
 
-              {/* Map placeholder */}
-              <motion.div variants={fadeUp} className="bg-accent rounded-2xl aspect-video flex items-center justify-center border border-border/30">
-                <span className="text-muted-foreground text-sm">מפת Google</span>
+              {/* Map placeholder with image */}
+              <motion.div variants={fadeUp} className="rounded-2xl overflow-hidden shadow-md border border-border/30">
+                <img src="/placeholder.svg" alt="מפה - כיכר המושבה הוד השרון" className="w-full aspect-video object-cover" />
               </motion.div>
             </motion.div>
 
@@ -116,6 +116,12 @@ const Contact = () => {
             </motion.div>
           </div>
         </div>
+      </section>
+
+      {/* Studio image banner */}
+      <section className="relative h-[30vh] overflow-hidden">
+        <img src="/placeholder.svg" alt="הסטודיו" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-yoga-dark/50" />
       </section>
     </Layout>
   );

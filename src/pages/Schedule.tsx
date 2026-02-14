@@ -40,9 +40,9 @@ const scheduleData: Record<string, { time: string; name: string; teacher: string
 };
 
 const teachers = [
-  { name: "שירה פלג", role: "בעלת הסטודיו ומורה בכירה", desc: "מלמדת יוגה מעל 10 שנים בגישה אישית וקשובה." },
-  { name: "מיכל לוי", role: "מורה ליוגה ומדיטציה", desc: "מתמחה ביוגה עדינה, יין ונשימות." },
-  { name: "נועה כהן", role: "מורה ליוגה למתחילים", desc: "מאמינה שכל אחד יכול לתרגל, ללא קשר לרמה." },
+  { name: "שירה פלג", role: "בעלת הסטודיו ומורה בכירה", desc: "מלמדת יוגה מעל 10 שנים בגישה אישית וקשובה.", image: "/placeholder.svg" },
+  { name: "מיכל לוי", role: "מורה ליוגה ומדיטציה", desc: "מתמחה ביוגה עדינה, יין ונשימות.", image: "/placeholder.svg" },
+  { name: "נועה כהן", role: "מורה ליוגה למתחילים", desc: "מאמינה שכל אחד יכול לתרגל, ללא קשר לרמה.", image: "/placeholder.svg" },
 ];
 
 const Schedule = () => {
@@ -125,11 +125,11 @@ const Schedule = () => {
           >
             {teachers.map((t) => (
               <motion.div key={t.name} variants={fadeUp}>
-                <Card className="text-center h-full glass-card rounded-2xl border-border/30 hover-lift">
-                  <CardContent className="pt-10 pb-8 flex flex-col items-center gap-4">
-                    <div className="w-24 h-24 rounded-2xl bg-accent flex items-center justify-center">
-                      <span className="text-muted-foreground text-xs">תמונה</span>
-                    </div>
+                <Card className="text-center h-full rounded-2xl border-border/30 overflow-hidden hover-lift">
+                  <div className="aspect-[3/4] overflow-hidden">
+                    <img src={t.image} alt={t.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                  </div>
+                  <CardContent className="pt-6 pb-8 flex flex-col items-center gap-2">
                     <h3 className="font-heading font-semibold text-lg">{t.name}</h3>
                     <p className="text-primary text-sm font-medium">{t.role}</p>
                     <p className="text-muted-foreground text-sm">{t.desc}</p>

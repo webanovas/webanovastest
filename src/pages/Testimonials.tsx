@@ -30,6 +30,12 @@ const Testimonials = () => {
         subtitle="מה אומרים המתרגלים שלנו"
       />
 
+      {/* Image banner */}
+      <section className="relative h-[25vh] overflow-hidden">
+        <img src="/placeholder.svg" alt="תרגול יוגה" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-b from-yoga-dark/40 to-background" />
+      </section>
+
       <section className="py-20 md:py-32">
         <div className="container mx-auto px-4">
           <motion.div
@@ -43,11 +49,17 @@ const Testimonials = () => {
               <motion.div key={i} variants={fadeUp}>
                 <Card className="h-full glass-card rounded-2xl border-border/30 hover-lift">
                   <CardContent className="pt-8 pb-6">
-                    <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center mb-4">
-                      <span className="text-primary text-lg">"</span>
+                    <div className="flex gap-1 mb-4">
+                      {[...Array(5)].map((_, j) => (
+                        <span key={j} className="text-primary text-lg">★</span>
+                      ))}
                     </div>
                     <p className="text-muted-foreground text-sm leading-relaxed mb-5">{t.text}</p>
-                    <p className="font-heading font-semibold text-primary text-sm">— {t.name}</p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span className="font-heading font-bold text-primary text-sm">{t.name}</span>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </motion.div>
