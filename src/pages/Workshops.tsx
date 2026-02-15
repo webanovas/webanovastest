@@ -18,27 +18,27 @@ const stagger = {
 
 const activeWorkshops = [
   {
-    title: "סדנת יוגה וכתיבה יוצרת",
-    date: "15 מרץ 2026",
-    time: "10:00-13:00",
-    desc: "שילוב של תרגול יוגה עם כתיבה יוצרת – חוויה מחברת לגוף ולנפש.",
-    location: "סטודיו יוגה במושבה",
-    imageLabel: "תמונת סדנה 1",
+    title: "שם הסדנה",
+    date: "תאריך",
+    time: "שעות",
+    desc: "תיאור הסדנה",
+    location: "מיקום",
+    imageLabel: "תמונת סדנה",
   },
   {
-    title: "סדנת נשימות פרנאיאמה",
-    date: "22 מרץ 2026",
-    time: "09:00-11:00",
-    desc: "סדנה מעמיקה בטכניקות נשימה עתיקות לשקט פנימי ובריאות.",
-    location: "סטודיו יוגה במושבה",
-    imageLabel: "תמונת סדנה 2",
+    title: "שם הסדנה",
+    date: "תאריך",
+    time: "שעות",
+    desc: "תיאור הסדנה",
+    location: "מיקום",
+    imageLabel: "תמונת סדנה",
   },
 ];
 
 const pastWorkshops = [
-  { title: "סדנת יוגה ומדיטציה", date: "דצמבר 2025", imageLabel: "תמונת ארכיון 1" },
-  { title: "יוגה בשקיעה – אירוע מיוחד", date: "אוקטובר 2025", imageLabel: "תמונת ארכיון 2" },
-  { title: "סדנת יין יוגה", date: "ספטמבר 2025", imageLabel: "תמונת ארכיון 3" },
+  { title: "שם הסדנה", date: "תאריך", imageLabel: "תמונת סדנה" },
+  { title: "שם הסדנה", date: "תאריך", imageLabel: "תמונת סדנה" },
+  { title: "שם הסדנה", date: "תאריך", imageLabel: "תמונת סדנה" },
 ];
 
 const Workshops = () => {
