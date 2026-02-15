@@ -34,17 +34,17 @@ const Contact = () => {
               <motion.h2 variants={fadeUp} className="font-heading text-2xl font-bold mb-8">פרטי התקשרות</motion.h2>
 
               <motion.div variants={fadeUp} className="flex flex-col gap-5 mb-10">
-                <a href="tel:0501234567" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
+                <a href="tel:0542131254" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Phone className="h-5 w-5 text-primary" /></div>
-                  050-123-4567
+                  054-213-1254
                 </a>
-                <a href="https://wa.me/972501234567" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
+                <a href="https://wa.me/972542131254" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><MessageCircle className="h-5 w-5 text-primary" /></div>
                   וואטסאפ
                 </a>
-                <a href="mailto:info@yogabamoshava.co.il" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
+                <a href="mailto:shira.pelleg@gmail.com" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Mail className="h-5 w-5 text-primary" /></div>
-                  info@yogabamoshava.co.il
+                  shira.pelleg@gmail.com
                 </a>
                 <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Instagram className="h-5 w-5 text-primary" /></div>
@@ -80,7 +80,7 @@ const Contact = () => {
 
               <motion.div variants={fadeUp} className="mt-5">
                 <Button variant="outline" asChild className="w-full gap-2 rounded-full h-12">
-                  <a href="https://wa.me/972501234567" target="_blank" rel="noopener noreferrer">
+                  <a href="https://wa.me/972542131254" target="_blank" rel="noopener noreferrer">
                     <MessageCircle className="h-4 w-4" />שלחו הודעה בוואטסאפ
                   </a>
                 </Button>
