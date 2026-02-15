@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Instagram, Phone, MapPin, ArrowUp } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const Footer = () => {
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
@@ -18,9 +19,7 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-2xl bg-primary-foreground/10 flex items-center justify-center">
-                <span className="text-primary-foreground font-heading font-bold text-lg">י</span>
-              </div>
+              <img src={logo} alt="יוגה במושבה" className="w-10 h-10 rounded-full object-contain" />
               <h3 className="font-heading text-xl font-bold">יוגה במושבה</h3>
             </div>
             <p className="text-primary-foreground/60 text-sm font-body leading-relaxed max-w-xs">
