@@ -5,12 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
-
-import meditationHands from "@/assets/meditation-hands.jpg";
-import yogaSunset from "@/assets/yoga-sunset.jpg";
-import yogaGroup from "@/assets/yoga-group.jpg";
-import heroYoga from "@/assets/hero-yoga.jpg";
-import studioInterior from "@/assets/studio-interior.jpg";
+import ImagePlaceholder from "@/components/ImagePlaceholder";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -28,7 +23,7 @@ const activeWorkshops = [
     time: "10:00-13:00",
     desc: "שילוב של תרגול יוגה עם כתיבה יוצרת – חוויה מחברת לגוף ולנפש.",
     location: "סטודיו יוגה במושבה",
-    image: yogaGroup,
+    imageLabel: "תמונה של סדנת יוגה וכתיבה",
   },
   {
     title: "סדנת נשימות פרנאיאמה",
@@ -36,14 +31,14 @@ const activeWorkshops = [
     time: "09:00-11:00",
     desc: "סדנה מעמיקה בטכניקות נשימה עתיקות לשקט פנימי ובריאות.",
     location: "סטודיו יוגה במושבה",
-    image: meditationHands,
+    imageLabel: "תמונה של סדנת נשימות / מדיטציה",
   },
 ];
 
 const pastWorkshops = [
-  { title: "סדנת יוגה ומדיטציה", date: "דצמבר 2025", image: heroYoga },
-  { title: "יוגה בשקיעה – אירוע מיוחד", date: "אוקטובר 2025", image: yogaSunset },
-  { title: "סדנת יין יוגה", date: "ספטמבר 2025", image: studioInterior },
+  { title: "סדנת יוגה ומדיטציה", date: "דצמבר 2025", imageLabel: "תמונה של סדנת יוגה ומדיטציה" },
+  { title: "יוגה בשקיעה – אירוע מיוחד", date: "אוקטובר 2025", imageLabel: "תמונה של יוגה בשקיעה" },
+  { title: "סדנת יין יוגה", date: "ספטמבר 2025", imageLabel: "תמונה של סדנת יין יוגה" },
 ];
 
 const Workshops = () => {
@@ -53,7 +48,6 @@ const Workshops = () => {
         label="אירועים"
         title="סדנאות"
         subtitle="סדנאות מיוחדות להעמקת התרגול והחוויה"
-        image={yogaSunset}
       />
 
       {/* Active */}
@@ -64,18 +58,12 @@ const Workshops = () => {
             <h2 className="font-heading text-3xl md:text-4xl font-bold">סדנאות קרובות</h2>
           </div>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={stagger}
-            className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto"
-          >
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             {activeWorkshops.map((w) => (
               <motion.div key={w.title} variants={fadeUp}>
                 <Card className="h-full rounded-3xl border-0 overflow-hidden hover-lift shadow-lg">
                   <div className="aspect-video overflow-hidden">
-                    <img src={w.image} alt={w.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                    <ImagePlaceholder label={w.imageLabel} />
                   </div>
                   <CardContent className="pt-6">
                     <h3 className="font-heading font-semibold text-xl mb-3">{w.title}</h3>
@@ -107,7 +95,7 @@ const Workshops = () => {
             {pastWorkshops.map((w) => (
               <Card key={w.title} className="rounded-3xl border-0 overflow-hidden shadow-md">
                 <div className="aspect-video overflow-hidden">
-                  <img src={w.image} alt={w.title} className="w-full h-full object-cover opacity-80" />
+                  <ImagePlaceholder label={w.imageLabel} />
                 </div>
                 <CardContent className="p-5">
                   <span className="font-heading font-medium text-sm">{w.title}</span>

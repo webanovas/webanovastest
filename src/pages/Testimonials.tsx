@@ -4,8 +4,6 @@ import PageHero from "@/components/PageHero";
 import { Card, CardContent } from "@/components/ui/card";
 import { Quote } from "lucide-react";
 
-import heroYoga from "@/assets/hero-yoga.jpg";
-
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
@@ -31,18 +29,11 @@ const Testimonials = () => {
         label="המלצות"
         title="מילים חמות"
         subtitle="מה אומרים המתרגלים שלנו"
-        image={heroYoga}
       />
 
       <section className="py-24 md:py-36">
         <div className="container mx-auto px-4">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={stagger}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto"
-          >
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {testimonials.map((t, i) => (
               <motion.div key={i} variants={fadeUp}>
                 <Card className="h-full rounded-3xl border-0 shadow-md hover-lift bg-card">
