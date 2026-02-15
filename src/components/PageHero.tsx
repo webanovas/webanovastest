@@ -13,27 +13,35 @@ interface PageHeroProps {
   title: string;
   subtitle?: string;
   label?: string;
+  image?: string;
 }
 
-const PageHero = ({ title, subtitle, label }: PageHeroProps) => {
+const PageHero = ({ title, subtitle, label, image }: PageHeroProps) => {
   return (
-    <section className="page-hero-gradient pt-28 md:pt-36 pb-16 md:pb-20 relative overflow-hidden">
-      {/* Decorative */}
-      <div className="absolute top-10 left-10 w-40 h-40 rounded-full bg-primary/5 blur-3xl" />
-      <div className="absolute bottom-0 right-10 w-32 h-32 rounded-full bg-yoga-sand/30 blur-2xl" />
+    <section className="relative min-h-[50vh] flex items-end overflow-hidden">
+      {image ? (
+        <>
+          <div className="absolute inset-0">
+            <img src={image} alt={title} className="w-full h-full object-cover" />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-yoga-dark/90 via-yoga-dark/40 to-yoga-dark/20" />
+        </>
+      ) : (
+        <div className="absolute inset-0 page-hero-gradient" />
+      )}
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto px-4 relative z-10 pb-14 md:pb-20 pt-32">
         <motion.div initial="hidden" animate="visible" variants={stagger}>
           {label && (
-            <motion.span variants={fadeUp} className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">
+            <motion.span variants={fadeUp} className={`font-medium text-sm tracking-wider uppercase mb-3 block ${image ? "text-primary-foreground/80" : "text-primary"}`}>
               {label}
             </motion.span>
           )}
-          <motion.h1 variants={fadeUp} className="font-heading text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">
+          <motion.h1 variants={fadeUp} className={`font-heading text-4xl md:text-6xl font-extrabold mb-4 tracking-tight ${image ? "text-primary-foreground" : ""}`}>
             {title}
           </motion.h1>
           {subtitle && (
-            <motion.p variants={fadeUp} className="text-muted-foreground text-lg max-w-xl">
+            <motion.p variants={fadeUp} className={`text-lg max-w-xl ${image ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
               {subtitle}
             </motion.p>
           )}

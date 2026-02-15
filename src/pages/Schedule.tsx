@@ -5,6 +5,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Clock, User } from "lucide-react";
 
+import yogaGroup from "@/assets/yoga-group.jpg";
+import teacherShira from "@/assets/teacher-shira.jpg";
+import privateLesson from "@/assets/private-lesson.jpg";
+import meditationHands from "@/assets/meditation-hands.jpg";
+
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
@@ -40,9 +45,9 @@ const scheduleData: Record<string, { time: string; name: string; teacher: string
 };
 
 const teachers = [
-  { name: "שירה פלג", role: "בעלת הסטודיו ומורה בכירה", desc: "מלמדת יוגה מעל 10 שנים בגישה אישית וקשובה.", image: "/placeholder.svg" },
-  { name: "מיכל לוי", role: "מורה ליוגה ומדיטציה", desc: "מתמחה ביוגה עדינה, יין ונשימות.", image: "/placeholder.svg" },
-  { name: "נועה כהן", role: "מורה ליוגה למתחילים", desc: "מאמינה שכל אחד יכול לתרגל, ללא קשר לרמה.", image: "/placeholder.svg" },
+  { name: "שירה פלג", role: "בעלת הסטודיו ומורה בכירה", desc: "מלמדת יוגה מעל 10 שנים בגישה אישית וקשובה.", image: teacherShira },
+  { name: "מיכל לוי", role: "מורה ליוגה ומדיטציה", desc: "מתמחה ביוגה עדינה, יין ונשימות.", image: privateLesson },
+  { name: "נועה כהן", role: "מורה ליוגה למתחילים", desc: "מאמינה שכל אחד יכול לתרגל, ללא קשר לרמה.", image: meditationHands },
 ];
 
 const Schedule = () => {
@@ -52,10 +57,11 @@ const Schedule = () => {
         label="לוח שיעורים"
         title="מערכת שעות ומורים"
         subtitle="הצטרפו לשיעור שמתאים לכם – בסטודיו או בזום"
+        image={yogaGroup}
       />
 
       {/* Schedule */}
-      <section className="py-20 md:py-32">
+      <section className="py-24 md:py-36">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <span className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">שבועי</span>
@@ -68,7 +74,7 @@ const Schedule = () => {
                 <TabsTrigger
                   key={day}
                   value={day}
-                  className="px-5 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl font-medium"
+                  className="px-6 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full font-medium"
                 >
                   {day}
                 </TabsTrigger>
@@ -80,7 +86,7 @@ const Schedule = () => {
                 <motion.div initial="hidden" animate="visible" variants={stagger} className="flex flex-col gap-4">
                   {scheduleData[day]?.map((cls, i) => (
                     <motion.div key={i} variants={fadeUp}>
-                      <Card className="glass-card rounded-2xl border-border/30 hover-lift">
+                      <Card className="rounded-2xl border-border/30 hover-lift shadow-sm">
                         <CardContent className="p-6">
                           <div className="flex items-start justify-between flex-wrap gap-3">
                             <div>
@@ -88,7 +94,7 @@ const Schedule = () => {
                               <p className="text-sm text-muted-foreground mt-1">{cls.desc}</p>
                             </div>
                             <div className="flex flex-col items-end gap-1.5 text-sm text-muted-foreground">
-                              <span className="flex items-center gap-2 bg-accent px-3 py-1 rounded-lg">
+                              <span className="flex items-center gap-2 bg-accent px-3 py-1 rounded-full">
                                 <Clock className="h-3.5 w-3.5" /> {cls.time}
                               </span>
                               <span className="flex items-center gap-2">
@@ -108,8 +114,7 @@ const Schedule = () => {
       </section>
 
       {/* Teachers */}
-      <section className="py-20 md:py-32 bg-yoga-cream relative">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      <section className="py-24 md:py-36 bg-yoga-cream relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <span className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">הצוות</span>
@@ -121,13 +126,13 @@ const Schedule = () => {
             whileInView="visible"
             viewport={{ once: true }}
             variants={stagger}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto"
+            className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
           >
             {teachers.map((t) => (
               <motion.div key={t.name} variants={fadeUp}>
-                <Card className="text-center h-full rounded-2xl border-border/30 overflow-hidden hover-lift">
+                <Card className="text-center h-full rounded-3xl border-0 overflow-hidden hover-lift shadow-lg">
                   <div className="aspect-[3/4] overflow-hidden">
-                    <img src={t.image} alt={t.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                    <img src={t.image} alt={t.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
                   </div>
                   <CardContent className="pt-6 pb-8 flex flex-col items-center gap-2">
                     <h3 className="font-heading font-semibold text-lg">{t.name}</h3>
