@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Instagram, Phone, MapPin, ArrowUp } from "lucide-react";
+import { Instagram, Phone, MapPin, ArrowUp, Settings } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 const Footer = () => {
@@ -65,9 +65,14 @@ const Footer = () => {
         </div>
 
         <div className="flex items-center justify-between border-t border-primary-foreground/10 pt-6">
-          <p className="text-xs text-primary-foreground/40">
-            © {new Date().getFullYear()} יוגה במושבה – כל הזכויות שמורות
-          </p>
+          <div className="flex items-center gap-3">
+            <p className="text-xs text-primary-foreground/40">
+              © {new Date().getFullYear()} יוגה במושבה – כל הזכויות שמורות
+            </p>
+            <Link to="/admin-login" className="text-primary-foreground/20 hover:text-primary-foreground/40 transition-colors" aria-label="כניסת מנהל">
+              <Settings className="h-3 w-3" />
+            </Link>
+          </div>
           <button
             onClick={scrollToTop}
             className="w-9 h-9 rounded-xl bg-primary-foreground/10 flex items-center justify-center hover:bg-primary-foreground/20 transition-colors"
