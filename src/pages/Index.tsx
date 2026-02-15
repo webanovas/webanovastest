@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import Layout from "@/components/Layout";
 import ImagePlaceholder from "@/components/ImagePlaceholder";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -36,13 +38,15 @@ const benefits = [
   { icon: Wind, title: "הפחתת מתח", desc: "שחרור מתחים ושיפור איכות השינה" },
 ];
 
-const testimonials = [
-  { name: "מילים חמות", text: "מילים חמות" },
-  { name: "מילים חמות", text: "מילים חמות" },
-  { name: "מילים חמות", text: "מילים חמות" },
-];
-
 const Index = () => {
+  const { data: testimonials = [] } = useQuery({
+    queryKey: ["testimonials-home"],
+    queryFn: async () => {
+      const { data } = await supabase.from("testimonials").select("*").order("sort_order").limit(3);
+      return data ?? [];
+    },
+  });
+
   return (
     <Layout>
       {/* Hero */}
@@ -198,21 +202,19 @@ const Index = () => {
           </motion.div>
 
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {testimonials.map((t) => (
-              <motion.div key={t.name} variants={fadeUp}>
+            {testimonials.length === 0 ? (
+              <p className="text-center text-muted-foreground col-span-full">מילים חמות יעודכנו בקרוב</p>
+            ) : testimonials.map((t) => (
+              <motion.div key={t.id} variants={fadeUp}>
                 <Card className="h-full rounded-3xl border-0 shadow-md hover-lift bg-card">
                   <CardContent className="pt-8 pb-8 px-8">
                     <Quote className="h-8 w-8 text-primary/20 mb-4" />
                     <p className="text-foreground/80 leading-relaxed mb-6">{t.text}</p>
                     <div className="flex items-center gap-3 pt-4 border-t border-border">
                       <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <span className="font-heading font-bold text-primary text-sm">{t.name}</span>
+                        <span className="font-heading font-bold text-primary text-sm">{t.name.charAt(0)}</span>
                       </div>
-                      <div className="flex gap-0.5">
-                        {[...Array(5)].map((_, i) => (
-                          <span key={i} className="text-primary text-sm">★</span>
-                        ))}
-                      </div>
+                      <span className="font-heading font-medium text-sm">{t.name}</span>
                     </div>
                   </CardContent>
                 </Card>
