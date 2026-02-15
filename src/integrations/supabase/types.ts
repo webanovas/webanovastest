@@ -47,6 +47,30 @@ export type Database = {
         }
         Relationships: []
       }
+      page_content: {
+        Row: {
+          content: string
+          id: string
+          page: string
+          section: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string
+          id?: string
+          page: string
+          section: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          id?: string
+          page?: string
+          section?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       teachers: {
         Row: {
           created_at: string
