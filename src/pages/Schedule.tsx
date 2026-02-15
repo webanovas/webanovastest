@@ -4,11 +4,7 @@ import PageHero from "@/components/PageHero";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Clock, User } from "lucide-react";
-
-import yogaGroup from "@/assets/yoga-group.jpg";
-import teacherShira from "@/assets/teacher-shira.jpg";
-import privateLesson from "@/assets/private-lesson.jpg";
-import meditationHands from "@/assets/meditation-hands.jpg";
+import ImagePlaceholder from "@/components/ImagePlaceholder";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -45,9 +41,9 @@ const scheduleData: Record<string, { time: string; name: string; teacher: string
 };
 
 const teachers = [
-  { name: "שירה פלג", role: "בעלת הסטודיו ומורה בכירה", desc: "מלמדת יוגה מעל 10 שנים בגישה אישית וקשובה.", image: teacherShira },
-  { name: "מיכל לוי", role: "מורה ליוגה ומדיטציה", desc: "מתמחה ביוגה עדינה, יין ונשימות.", image: privateLesson },
-  { name: "נועה כהן", role: "מורה ליוגה למתחילים", desc: "מאמינה שכל אחד יכול לתרגל, ללא קשר לרמה.", image: meditationHands },
+  { name: "שירה פלג", role: "בעלת הסטודיו ומורה בכירה", desc: "מלמדת יוגה מעל 10 שנים בגישה אישית וקשובה.", imageLabel: "תמונה של שירה פלג" },
+  { name: "מיכל לוי", role: "מורה ליוגה ומדיטציה", desc: "מתמחה ביוגה עדינה, יין ונשימות.", imageLabel: "תמונה של מיכל לוי" },
+  { name: "נועה כהן", role: "מורה ליוגה למתחילים", desc: "מאמינה שכל אחד יכול לתרגל, ללא קשר לרמה.", imageLabel: "תמונה של נועה כהן" },
 ];
 
 const Schedule = () => {
@@ -57,7 +53,6 @@ const Schedule = () => {
         label="לוח שיעורים"
         title="מערכת שעות ומורים"
         subtitle="הצטרפו לשיעור שמתאים לכם – בסטודיו או בזום"
-        image={yogaGroup}
       />
 
       {/* Schedule */}
@@ -71,11 +66,7 @@ const Schedule = () => {
           <Tabs defaultValue="ראשון" dir="rtl" className="max-w-3xl mx-auto">
             <TabsList className="flex flex-wrap justify-center gap-1.5 mb-10 h-auto bg-transparent">
               {days.map((day) => (
-                <TabsTrigger
-                  key={day}
-                  value={day}
-                  className="px-6 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full font-medium"
-                >
+                <TabsTrigger key={day} value={day} className="px-6 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full font-medium">
                   {day}
                 </TabsTrigger>
               ))}
@@ -121,18 +112,12 @@ const Schedule = () => {
             <h2 className="font-heading text-3xl md:text-4xl font-bold">המורים שלנו</h2>
           </div>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={stagger}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
-          >
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {teachers.map((t) => (
               <motion.div key={t.name} variants={fadeUp}>
                 <Card className="text-center h-full rounded-3xl border-0 overflow-hidden hover-lift shadow-lg">
                   <div className="aspect-[3/4] overflow-hidden">
-                    <img src={t.image} alt={t.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
+                    <ImagePlaceholder label={t.imageLabel} />
                   </div>
                   <CardContent className="pt-6 pb-8 flex flex-col items-center gap-2">
                     <h3 className="font-heading font-semibold text-lg">{t.name}</h3>
