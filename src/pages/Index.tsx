@@ -23,10 +23,10 @@ const stagger = {
 };
 
 const services = [
-  { icon: Users, title: "שיעורים בסטודיו", desc: "שיעורי יוגה קבוצתיים באווירה חמה ומזמינה", imageLabel: "תמונה של שיעור יוגה קבוצתי בסטודיו" },
-  { icon: Monitor, title: "שיעורי זום", desc: "תרגלו מהנוחות של הבית בשיעורים אונליין", imageLabel: "תמונה של שיעור יוגה בזום" },
-  { icon: User, title: "שיעורים פרטיים", desc: "תרגול מותאם אישית לצרכים שלכם", imageLabel: "תמונה של שיעור יוגה פרטי" },
-  { icon: Heart, title: "קבוצות מיוחדות", desc: "שיעורים לקבוצות, ימי כיף ואירועים", imageLabel: "תמונה של מדיטציה / קבוצה מיוחדת" },
+  { icon: Users, title: "שיעורים בסטודיו", desc: "שיעורי יוגה קבוצתיים באווירה חמה ומזמינה", imageLabel: "תמונה – שיעור קבוצתי" },
+  { icon: Monitor, title: "שיעורי זום", desc: "תרגלו מהנוחות של הבית בשיעורים אונליין", imageLabel: "תמונה – שיעור זום" },
+  { icon: User, title: "שיעורים פרטיים", desc: "תרגול מותאם אישית לצרכים שלכם", imageLabel: "תמונה – שיעור פרטי" },
+  { icon: Heart, title: "קבוצות מיוחדות", desc: "שיעורים לקבוצות, ימי כיף ואירועים", imageLabel: "תמונה – קבוצה מיוחדת" },
 ];
 
 const benefits = [
@@ -37,9 +37,9 @@ const benefits = [
 ];
 
 const testimonials = [
-  { name: "ר.כ", text: "שירה מצליחה ליצור מרחב בטוח ומזמין. כל שיעור הוא חוויה מחדש." },
-  { name: "מ.ד", text: "מאז שהתחלתי לתרגל בסטודיו, הגב שלי משתפר והנפש רגועה." },
-  { name: "ל.ש", text: "האווירה בסטודיו מדהימה. שירה מורה קשובה ומקצועית." },
+  { name: "מילים חמות", text: "שירה מצליחה ליצור מרחב בטוח ומזמין. כל שיעור הוא חוויה מחדש." },
+  { name: "מילים חמות", text: "מאז שהתחלתי לתרגל בסטודיו, הגב שלי משתפר והנפש רגועה." },
+  { name: "מילים חמות", text: "האווירה בסטודיו מדהימה. שירה מורה קשובה ומקצועית." },
 ];
 
 const Index = () => {
@@ -48,7 +48,7 @@ const Index = () => {
       {/* Hero */}
       <section className="relative min-h-screen flex items-end overflow-hidden">
         <div className="absolute inset-0">
-          <ImagePlaceholder label="תמונת Hero ראשית – שיעור יוגה בסטודיו או נוף מרגיע" />
+          <ImagePlaceholder label="תמונת רקע ראשית" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-yoga-dark/90 via-yoga-dark/30 to-transparent" />
 
@@ -101,10 +101,10 @@ const Index = () => {
 
             <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="relative">
               <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[3/4]">
-                <ImagePlaceholder label="תמונה של שירה פלג – בעלת הסטודיו" />
+                <ImagePlaceholder label="תמונת פורטרט" />
               </div>
               <div className="absolute -bottom-8 -right-8 md:-right-12 w-40 h-40 md:w-52 md:h-52 rounded-2xl overflow-hidden shadow-xl border-4 border-background">
-                <ImagePlaceholder label="תמונה של פנים הסטודיו" />
+                <ImagePlaceholder label="תמונת הסטודיו" />
               </div>
             </motion.div>
           </div>
@@ -146,7 +146,7 @@ const Index = () => {
 
       {/* Full-width image divider */}
       <section className="relative h-[60vh] overflow-hidden">
-        <ImagePlaceholder label="תמונת רוחב מלא – יוגה בשקיעה / נוף" className="absolute inset-0" />
+        <ImagePlaceholder label="תמונת רקע רחבה" className="absolute inset-0" />
         <div className="absolute inset-0 bg-yoga-dark/50 flex items-center justify-center">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center px-4">
             <h2 className="font-heading text-4xl md:text-6xl font-bold text-primary-foreground mb-4">
@@ -165,7 +165,7 @@ const Index = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="rounded-3xl overflow-hidden shadow-xl aspect-square">
-              <ImagePlaceholder label="תמונה של תרגול קבוצתי בסטודיו" />
+              <ImagePlaceholder label="תמונת תרגול" />
             </motion.div>
 
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>

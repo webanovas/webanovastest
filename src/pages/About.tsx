@@ -16,12 +16,12 @@ const stagger = {
 };
 
 const galleryLabels = [
-  "תמונה של שיעור יוגה – Hero",
-  "תמונה של תרגול קבוצתי",
-  "תמונה של פנים הסטודיו",
-  "תמונה של מדיטציה / ידיים",
-  "תמונה של יוגה בשקיעה",
-  "תמונה של שירה פלג",
+  "תמונת גלריה 1",
+  "תמונת גלריה 2",
+  "תמונת גלריה 3",
+  "תמונת גלריה 4",
+  "תמונת גלריה 5",
+  "תמונת גלריה 6",
 ];
 
 const About = () => {
@@ -39,7 +39,7 @@ const About = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative">
               <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[3/4]">
-                <ImagePlaceholder label="תמונה של שירה פלג – בעלת הסטודיו" />
+                <ImagePlaceholder label="תמונת פורטרט" />
               </div>
             </motion.div>
 
@@ -108,7 +108,7 @@ const About = () => {
 
       {/* CTA Banner */}
       <section className="relative h-[50vh] overflow-hidden">
-        <ImagePlaceholder label="תמונת רקע – יוגה בשקיעה" className="absolute inset-0" />
+        <ImagePlaceholder label="תמונת רקע" className="absolute inset-0" />
         <div className="absolute inset-0 bg-yoga-dark/50 flex items-center justify-center">
           <div className="text-center px-4">
             <h2 className="font-heading text-3xl md:text-5xl font-bold text-primary-foreground mb-4">

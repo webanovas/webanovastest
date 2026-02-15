@@ -57,7 +57,7 @@ const Contact = () => {
               </motion.div>
 
               <motion.div variants={fadeUp} className="rounded-2xl overflow-hidden shadow-md border border-border/30 aspect-video">
-                <ImagePlaceholder label="מפת הגעה – כיכר המושבה, הוד השרון" />
+                <ImagePlaceholder label="מפת הגעה" />
               </motion.div>
             </motion.div>
 
