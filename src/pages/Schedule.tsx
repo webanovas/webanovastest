@@ -1,12 +1,28 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
 import PageHero from "@/components/PageHero";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Clock, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Clock, User, Plus, Trash2, Check, X, Pencil, GripVertical } from "lucide-react";
 import ImagePlaceholder from "@/components/ImagePlaceholder";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAdminMode } from "@/hooks/useAdminMode";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import type { Tables } from "@/integrations/supabase/types";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+type ClassRow = Tables<"classes">;
+type TeacherRow = Tables<"teachers">;
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -19,7 +35,34 @@ const stagger = {
 
 const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי"];
 
+// Time slots for timetable grid
+const timeSlots = [
+  "07:00", "08:00", "09:00", "09:30", "10:00", "10:30",
+  "16:00", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30",
+];
+
+function getTimeSlot(time: string): string {
+  // Extract just HH:MM from time string
+  const match = time.match(/(\d{1,2}:\d{2})/);
+  return match ? match[1] : time;
+}
+
+function getUniqueTimes(classes: ClassRow[]): string[] {
+  const times = new Set<string>();
+  classes.forEach((c) => {
+    const t = getTimeSlot(c.time);
+    if (t) times.add(t);
+  });
+  return Array.from(times).sort();
+}
+
 const Schedule = () => {
+  const { isEditMode, isAdmin } = useAdminMode();
+  const queryClient = useQueryClient();
+  const [editingClass, setEditingClass] = useState<ClassRow | null>(null);
+  const [isAddingClass, setIsAddingClass] = useState(false);
+  const [newClass, setNewClass] = useState({ day: "ראשון", time: "", name: "", teacher: "", description: "" });
+
   const { data: classes = [] } = useQuery({
     queryKey: ["classes"],
     queryFn: async () => {
@@ -36,13 +79,75 @@ const Schedule = () => {
     },
   });
 
-  const classesByDay = days.reduce((acc, day) => {
-    acc[day] = classes.filter((c) => c.day === day);
-    return acc;
-  }, {} as Record<string, typeof classes>);
+  const [editingTeacher, setEditingTeacher] = useState<TeacherRow | null>(null);
+  const [isAddingTeacher, setIsAddingTeacher] = useState(false);
+  const [newTeacher, setNewTeacher] = useState({ name: "", role: "", description: "" });
 
+  const uniqueTimes = getUniqueTimes(classes);
   const hasClasses = classes.length > 0;
   const hasTeachers = teachers.length > 0;
+
+  const classesByDayTime = (day: string, time: string) =>
+    classes.filter((c) => c.day === day && getTimeSlot(c.time) === time);
+
+  const saveClass = async (cls: ClassRow) => {
+    const { error } = await supabase.from("classes").update({
+      day: cls.day, time: cls.time, name: cls.name, teacher: cls.teacher, description: cls.description,
+    }).eq("id", cls.id);
+    if (error) toast.error("שגיאה בשמירה");
+    else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["classes"] }); }
+    setEditingClass(null);
+  };
+
+  const addClass = async () => {
+    if (!newClass.name || !newClass.time) { toast.error("שם ושעה חובה"); return; }
+    const { error } = await supabase.from("classes").insert({
+      day: newClass.day, time: newClass.time, name: newClass.name,
+      teacher: newClass.teacher, description: newClass.description,
+    });
+    if (error) toast.error("שגיאה");
+    else {
+      toast.success("נוסף");
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
+      setNewClass({ day: "ראשון", time: "", name: "", teacher: "", description: "" });
+      setIsAddingClass(false);
+    }
+  };
+
+  const deleteClass = async (id: string) => {
+    await supabase.from("classes").delete().eq("id", id);
+    toast.success("נמחק");
+    queryClient.invalidateQueries({ queryKey: ["classes"] });
+    setEditingClass(null);
+  };
+
+  const saveTeacher = async (t: TeacherRow) => {
+    const { error } = await supabase.from("teachers").update({
+      name: t.name, role: t.role, description: t.description,
+    }).eq("id", t.id);
+    if (error) toast.error("שגיאה");
+    else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["teachers"] }); }
+    setEditingTeacher(null);
+  };
+
+  const addTeacher = async () => {
+    if (!newTeacher.name) { toast.error("שם חובה"); return; }
+    const { error } = await supabase.from("teachers").insert(newTeacher);
+    if (error) toast.error("שגיאה");
+    else {
+      toast.success("נוסף");
+      queryClient.invalidateQueries({ queryKey: ["teachers"] });
+      setNewTeacher({ name: "", role: "", description: "" });
+      setIsAddingTeacher(false);
+    }
+  };
+
+  const deleteTeacher = async (id: string) => {
+    await supabase.from("teachers").delete().eq("id", id);
+    toast.success("נמחק");
+    queryClient.invalidateQueries({ queryKey: ["teachers"] });
+    setEditingTeacher(null);
+  };
 
   return (
     <Layout>
@@ -52,62 +157,151 @@ const Schedule = () => {
         subtitle="הצטרפו לשיעור שמתאים לכם – בסטודיו או בזום"
       />
 
-      {/* Schedule */}
+      {/* Timetable Schedule */}
       <section className="py-24 md:py-36">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <span className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">שבועי</span>
             <h2 className="font-heading text-3xl md:text-4xl font-bold">לוח שיעורים</h2>
+            {isEditMode && (
+              <Button
+                size="sm"
+                onClick={() => setIsAddingClass(true)}
+                className="mt-4 rounded-full gap-2"
+              >
+                <Plus className="h-4 w-4" />הוסף שיעור
+              </Button>
+            )}
           </div>
 
-          {!hasClasses ? (
+          {!hasClasses && !isEditMode ? (
             <p className="text-center text-muted-foreground">לוח השיעורים יעודכן בקרוב</p>
           ) : (
-            <Tabs defaultValue="ראשון" dir="rtl" className="max-w-3xl mx-auto">
-              <TabsList className="flex flex-wrap justify-center gap-1.5 mb-10 h-auto bg-transparent">
-                {days.map((day) => (
-                  <TabsTrigger key={day} value={day} className="px-6 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full font-medium">
-                    {day}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-
-              {days.map((day) => (
-                <TabsContent key={day} value={day}>
-                  <motion.div initial="hidden" animate="visible" variants={stagger} className="flex flex-col gap-4">
-                    {classesByDay[day]?.length === 0 ? (
-                      <p className="text-center text-muted-foreground py-8">אין שיעורים ביום זה</p>
-                    ) : (
-                      classesByDay[day]?.map((cls) => (
-                        <motion.div key={cls.id} variants={fadeUp}>
-                          <Card className="rounded-2xl border-border/30 hover-lift shadow-sm">
-                            <CardContent className="p-6">
-                              <div className="flex items-start justify-between flex-wrap gap-3">
-                                <div>
-                                  <h3 className="font-heading font-semibold text-lg">{cls.name}</h3>
-                                  <p className="text-sm text-muted-foreground mt-1">{cls.description}</p>
-                                </div>
-                                <div className="flex flex-col items-end gap-1.5 text-sm text-muted-foreground">
-                                  <span className="flex items-center gap-2 bg-accent px-3 py-1 rounded-full">
-                                    <Clock className="h-3.5 w-3.5" /> {cls.time}
-                                  </span>
-                                  <span className="flex items-center gap-2">
-                                    <User className="h-3.5 w-3.5" /> {cls.teacher}
-                                  </span>
-                                </div>
+            <div className="max-w-6xl mx-auto overflow-x-auto">
+              <table className="w-full border-collapse min-w-[700px]">
+                <thead>
+                  <tr>
+                    <th className="p-3 text-sm font-heading font-semibold text-muted-foreground border-b-2 border-primary/20 w-20 text-right">שעה</th>
+                    {days.map((day) => (
+                      <th key={day} className="p-3 text-sm font-heading font-semibold text-center border-b-2 border-primary/20">
+                        <span className="bg-primary/10 text-primary px-4 py-1.5 rounded-full">{day}</span>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {uniqueTimes.map((time) => (
+                    <tr key={time} className="border-b border-border/30 hover:bg-accent/20 transition-colors">
+                      <td className="p-3 text-sm font-medium text-muted-foreground whitespace-nowrap align-top">
+                        <div className="flex items-center gap-1.5">
+                          <Clock className="h-3.5 w-3.5" />
+                          {time}
+                        </div>
+                      </td>
+                      {days.map((day) => {
+                        const cellClasses = classesByDayTime(day, time);
+                        return (
+                          <td key={day} className="p-2 align-top min-w-[140px]">
+                            {cellClasses.map((cls) => (
+                              <div
+                                key={cls.id}
+                                className={cn(
+                                  "rounded-xl p-3 mb-1.5 bg-primary/8 border border-primary/15 transition-all",
+                                  isEditMode && "cursor-pointer hover:bg-primary/15 hover:border-primary/30 group relative"
+                                )}
+                                onClick={() => isEditMode && setEditingClass({ ...cls })}
+                              >
+                                <p className="font-heading font-semibold text-sm leading-tight">{cls.name}</p>
+                                <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+                                  <User className="h-3 w-3" />{cls.teacher}
+                                </p>
+                                {cls.description && (
+                                  <p className="text-xs text-muted-foreground/70 mt-1 line-clamp-2">{cls.description}</p>
+                                )}
+                                {isEditMode && (
+                                  <Pencil className="absolute top-2 left-2 h-3 w-3 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                                )}
                               </div>
-                            </CardContent>
-                          </Card>
-                        </motion.div>
-                      ))
-                    )}
-                  </motion.div>
-                </TabsContent>
-              ))}
-            </Tabs>
+                            ))}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </section>
+
+      {/* Class Edit Dialog */}
+      <Dialog open={!!editingClass} onOpenChange={(open) => !open && setEditingClass(null)}>
+        <DialogContent className="max-w-md" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="font-heading">עריכת שיעור</DialogTitle>
+          </DialogHeader>
+          {editingClass && (
+            <ClassForm
+              value={editingClass}
+              onChange={setEditingClass}
+              onSave={() => saveClass(editingClass)}
+              onDelete={() => deleteClass(editingClass.id)}
+              onCancel={() => setEditingClass(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Class Add Dialog */}
+      <Dialog open={isAddingClass} onOpenChange={setIsAddingClass}>
+        <DialogContent className="max-w-md" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="font-heading">הוספת שיעור חדש</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <select
+              value={newClass.day}
+              onChange={(e) => setNewClass({ ...newClass, day: e.target.value })}
+              className="w-full rounded-lg border border-input bg-background p-2.5 text-sm"
+            >
+              {days.map((d) => <option key={d} value={d}>{d}</option>)}
+            </select>
+            <Input
+              type="time"
+              value={newClass.time}
+              onChange={(e) => setNewClass({ ...newClass, time: e.target.value })}
+              placeholder="שעה"
+              className="rounded-lg"
+            />
+            <Input
+              value={newClass.name}
+              onChange={(e) => setNewClass({ ...newClass, name: e.target.value })}
+              placeholder="שם השיעור"
+              className="rounded-lg"
+            />
+            <Input
+              value={newClass.teacher}
+              onChange={(e) => setNewClass({ ...newClass, teacher: e.target.value })}
+              placeholder="מורה"
+              className="rounded-lg"
+            />
+            <Textarea
+              value={newClass.description}
+              onChange={(e) => setNewClass({ ...newClass, description: e.target.value })}
+              placeholder="תיאור"
+              className="rounded-lg"
+              rows={2}
+            />
+            <div className="flex gap-2 justify-end pt-2">
+              <Button variant="outline" size="sm" onClick={() => setIsAddingClass(false)} className="rounded-full">ביטול</Button>
+              <Button size="sm" onClick={addClass} className="rounded-full gap-1">
+                <Check className="h-3.5 w-3.5" />הוסף
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Teachers */}
       <section className="py-24 md:py-36 bg-yoga-cream relative">
@@ -115,17 +309,37 @@ const Schedule = () => {
           <div className="text-center mb-12">
             <span className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">הצוות</span>
             <h2 className="font-heading text-3xl md:text-4xl font-bold">המורים שלנו</h2>
+            {isEditMode && (
+              <Button
+                size="sm"
+                onClick={() => setIsAddingTeacher(true)}
+                className="mt-4 rounded-full gap-2"
+              >
+                <Plus className="h-4 w-4" />הוסף מורה
+              </Button>
+            )}
           </div>
 
-          {!hasTeachers ? (
+          {!hasTeachers && !isEditMode ? (
             <p className="text-center text-muted-foreground">המורים יעודכנו בקרוב</p>
           ) : (
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
               {teachers.map((t) => (
                 <motion.div key={t.id} variants={fadeUp}>
-                  <Card className="text-center h-full rounded-3xl border-0 overflow-hidden hover-lift shadow-lg">
-                    <div className="aspect-[3/4] overflow-hidden">
+                  <Card
+                    className={cn(
+                      "text-center h-full rounded-3xl border-0 overflow-hidden hover-lift shadow-lg",
+                      isEditMode && "cursor-pointer ring-2 ring-transparent hover:ring-primary/30"
+                    )}
+                    onClick={() => isEditMode && setEditingTeacher({ ...t })}
+                  >
+                    <div className="aspect-[3/4] overflow-hidden relative">
                       <ImagePlaceholder label="תמונת מורה" />
+                      {isEditMode && (
+                        <div className="absolute top-3 left-3 bg-card/90 backdrop-blur-sm rounded-full p-1.5">
+                          <Pencil className="h-3.5 w-3.5 text-primary" />
+                        </div>
+                      )}
                     </div>
                     <CardContent className="pt-6 pb-8 flex flex-col items-center gap-2">
                       <h3 className="font-heading font-semibold text-lg">{t.name}</h3>
@@ -139,8 +353,151 @@ const Schedule = () => {
           )}
         </div>
       </section>
+
+      {/* Teacher Edit Dialog */}
+      <Dialog open={!!editingTeacher} onOpenChange={(open) => !open && setEditingTeacher(null)}>
+        <DialogContent className="max-w-md" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="font-heading">עריכת מורה</DialogTitle>
+          </DialogHeader>
+          {editingTeacher && (
+            <div className="space-y-3">
+              <Input
+                value={editingTeacher.name}
+                onChange={(e) => setEditingTeacher({ ...editingTeacher, name: e.target.value })}
+                placeholder="שם"
+                className="rounded-lg"
+              />
+              <Input
+                value={editingTeacher.role}
+                onChange={(e) => setEditingTeacher({ ...editingTeacher, role: e.target.value })}
+                placeholder="תפקיד"
+                className="rounded-lg"
+              />
+              <Textarea
+                value={editingTeacher.description}
+                onChange={(e) => setEditingTeacher({ ...editingTeacher, description: e.target.value })}
+                placeholder="תיאור"
+                className="rounded-lg"
+                rows={3}
+              />
+              <div className="flex gap-2 justify-between pt-2">
+                <Button variant="ghost" size="sm" onClick={() => deleteTeacher(editingTeacher.id)} className="text-destructive gap-1 rounded-full">
+                  <Trash2 className="h-3.5 w-3.5" />מחק
+                </Button>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setEditingTeacher(null)} className="rounded-full">ביטול</Button>
+                  <Button size="sm" onClick={() => saveTeacher(editingTeacher)} className="rounded-full gap-1">
+                    <Check className="h-3.5 w-3.5" />שמור
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Teacher Add Dialog */}
+      <Dialog open={isAddingTeacher} onOpenChange={setIsAddingTeacher}>
+        <DialogContent className="max-w-md" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="font-heading">הוספת מורה</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Input
+              value={newTeacher.name}
+              onChange={(e) => setNewTeacher({ ...newTeacher, name: e.target.value })}
+              placeholder="שם"
+              className="rounded-lg"
+            />
+            <Input
+              value={newTeacher.role}
+              onChange={(e) => setNewTeacher({ ...newTeacher, role: e.target.value })}
+              placeholder="תפקיד"
+              className="rounded-lg"
+            />
+            <Textarea
+              value={newTeacher.description}
+              onChange={(e) => setNewTeacher({ ...newTeacher, description: e.target.value })}
+              placeholder="תיאור"
+              className="rounded-lg"
+              rows={3}
+            />
+            <div className="flex gap-2 justify-end pt-2">
+              <Button variant="outline" size="sm" onClick={() => setIsAddingTeacher(false)} className="rounded-full">ביטול</Button>
+              <Button size="sm" onClick={addTeacher} className="rounded-full gap-1">
+                <Check className="h-3.5 w-3.5" />הוסף
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
+
+// Class form sub-component
+function ClassForm({
+  value,
+  onChange,
+  onSave,
+  onDelete,
+  onCancel,
+}: {
+  value: ClassRow;
+  onChange: (v: ClassRow) => void;
+  onSave: () => void;
+  onDelete: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <select
+        value={value.day}
+        onChange={(e) => onChange({ ...value, day: e.target.value })}
+        className="w-full rounded-lg border border-input bg-background p-2.5 text-sm"
+      >
+        {days.map((d) => <option key={d} value={d}>{d}</option>)}
+      </select>
+      <Input
+        type="time"
+        value={value.time}
+        onChange={(e) => onChange({ ...value, time: e.target.value })}
+        placeholder="שעה"
+        className="rounded-lg"
+      />
+      <Input
+        value={value.name}
+        onChange={(e) => onChange({ ...value, name: e.target.value })}
+        placeholder="שם השיעור"
+        className="rounded-lg"
+      />
+      <Input
+        value={value.teacher}
+        onChange={(e) => onChange({ ...value, teacher: e.target.value })}
+        placeholder="מורה"
+        className="rounded-lg"
+      />
+      <Textarea
+        value={value.description}
+        onChange={(e) => onChange({ ...value, description: e.target.value })}
+        placeholder="תיאור"
+        className="rounded-lg"
+        rows={2}
+      />
+      <div className="flex gap-2 justify-between pt-2">
+        <Button variant="ghost" size="sm" onClick={onDelete} className="text-destructive gap-1 rounded-full">
+          <Trash2 className="h-3.5 w-3.5" />מחק
+        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={onCancel} className="rounded-full">ביטול</Button>
+          <Button size="sm" onClick={onSave} className="rounded-full gap-1">
+            <Check className="h-3.5 w-3.5" />שמור
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default Schedule;
