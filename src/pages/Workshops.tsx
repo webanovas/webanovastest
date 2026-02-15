@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar, Clock, MapPin, Plus, Pencil, Check, Trash2 } from "lucide-react";
+import { Calendar, Clock, MapPin, Users, Plus, Pencil, Check, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import ImagePlaceholder from "@/components/ImagePlaceholder";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -78,32 +78,6 @@ const Workshops = () => {
     setEditing(null);
   };
 
-  const WorkshopForm = ({ value, onChange, onSave, onDelete, onCancel, isNew = false }: {
-    value: any; onChange: (v: any) => void; onSave: () => void;
-    onDelete?: () => void; onCancel: () => void; isNew?: boolean;
-  }) => (
-    <div className="space-y-3">
-      <Input value={value.title} onChange={(e) => onChange({ ...value, title: e.target.value })} placeholder="שם הסדנה" className="rounded-lg" />
-      <Input value={value.date} onChange={(e) => onChange({ ...value, date: e.target.value })} placeholder="תאריך" className="rounded-lg" />
-      <Input type="time" value={value.time || ""} onChange={(e) => onChange({ ...value, time: e.target.value })} placeholder="שעה" className="rounded-lg" />
-      <Input value={value.location || ""} onChange={(e) => onChange({ ...value, location: e.target.value })} placeholder="מיקום" className="rounded-lg" />
-      <Textarea value={value.description} onChange={(e) => onChange({ ...value, description: e.target.value })} placeholder="תיאור" className="rounded-lg" rows={3} />
-      <label className="flex items-center gap-2 text-sm">
-        <input type="checkbox" checked={value.is_active} onChange={(e) => onChange({ ...value, is_active: e.target.checked })} className="rounded" />
-        פעיל (מוצג באתר)
-      </label>
-      <div className="flex gap-2 justify-between pt-2">
-        {onDelete && (
-          <Button variant="ghost" size="sm" onClick={onDelete} className="text-destructive gap-1 rounded-full"><Trash2 className="h-3.5 w-3.5" />מחק</Button>
-        )}
-        <div className="flex gap-2 mr-auto">
-          <Button variant="outline" size="sm" onClick={onCancel} className="rounded-full">ביטול</Button>
-          <Button size="sm" onClick={onSave} className="rounded-full gap-1"><Check className="h-3.5 w-3.5" />{isNew ? "הוסף" : "שמור"}</Button>
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <Layout>
       <PageHero label="אירועים" title="סדנאות" subtitle="סדנאות מיוחדות להעמקת התרגול והחוויה" />
@@ -127,32 +101,7 @@ const Workshops = () => {
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
               {activeWorkshops.map((w) => (
                 <motion.div key={w.id} variants={fadeUp}>
-                  <Card
-                    className={cn(
-                      "h-full rounded-3xl border-0 overflow-hidden hover-lift shadow-lg",
-                      isEditMode && "cursor-pointer ring-2 ring-transparent hover:ring-primary/30 relative"
-                    )}
-                    onClick={() => isEditMode && setEditing({ ...w })}
-                  >
-                    {isEditMode && (
-                      <div className="absolute top-4 left-4 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1.5">
-                        <Pencil className="h-3.5 w-3.5 text-primary" />
-                      </div>
-                    )}
-                    <div className="aspect-video overflow-hidden"><ImagePlaceholder label="תמונת סדנה" /></div>
-                    <CardContent className="pt-6">
-                      <h3 className="font-heading font-semibold text-xl mb-3">{w.title}</h3>
-                      <p className="text-sm text-muted-foreground mb-5">{w.description}</p>
-                      <div className="flex flex-col gap-2 text-sm text-muted-foreground mb-6">
-                        <span className="flex items-center gap-2"><Calendar className="h-4 w-4 text-primary" />{w.date}</span>
-                        {w.time && <span className="flex items-center gap-2"><Clock className="h-4 w-4 text-primary" />{w.time}</span>}
-                        {w.location && <span className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" />{w.location}</span>}
-                      </div>
-                      <Button asChild className="w-full rounded-full h-11 shadow-lg shadow-primary/20">
-                        <Link to="/contact">הרשמה / פרטים</Link>
-                      </Button>
-                    </CardContent>
-                  </Card>
+                  <WorkshopCard workshop={w} isEditMode={isEditMode} onEdit={() => setEditing({ ...w })} />
                 </motion.div>
               ))}
             </motion.div>
@@ -208,5 +157,97 @@ const Workshops = () => {
     </Layout>
   );
 };
+
+/* Workshop Card - clear labels */
+function WorkshopCard({ workshop: w, isEditMode, onEdit }: { workshop: WorkshopRow; isEditMode: boolean; onEdit: () => void }) {
+  return (
+    <Card
+      className={cn(
+        "h-full rounded-3xl border-0 overflow-hidden hover-lift shadow-lg",
+        isEditMode && "cursor-pointer ring-2 ring-transparent hover:ring-primary/30 relative"
+      )}
+      onClick={() => isEditMode && onEdit()}
+    >
+      {isEditMode && (
+        <div className="absolute top-4 left-4 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1.5">
+          <Pencil className="h-3.5 w-3.5 text-primary" />
+        </div>
+      )}
+      <div className="aspect-video overflow-hidden"><ImagePlaceholder label="תמונת סדנה" /></div>
+      <CardContent className="pt-6 pb-6">
+        <h3 className="font-heading font-semibold text-xl mb-4">{w.title}</h3>
+        <p className="text-sm text-muted-foreground mb-5 leading-relaxed">{w.description}</p>
+
+        {/* Details with clear labels */}
+        <div className="space-y-3 mb-6">
+          <div className="flex items-center gap-3 text-sm">
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10">
+              <Calendar className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <span className="text-xs text-muted-foreground block">תאריך</span>
+              <span className="font-medium">{w.date}</span>
+            </div>
+          </div>
+          {w.time && (
+            <div className="flex items-center gap-3 text-sm">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10">
+                <Clock className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <span className="text-xs text-muted-foreground block">שעות</span>
+                <span className="font-medium">{w.time}</span>
+              </div>
+            </div>
+          )}
+          {w.location && (
+            <div className="flex items-center gap-3 text-sm">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10">
+                <MapPin className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <span className="text-xs text-muted-foreground block">מיקום</span>
+                <span className="font-medium">{w.location}</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <Button asChild className="w-full rounded-full h-11 shadow-lg shadow-primary/20">
+          <Link to="/contact">הרשמה / פרטים</Link>
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+/* Workshop Form */
+function WorkshopForm({ value, onChange, onSave, onDelete, onCancel, isNew = false }: {
+  value: any; onChange: (v: any) => void; onSave: () => void;
+  onDelete?: () => void; onCancel: () => void; isNew?: boolean;
+}) {
+  return (
+    <div className="space-y-3">
+      <Input value={value.title} onChange={(e) => onChange({ ...value, title: e.target.value })} placeholder="שם הסדנה" className="rounded-lg" />
+      <Input value={value.date} onChange={(e) => onChange({ ...value, date: e.target.value })} placeholder='תאריך (לדוגמה: 15.3.2026)' className="rounded-lg" />
+      <Input value={value.time || ""} onChange={(e) => onChange({ ...value, time: e.target.value })} placeholder='שעות (לדוגמה: 10:00-13:00)' className="rounded-lg" />
+      <Input value={value.location || ""} onChange={(e) => onChange({ ...value, location: e.target.value })} placeholder="מיקום" className="rounded-lg" />
+      <Textarea value={value.description} onChange={(e) => onChange({ ...value, description: e.target.value })} placeholder="תיאור" className="rounded-lg" rows={3} />
+      <label className="flex items-center gap-2 text-sm">
+        <input type="checkbox" checked={value.is_active} onChange={(e) => onChange({ ...value, is_active: e.target.checked })} className="rounded" />
+        פעיל (מוצג באתר)
+      </label>
+      <div className="flex gap-2 justify-between pt-2">
+        {onDelete && (
+          <Button variant="ghost" size="sm" onClick={onDelete} className="text-destructive gap-1 rounded-full"><Trash2 className="h-3.5 w-3.5" />מחק</Button>
+        )}
+        <div className="flex gap-2 mr-auto">
+          <Button variant="outline" size="sm" onClick={onCancel} className="rounded-full">ביטול</Button>
+          <Button size="sm" onClick={onSave} className="rounded-full gap-1"><Check className="h-3.5 w-3.5" />{isNew ? "הוסף" : "שמור"}</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default Workshops;

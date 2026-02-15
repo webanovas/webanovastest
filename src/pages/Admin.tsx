@@ -34,9 +34,14 @@ const Admin = () => {
     <div className="min-h-screen bg-background" dir="rtl">
       <header className="border-b border-border px-4 py-3 flex items-center justify-between">
         <h1 className="font-heading font-bold text-lg">ניהול האתר</h1>
-        <Button variant="ghost" size="sm" onClick={() => { signOut(); navigate("/"); }} className="gap-2">
-          <LogOut className="h-4 w-4" />יציאה
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => navigate("/")} className="gap-2 rounded-full">
+            חזרה לאתר
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => { signOut(); navigate("/"); }} className="gap-2">
+            <LogOut className="h-4 w-4" />יציאה
+          </Button>
+        </div>
       </header>
 
       <div className="container mx-auto p-4 max-w-4xl">
