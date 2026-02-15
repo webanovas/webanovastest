@@ -44,9 +44,9 @@ const Footer = () => {
           <div>
             <h4 className="font-heading font-semibold mb-4 text-primary-foreground/90">צרו קשר</h4>
             <div className="flex flex-col gap-3 text-sm">
-              <a href="tel:0501234567" className="flex items-center gap-3 text-primary-foreground/50 hover:text-primary-foreground transition-colors">
+              <a href="tel:0542131254" className="flex items-center gap-3 text-primary-foreground/50 hover:text-primary-foreground transition-colors">
                 <Phone className="h-4 w-4" />
-                050-123-4567
+                054-213-1254
               </a>
               <div className="flex items-center gap-3 text-primary-foreground/50">
                 <MapPin className="h-4 w-4" />
