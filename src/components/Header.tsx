@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import logo from "@/assets/logo.png";
 
 const navItems = [
   { label: "בית", path: "/" },
@@ -37,9 +38,7 @@ const Header = () => {
       <div className="container mx-auto flex items-center justify-between h-18 md:h-20 px-4">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-11 h-11 rounded-2xl bg-primary/90 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-            <span className="text-primary-foreground font-heading font-bold text-xl">י</span>
-          </div>
+          <img src={logo} alt="יוגה במושבה" className="w-11 h-11 rounded-full object-contain" />
           <span
             className={cn(
               "font-heading font-bold text-lg tracking-tight transition-colors",
