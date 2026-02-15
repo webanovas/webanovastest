@@ -95,7 +95,7 @@ const Index = () => {
               <Button
                 size="lg"
                 variant="outline"
-                className="rounded-full px-10 h-14 text-base border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground text-lg backdrop-blur-sm"
+                className="rounded-full px-10 h-14 text-base border-primary-foreground/50 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:text-primary-foreground text-lg backdrop-blur-md"
                 asChild
               >
                 <Link to="/about">הכירו אותנו</Link>
