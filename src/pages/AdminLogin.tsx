@@ -11,6 +11,7 @@ const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isSignup, setIsSignup] = useState(false);
   const { signIn, isAdmin, user } = useAuth();
   const navigate = useNavigate();
 
@@ -23,14 +24,24 @@ const AdminLogin = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await signIn(email, password);
-    if (error) {
-      toast.error("שגיאה בהתחברות – בדקו אימייל וסיסמה");
+    if (isSignup) {
+      const { error } = await (await import("@/integrations/supabase/client")).supabase.auth.signUp({ email, password });
+      if (error) {
+        toast.error("שגיאה בהרשמה: " + error.message);
+      } else {
+        toast.success("נרשמת בהצלחה! מתחבר...");
+        const { error: signInError } = await signIn(email, password);
+        if (!signInError) {
+          setTimeout(() => navigate("/admin"), 500);
+        }
+      }
     } else {
-      // Wait a moment for admin check
-      setTimeout(() => {
-        navigate("/admin");
-      }, 500);
+      const { error } = await signIn(email, password);
+      if (error) {
+        toast.error("שגיאה בהתחברות – בדקו אימייל וסיסמה");
+      } else {
+        setTimeout(() => navigate("/admin"), 500);
+      }
     }
     setLoading(false);
   };
@@ -65,8 +76,15 @@ const AdminLogin = () => {
               dir="ltr"
             />
             <Button type="submit" disabled={loading} className="rounded-full h-11 mt-2">
-              {loading ? "מתחבר..." : "כניסה"}
+              {loading ? "מתחבר..." : isSignup ? "הרשמה" : "כניסה"}
             </Button>
+            <button
+              type="button"
+              onClick={() => setIsSignup(!isSignup)}
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              {isSignup ? "יש לך חשבון? התחבר" : "אין לך חשבון? הירשם"}
+            </button>
           </form>
         </CardContent>
       </Card>
