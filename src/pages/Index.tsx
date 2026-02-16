@@ -11,9 +11,17 @@ import {
   ArrowLeft, Quote,
 } from "lucide-react";
 import Layout from "@/components/Layout";
-import ImagePlaceholder from "@/components/ImagePlaceholder";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+
+import heroYoga from "@/assets/hero-yoga.jpg";
+import teacherShira from "@/assets/teacher-shira.jpg";
+import studioInterior from "@/assets/studio-interior.jpg";
+import yogaGroup from "@/assets/yoga-group.jpg";
+import zoomYoga from "@/assets/zoom-yoga.jpg";
+import privateLesson from "@/assets/private-lesson.jpg";
+import meditationHands from "@/assets/meditation-hands.jpg";
+import yogaSunset from "@/assets/yoga-sunset.jpg";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -25,10 +33,10 @@ const stagger = {
 };
 
 const services = [
-  { icon: Users, title: "שיעורים בסטודיו", desc: "שיעורי יוגה קבוצתיים באווירה חמה ומזמינה", imageLabel: "תמונה – שיעור קבוצתי" },
-  { icon: Monitor, title: "שיעורי זום", desc: "תרגלו מהנוחות של הבית בשיעורים אונליין", imageLabel: "תמונה – שיעור זום" },
-  { icon: User, title: "שיעורים פרטיים", desc: "תרגול מותאם אישית לצרכים שלכם", imageLabel: "תמונה – שיעור פרטי" },
-  { icon: Heart, title: "קבוצות מיוחדות", desc: "שיעורים לקבוצות, ימי כיף ואירועים", imageLabel: "תמונה – קבוצה מיוחדת" },
+  { icon: Users, title: "שיעורים בסטודיו", desc: "שיעורי יוגה קבוצתיים באווירה חמה ומזמינה", img: yogaGroup },
+  { icon: Monitor, title: "שיעורי זום", desc: "תרגלו מהנוחות של הבית בשיעורים אונליין", img: zoomYoga },
+  { icon: User, title: "שיעורים פרטיים", desc: "תרגול מותאם אישית לצרכים שלכם", img: privateLesson },
+  { icon: Heart, title: "קבוצות מיוחדות", desc: "שיעורים לקבוצות, ימי כיף ואירועים", img: meditationHands },
 ];
 
 const benefits = [
@@ -52,7 +60,7 @@ const Index = () => {
       {/* Hero */}
       <section className="relative min-h-screen flex items-end overflow-hidden">
         <div className="absolute inset-0">
-          <ImagePlaceholder label="תמונת רקע ראשית" />
+          <img src={heroYoga} alt="יוגה במושבה" className="w-full h-full object-cover" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-yoga-dark/90 via-yoga-dark/30 to-transparent" />
 
@@ -105,10 +113,10 @@ const Index = () => {
 
             <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="relative">
               <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[3/4]">
-                <ImagePlaceholder label="תמונת פורטרט" />
+                <img src={teacherShira} alt="שירה פלג" className="w-full h-full object-cover" />
               </div>
               <div className="absolute -bottom-8 -right-8 md:-right-12 w-40 h-40 md:w-52 md:h-52 rounded-2xl overflow-hidden shadow-xl border-4 border-background">
-                <ImagePlaceholder label="תמונת הסטודיו" />
+                <img src={studioInterior} alt="הסטודיו" className="w-full h-full object-cover" />
               </div>
             </motion.div>
           </div>
@@ -129,7 +137,7 @@ const Index = () => {
               <motion.div key={s.title} variants={fadeUp}>
                 <Card className="group rounded-3xl border-0 overflow-hidden hover-lift shadow-lg">
                   <div className="aspect-[16/10] overflow-hidden relative">
-                    <ImagePlaceholder label={s.imageLabel} />
+                    <img src={s.img} alt={s.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     <div className="absolute inset-0 bg-gradient-to-t from-yoga-dark/70 to-transparent" />
                     <div className="absolute bottom-0 p-6 text-primary-foreground">
                       <div className="flex items-center gap-3 mb-2">
@@ -150,7 +158,7 @@ const Index = () => {
 
       {/* Full-width image divider */}
       <section className="relative h-[60vh] overflow-hidden">
-        <ImagePlaceholder label="תמונת רקע רחבה" className="absolute inset-0" />
+        <img src={yogaSunset} alt="יוגה" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-yoga-dark/50 flex items-center justify-center">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center px-4">
             <h2 className="font-heading text-4xl md:text-6xl font-bold text-primary-foreground mb-4">
@@ -169,7 +177,7 @@ const Index = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="rounded-3xl overflow-hidden shadow-xl aspect-square">
-              <ImagePlaceholder label="תמונת תרגול" />
+              <img src={meditationHands} alt="תרגול יוגה" className="w-full h-full object-cover" />
             </motion.div>
 
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>

@@ -4,7 +4,14 @@ import PageHero from "@/components/PageHero";
 import { Leaf, Award, Heart, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import ImagePlaceholder from "@/components/ImagePlaceholder";
+
+import teacherShira from "@/assets/teacher-shira.jpg";
+import studioInterior from "@/assets/studio-interior.jpg";
+import yogaGroup from "@/assets/yoga-group.jpg";
+import meditationHands from "@/assets/meditation-hands.jpg";
+import yogaSunset from "@/assets/yoga-sunset.jpg";
+import heroYoga from "@/assets/hero-yoga.jpg";
+import zoomYoga from "@/assets/zoom-yoga.jpg";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -15,13 +22,13 @@ const stagger = {
   visible: { transition: { staggerChildren: 0.15 } },
 };
 
-const galleryLabels = [
-  "תמונת גלריה 1",
-  "תמונת גלריה 2",
-  "תמונת גלריה 3",
-  "תמונת גלריה 4",
-  "תמונת גלריה 5",
-  "תמונת גלריה 6",
+const galleryImages = [
+  { src: studioInterior, alt: "הסטודיו" },
+  { src: yogaGroup, alt: "שיעור קבוצתי" },
+  { src: meditationHands, alt: "מדיטציה" },
+  { src: heroYoga, alt: "תרגול יוגה" },
+  { src: zoomYoga, alt: "שיעור זום" },
+  { src: yogaSunset, alt: "יוגה בשקיעה" },
 ];
 
 const About = () => {
@@ -39,7 +46,7 @@ const About = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative">
               <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[3/4]">
-                <ImagePlaceholder label="תמונת פורטרט" />
+                <img src={teacherShira} alt="שירה פלג" className="w-full h-full object-cover" />
               </div>
             </motion.div>
 
@@ -65,7 +72,7 @@ const About = () => {
       {/* Gallery */}
       <section className="py-4 px-4">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-6xl mx-auto">
-          {galleryLabels.map((label, i) => (
+          {galleryImages.map((img, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 20 }}
@@ -74,7 +81,7 @@ const About = () => {
               transition={{ delay: i * 0.1 }}
               className="rounded-2xl overflow-hidden shadow-md aspect-square"
             >
-              <ImagePlaceholder label={label} />
+              <img src={img.src} alt={img.alt} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
             </motion.div>
           ))}
         </div>
@@ -108,7 +115,7 @@ const About = () => {
 
       {/* CTA Banner */}
       <section className="relative h-[50vh] overflow-hidden">
-        <ImagePlaceholder label="תמונת רקע" className="absolute inset-0" />
+        <img src={yogaSunset} alt="יוגה בשקיעה" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-yoga-dark/50 flex items-center justify-center">
           <div className="text-center px-4">
             <h2 className="font-heading text-3xl md:text-5xl font-bold text-primary-foreground mb-4">
