@@ -6,8 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Clock, User, Plus, Trash2, Check, Pencil, MapPin } from "lucide-react";
-import ImagePlaceholder from "@/components/ImagePlaceholder";
+import { Clock, User, Plus, Trash2, Check, Pencil } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminMode } from "@/hooks/useAdminMode";
@@ -15,12 +14,12 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { Tables } from "@/integrations/supabase/types";
 import { Link } from "react-router-dom";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
+import teacherImg from "@/assets/teacher-placeholder.jpg";
 
 type ClassRow = Tables<"classes">;
 type TeacherRow = Tables<"teachers">;
@@ -211,12 +210,10 @@ const Schedule = () => {
                       )}
                       <CardContent className="p-0">
                         <div className="flex items-stretch" dir="rtl">
-                          {/* Time badge */}
                           <div className="flex flex-col items-center justify-center px-6 py-5 bg-primary/8 border-l border-primary/10 min-w-[100px]">
                             <Clock className="h-4 w-4 text-primary mb-1.5" />
                             <span className="font-heading font-bold text-lg text-primary">{cls.time}</span>
                           </div>
-                          {/* Content */}
                           <div className="flex-1 p-5 flex items-center justify-between gap-4">
                             <div className="flex-1">
                               <h3 className="font-heading font-semibold text-base mb-1">{cls.name}</h3>
@@ -271,7 +268,7 @@ const Schedule = () => {
                     onClick={() => isEditMode && setEditingTeacher({ ...t })}
                   >
                     <div className="aspect-[3/4] overflow-hidden relative">
-                      <ImagePlaceholder label="תמונת מורה" />
+                      <img src={t.image_url || teacherImg} alt={t.name} className="w-full h-full object-cover" />
                       {isEditMode && (
                         <div className="absolute top-3 left-3 bg-card/90 backdrop-blur-sm rounded-full p-1.5">
                           <Pencil className="h-3.5 w-3.5 text-primary" />
@@ -291,12 +288,11 @@ const Schedule = () => {
         </div>
       </section>
 
-      {/* Class Edit Dialog */}
+      {/* Class Edit - WYSIWYG */}
       <Dialog open={!!editingClass} onOpenChange={(open) => !open && setEditingClass(null)}>
-        <DialogContent className="max-w-md" dir="rtl">
-          <DialogHeader><DialogTitle className="font-heading">עריכת שיעור</DialogTitle></DialogHeader>
+        <DialogContent className="max-w-md p-0 overflow-hidden" dir="rtl">
           {editingClass && (
-            <ClassForm
+            <ClassEditPreview
               value={editingClass}
               onChange={setEditingClass}
               onSave={() => saveClass(editingClass)}
@@ -307,87 +303,244 @@ const Schedule = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Class Add Dialog */}
+      {/* Class Add - WYSIWYG */}
       <Dialog open={isAddingClass} onOpenChange={setIsAddingClass}>
-        <DialogContent className="max-w-md" dir="rtl">
-          <DialogHeader><DialogTitle className="font-heading">הוספת שיעור חדש</DialogTitle></DialogHeader>
-          <div className="space-y-3">
-            <select
-              value={newClass.day}
-              onChange={(e) => setNewClass({ ...newClass, day: e.target.value })}
-              className="w-full rounded-lg border border-input bg-background p-2.5 text-sm"
-            >
-              {days.map((d) => <option key={d} value={d}>יום {d}</option>)}
-            </select>
-            <Input type="time" value={newClass.time} onChange={(e) => setNewClass({ ...newClass, time: e.target.value })} placeholder="שעה" className="rounded-lg" />
-            <Input value={newClass.name} onChange={(e) => setNewClass({ ...newClass, name: e.target.value })} placeholder="שם השיעור" className="rounded-lg" />
-            <Input value={newClass.teacher} onChange={(e) => setNewClass({ ...newClass, teacher: e.target.value })} placeholder="מורה" className="rounded-lg" />
-            <Textarea value={newClass.description} onChange={(e) => setNewClass({ ...newClass, description: e.target.value })} placeholder="תיאור" className="rounded-lg" rows={2} />
-            <div className="flex gap-2 justify-end pt-2">
-              <Button variant="outline" size="sm" onClick={() => setIsAddingClass(false)} className="rounded-full">ביטול</Button>
-              <Button size="sm" onClick={addClass} className="rounded-full gap-1"><Check className="h-3.5 w-3.5" />הוסף</Button>
-            </div>
-          </div>
+        <DialogContent className="max-w-md p-0 overflow-hidden" dir="rtl">
+          <ClassEditPreview
+            value={newClass as any}
+            onChange={setNewClass as any}
+            onSave={addClass}
+            onCancel={() => setIsAddingClass(false)}
+            isNew
+          />
         </DialogContent>
       </Dialog>
 
-      {/* Teacher Edit Dialog */}
+      {/* Teacher Edit - WYSIWYG */}
       <Dialog open={!!editingTeacher} onOpenChange={(open) => !open && setEditingTeacher(null)}>
-        <DialogContent className="max-w-md" dir="rtl">
-          <DialogHeader><DialogTitle className="font-heading">עריכת מורה</DialogTitle></DialogHeader>
+        <DialogContent className="max-w-md p-0 overflow-hidden" dir="rtl">
           {editingTeacher && (
-            <div className="space-y-3">
-              <Input value={editingTeacher.name} onChange={(e) => setEditingTeacher({ ...editingTeacher, name: e.target.value })} placeholder="שם" className="rounded-lg" />
-              <Input value={editingTeacher.role} onChange={(e) => setEditingTeacher({ ...editingTeacher, role: e.target.value })} placeholder="תפקיד" className="rounded-lg" />
-              <Textarea value={editingTeacher.description} onChange={(e) => setEditingTeacher({ ...editingTeacher, description: e.target.value })} placeholder="תיאור" className="rounded-lg" rows={3} />
-              <div className="flex gap-2 justify-between pt-2">
-                <Button variant="ghost" size="sm" onClick={() => deleteTeacher(editingTeacher.id)} className="text-destructive gap-1 rounded-full"><Trash2 className="h-3.5 w-3.5" />מחק</Button>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => setEditingTeacher(null)} className="rounded-full">ביטול</Button>
-                  <Button size="sm" onClick={() => saveTeacher(editingTeacher)} className="rounded-full gap-1"><Check className="h-3.5 w-3.5" />שמור</Button>
-                </div>
-              </div>
-            </div>
+            <TeacherEditPreview
+              value={editingTeacher}
+              onChange={setEditingTeacher}
+              onSave={() => saveTeacher(editingTeacher)}
+              onDelete={() => deleteTeacher(editingTeacher.id)}
+              onCancel={() => setEditingTeacher(null)}
+            />
           )}
         </DialogContent>
       </Dialog>
 
-      {/* Teacher Add Dialog */}
+      {/* Teacher Add - WYSIWYG */}
       <Dialog open={isAddingTeacher} onOpenChange={setIsAddingTeacher}>
-        <DialogContent className="max-w-md" dir="rtl">
-          <DialogHeader><DialogTitle className="font-heading">הוספת מורה</DialogTitle></DialogHeader>
-          <div className="space-y-3">
-            <Input value={newTeacher.name} onChange={(e) => setNewTeacher({ ...newTeacher, name: e.target.value })} placeholder="שם" className="rounded-lg" />
-            <Input value={newTeacher.role} onChange={(e) => setNewTeacher({ ...newTeacher, role: e.target.value })} placeholder="תפקיד" className="rounded-lg" />
-            <Textarea value={newTeacher.description} onChange={(e) => setNewTeacher({ ...newTeacher, description: e.target.value })} placeholder="תיאור" className="rounded-lg" rows={3} />
-            <div className="flex gap-2 justify-end pt-2">
-              <Button variant="outline" size="sm" onClick={() => setIsAddingTeacher(false)} className="rounded-full">ביטול</Button>
-              <Button size="sm" onClick={addTeacher} className="rounded-full gap-1"><Check className="h-3.5 w-3.5" />הוסף</Button>
-            </div>
-          </div>
+        <DialogContent className="max-w-md p-0 overflow-hidden" dir="rtl">
+          <TeacherEditPreview
+            value={newTeacher as any}
+            onChange={setNewTeacher as any}
+            onSave={addTeacher}
+            onCancel={() => setIsAddingTeacher(false)}
+            isNew
+          />
         </DialogContent>
       </Dialog>
     </Layout>
   );
 };
 
-function ClassForm({ value, onChange, onSave, onDelete, onCancel }: {
-  value: ClassRow; onChange: (v: ClassRow) => void; onSave: () => void; onDelete: () => void; onCancel: () => void;
+/* WYSIWYG Class Editor - looks like the actual class card */
+function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew = false }: {
+  value: any; onChange: (v: any) => void; onSave: () => void;
+  onDelete?: () => void; onCancel: () => void; isNew?: boolean;
 }) {
   return (
-    <div className="space-y-3">
-      <select value={value.day} onChange={(e) => onChange({ ...value, day: e.target.value })} className="w-full rounded-lg border border-input bg-background p-2.5 text-sm">
-        {days.map((d) => <option key={d} value={d}>יום {d}</option>)}
-      </select>
-      <Input type="time" value={value.time} onChange={(e) => onChange({ ...value, time: e.target.value })} placeholder="שעה" className="rounded-lg" />
-      <Input value={value.name} onChange={(e) => onChange({ ...value, name: e.target.value })} placeholder="שם השיעור" className="rounded-lg" />
-      <Input value={value.teacher} onChange={(e) => onChange({ ...value, teacher: e.target.value })} placeholder="מורה" className="rounded-lg" />
-      <Textarea value={value.description} onChange={(e) => onChange({ ...value, description: e.target.value })} placeholder="תיאור" className="rounded-lg" rows={2} />
-      <div className="flex gap-2 justify-between pt-2">
-        <Button variant="ghost" size="sm" onClick={onDelete} className="text-destructive gap-1 rounded-full"><Trash2 className="h-3.5 w-3.5" />מחק</Button>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={onCancel} className="rounded-full">ביטול</Button>
-          <Button size="sm" onClick={onSave} className="rounded-full gap-1"><Check className="h-3.5 w-3.5" />שמור</Button>
+    <div className="bg-card">
+      {/* Preview header that matches the real card */}
+      <div className="bg-primary/5 px-5 py-4 border-b border-primary/10">
+        <p className="text-xs text-primary font-medium mb-2">תצוגה מקדימה</p>
+        {/* Mini preview of how it'll look */}
+        <div className="bg-card rounded-xl shadow-sm overflow-hidden">
+          <div className="flex items-stretch" dir="rtl">
+            <div className="flex flex-col items-center justify-center px-4 py-3 bg-primary/8 border-l border-primary/10 min-w-[80px]">
+              <Clock className="h-3 w-3 text-primary mb-1" />
+              <span className="font-heading font-bold text-sm text-primary">{value.time || "--:--"}</span>
+            </div>
+            <div className="flex-1 p-3">
+              <h3 className="font-heading font-semibold text-sm">{value.name || "שם השיעור"}</h3>
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <User className="h-3 w-3" />{value.teacher || "מורה"}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-5 space-y-4">
+        {/* Day selector as chips */}
+        <div>
+          <label className="text-xs text-muted-foreground block mb-2">יום</label>
+          <div className="flex gap-1.5">
+            {days.map((d) => (
+              <button
+                key={d}
+                onClick={() => onChange({ ...value, day: d })}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
+                  value.day === d
+                    ? "bg-primary text-primary-foreground shadow-md"
+                    : "bg-muted hover:bg-accent text-foreground"
+                )}
+              >
+                {d}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Time picker with chips */}
+        <div>
+          <label className="text-xs text-muted-foreground block mb-2">שעה</label>
+          <TimeChipPicker
+            value={value.time}
+            onChange={(t) => onChange({ ...value, time: t })}
+          />
+        </div>
+
+        {/* Name */}
+        <Input
+          value={value.name}
+          onChange={(e) => onChange({ ...value, name: e.target.value })}
+          placeholder="שם השיעור"
+          className="rounded-xl border-dashed border-primary/20 h-11"
+        />
+
+        {/* Teacher */}
+        <Input
+          value={value.teacher}
+          onChange={(e) => onChange({ ...value, teacher: e.target.value })}
+          placeholder="שם המורה"
+          className="rounded-xl border-dashed border-primary/20 h-11"
+        />
+
+        {/* Description */}
+        <Textarea
+          value={value.description || ""}
+          onChange={(e) => onChange({ ...value, description: e.target.value })}
+          placeholder="תיאור (אופציונלי)"
+          className="rounded-xl border-dashed border-primary/20 resize-none"
+          rows={2}
+        />
+
+        {/* Actions */}
+        <div className="flex gap-2 justify-between pt-2 border-t border-border/50">
+          {onDelete && (
+            <Button variant="ghost" size="sm" onClick={onDelete} className="text-destructive gap-1 rounded-full">
+              <Trash2 className="h-3.5 w-3.5" />מחק
+            </Button>
+          )}
+          <div className="flex gap-2 mr-auto">
+            <Button variant="outline" size="sm" onClick={onCancel} className="rounded-full">ביטול</Button>
+            <Button size="sm" onClick={onSave} className="rounded-full gap-1">
+              <Check className="h-3.5 w-3.5" />{isNew ? "הוסף" : "שמור"}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* Time chip picker */
+function TimeChipPicker({ value, onChange }: { value: string; onChange: (t: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const hours = Array.from({ length: 15 }, (_, i) => {
+    const h = i + 6;
+    return [`${String(h).padStart(2, "0")}:00`, `${String(h).padStart(2, "0")}:30`];
+  }).flat();
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          className={cn(
+            "w-full justify-center font-mono text-sm rounded-xl h-11 border-dashed border-primary/20",
+            !value && "text-muted-foreground"
+          )}
+        >
+          <Clock className="h-4 w-4 ml-2 text-primary" />
+          {value || "בחר שעה"}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-64 p-3 max-h-64 overflow-y-auto" align="center">
+        <div className="grid grid-cols-4 gap-1.5">
+          {hours.map((h) => (
+            <button
+              key={h}
+              onClick={() => { onChange(h); setOpen(false); }}
+              className={cn(
+                "px-2 py-2 rounded-lg text-xs font-mono transition-all",
+                value === h
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "hover:bg-accent text-foreground"
+              )}
+            >
+              {h}
+            </button>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+/* WYSIWYG Teacher Editor */
+function TeacherEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew = false }: {
+  value: any; onChange: (v: any) => void; onSave: () => void;
+  onDelete?: () => void; onCancel: () => void; isNew?: boolean;
+}) {
+  return (
+    <div className="bg-card">
+      {/* Image preview */}
+      <div className="aspect-[4/3] overflow-hidden relative">
+        <img src={value.image_url || teacherImg} alt="preview" className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground/50 to-transparent" />
+        <div className="absolute bottom-4 right-4 left-4 space-y-2">
+          <Input
+            value={value.name}
+            onChange={(e) => onChange({ ...value, name: e.target.value })}
+            placeholder="שם המורה"
+            className="bg-card/90 backdrop-blur-sm border-0 rounded-xl font-heading font-semibold text-lg h-12 shadow-lg"
+          />
+          <Input
+            value={value.role}
+            onChange={(e) => onChange({ ...value, role: e.target.value })}
+            placeholder="תפקיד / התמחות"
+            className="bg-card/90 backdrop-blur-sm border-0 rounded-xl text-sm h-10 shadow-lg"
+          />
+        </div>
+      </div>
+
+      <div className="p-5 space-y-4">
+        <Textarea
+          value={value.description || ""}
+          onChange={(e) => onChange({ ...value, description: e.target.value })}
+          placeholder="קצת על המורה..."
+          className="rounded-xl border-dashed border-primary/20 resize-none"
+          rows={3}
+        />
+
+        <div className="flex gap-2 justify-between pt-2 border-t border-border/50">
+          {onDelete && (
+            <Button variant="ghost" size="sm" onClick={onDelete} className="text-destructive gap-1 rounded-full">
+              <Trash2 className="h-3.5 w-3.5" />מחק
+            </Button>
+          )}
+          <div className="flex gap-2 mr-auto">
+            <Button variant="outline" size="sm" onClick={onCancel} className="rounded-full">ביטול</Button>
+            <Button size="sm" onClick={onSave} className="rounded-full gap-1">
+              <Check className="h-3.5 w-3.5" />{isNew ? "הוסף" : "שמור"}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
