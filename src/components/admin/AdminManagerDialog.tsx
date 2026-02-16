@@ -14,13 +14,109 @@ interface Admin {
   email: string;
 }
 
-const AdminManagerDialog = () => {
+interface AdminListContentProps {
+  admins: Admin[];
+  isLoading: boolean;
+  user: any;
+  newEmail: string;
+  setNewEmail: (v: string) => void;
+  adding: boolean;
+  addAdmin: () => void;
+  removing: string | null;
+  removeAdmin: (email: string) => void;
+}
+
+function AdminListContent({ admins, isLoading, user, newEmail, setNewEmail, adding, addAdmin, removing, removeAdmin }: AdminListContentProps) {
+  return (
+    <div className="space-y-5 pt-2">
+      <div className="flex gap-2">
+        <Input
+          value={newEmail}
+          onChange={(e) => setNewEmail(e.target.value)}
+          placeholder="אימייל של מנהל חדש"
+          type="email"
+          className="rounded-xl h-11 flex-1"
+          onKeyDown={(e) => e.key === "Enter" && addAdmin()}
+        />
+        <Button
+          size="sm"
+          onClick={addAdmin}
+          disabled={adding || !newEmail.trim()}
+          className="rounded-xl h-11 gap-1.5 px-4"
+        >
+          {adding ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
+          הוסף
+        </Button>
+      </div>
+      <div className="space-y-2">
+        <span className="text-xs font-heading font-semibold text-muted-foreground uppercase tracking-wider">מנהלים פעילים</span>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-6">
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+          </div>
+        ) : admins.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-4">אין מנהלים</p>
+        ) : (
+          <div className="space-y-1.5">
+            {admins.map((admin) => {
+              const isMe = admin.user_id === user?.id;
+              return (
+                <div
+                  key={admin.id}
+                  className="flex items-center justify-between bg-muted/40 rounded-xl px-4 py-3 border border-border/30"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <span className="text-xs font-bold text-primary">
+                        {admin.email.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-sm font-medium">{admin.email}</span>
+                      {isMe && (
+                        <span className="text-[10px] text-primary font-medium mr-2">(את/ה)</span>
+                      )}
+                    </div>
+                  </div>
+                  {!isMe && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeAdmin(admin.email)}
+                      disabled={removing === admin.email}
+                      className="text-destructive hover:bg-destructive/10 rounded-full h-8 w-8 p-0"
+                    >
+                      {removing === admin.email ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-3.5 w-3.5" />
+                      )}
+                    </Button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+interface AdminManagerDialogProps {
+  isMobileDrawer?: boolean;
+  onClose?: () => void;
+}
+
+const AdminManagerDialog = ({ isMobileDrawer, onClose }: AdminManagerDialogProps = {}) => {
   const [open, setOpen] = useState(false);
   const [newEmail, setNewEmail] = useState("");
   const [adding, setAdding] = useState(false);
   const [removing, setRemoving] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const { user } = useAuth();
+
+  const isOpen = isMobileDrawer ? true : open;
 
   const { data: admins = [], isLoading } = useQuery({
     queryKey: ["admin-list"],
@@ -31,7 +127,7 @@ const AdminManagerDialog = () => {
       if (error) throw error;
       return (data?.admins || []) as Admin[];
     },
-    enabled: open,
+    enabled: isOpen,
   });
 
   const addAdmin = async () => {
@@ -70,6 +166,21 @@ const AdminManagerDialog = () => {
     }
   };
 
+  // Inline content for mobile drawer
+  if (isMobileDrawer) {
+    return <AdminListContent
+      admins={admins}
+      isLoading={isLoading}
+      user={user}
+      newEmail={newEmail}
+      setNewEmail={setNewEmail}
+      adding={adding}
+      addAdmin={addAdmin}
+      removing={removing}
+      removeAdmin={removeAdmin}
+    />;
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -85,81 +196,17 @@ const AdminManagerDialog = () => {
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-5 pt-2">
-          {/* Add new admin */}
-          <div className="flex gap-2">
-            <Input
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-              placeholder="אימייל של מנהל חדש"
-              type="email"
-              className="rounded-xl h-10 flex-1"
-              onKeyDown={(e) => e.key === "Enter" && addAdmin()}
-            />
-            <Button
-              size="sm"
-              onClick={addAdmin}
-              disabled={adding || !newEmail.trim()}
-              className="rounded-xl h-10 gap-1.5 px-4"
-            >
-              {adding ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
-              הוסף
-            </Button>
-          </div>
-
-          {/* Admin list */}
-          <div className="space-y-2">
-            <span className="text-xs font-heading font-semibold text-muted-foreground uppercase tracking-wider">מנהלים פעילים</span>
-            {isLoading ? (
-              <div className="flex items-center justify-center py-6">
-                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-              </div>
-            ) : admins.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">אין מנהלים</p>
-            ) : (
-              <div className="space-y-1.5">
-                {admins.map((admin) => {
-                  const isMe = admin.user_id === user?.id;
-                  return (
-                    <div
-                      key={admin.id}
-                      className="flex items-center justify-between bg-muted/40 rounded-xl px-4 py-3 border border-border/30"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                          <span className="text-xs font-bold text-primary">
-                            {admin.email.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-sm font-medium">{admin.email}</span>
-                          {isMe && (
-                            <span className="text-[10px] text-primary font-medium mr-2">(את/ה)</span>
-                          )}
-                        </div>
-                      </div>
-                      {!isMe && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeAdmin(admin.email)}
-                          disabled={removing === admin.email}
-                          className="text-destructive hover:bg-destructive/10 rounded-full h-8 w-8 p-0"
-                        >
-                          {removing === admin.email ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          ) : (
-                            <Trash2 className="h-3.5 w-3.5" />
-                          )}
-                        </Button>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
+        <AdminListContent
+          admins={admins}
+          isLoading={isLoading}
+          user={user}
+          newEmail={newEmail}
+          setNewEmail={setNewEmail}
+          adding={adding}
+          addAdmin={addAdmin}
+          removing={removing}
+          removeAdmin={removeAdmin}
+        />
       </DialogContent>
     </Dialog>
   );
