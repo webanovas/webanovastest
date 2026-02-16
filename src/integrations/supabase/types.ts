@@ -20,8 +20,10 @@ export type Database = {
           day: string
           description: string
           id: string
+          is_recurring: boolean
           name: string
           sort_order: number
+          specific_date: string | null
           teacher: string
           time: string
         }
@@ -30,8 +32,10 @@ export type Database = {
           day: string
           description?: string
           id?: string
+          is_recurring?: boolean
           name: string
           sort_order?: number
+          specific_date?: string | null
           teacher: string
           time: string
         }
@@ -40,8 +44,10 @@ export type Database = {
           day?: string
           description?: string
           id?: string
+          is_recurring?: boolean
           name?: string
           sort_order?: number
+          specific_date?: string | null
           teacher?: string
           time?: string
         }

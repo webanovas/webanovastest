@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar as CalendarIcon, Clock, MapPin, Plus, Pencil, Check, Trash2, CalendarDays } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, MapPin, Plus, Pencil, Check, Trash2, CalendarDays, BookOpen, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,15 +15,13 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { Tables } from "@/integrations/supabase/types";
 import { format } from "date-fns";
-import { he } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
+import { ClockPicker } from "@/components/ui/clock-picker";
 import workshopImg1 from "@/assets/workshop-1.jpg";
 import workshopImg2 from "@/assets/workshop-2.jpg";
 
@@ -39,6 +37,47 @@ const fadeUp = {
 const stagger = {
   visible: { transition: { staggerChildren: 0.15 } },
 };
+
+/* ──── Form Section ──── */
+function FormSection({ icon: Icon, title, children }: { icon: any; title: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2 px-1">
+        <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+          <Icon className="h-3.5 w-3.5 text-primary" />
+        </div>
+        <span className="text-xs font-heading font-semibold text-foreground/70 uppercase tracking-wider">{title}</span>
+      </div>
+      <div className="bg-muted/30 rounded-2xl p-4 space-y-3 border border-border/30">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/* ──── Time Picker with Clock Face ──── */
+function TimeSlotPicker({ value, onChange, placeholder }: { value: string; onChange: (t: string) => void; placeholder: string }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          className={cn(
+            "flex-1 justify-center font-mono text-sm rounded-xl h-11 border-0 bg-card shadow-sm",
+            !value && "text-muted-foreground"
+          )}
+        >
+          {value || placeholder}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-4" align="center">
+        <ClockPicker value={value} onChange={onChange} onDone={() => setOpen(false)} />
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 const Workshops = () => {
   const { isEditMode } = useAdminMode();
@@ -63,7 +102,8 @@ const Workshops = () => {
       title: w.title, date: w.date, time: w.time, location: w.location,
       description: w.description, is_active: w.is_active,
     }).eq("id", w.id);
-    if (error) toast.error("שגיאה"); else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["workshops"] }); }
+    if (error) { console.error("Save error:", error); toast.error("שגיאה: " + error.message); }
+    else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["workshops"] }); }
     setEditing(null);
   };
 
@@ -73,15 +113,17 @@ const Workshops = () => {
       title: newItem.title, date: newItem.date, description: newItem.description,
       time: newItem.time || null, location: newItem.location || null, is_active: newItem.is_active,
     });
-    if (error) toast.error("שגיאה"); else {
+    if (error) { console.error("Add error:", error); toast.error("שגיאה: " + error.message); }
+    else {
       toast.success("נוסף"); queryClient.invalidateQueries({ queryKey: ["workshops"] });
       setNewItem({ title: "", date: "", time: "", location: "", description: "", is_active: true }); setIsAdding(false);
     }
   };
 
   const remove = async (id: string) => {
-    await supabase.from("workshops").delete().eq("id", id);
-    toast.success("נמחק"); queryClient.invalidateQueries({ queryKey: ["workshops"] });
+    const { error } = await supabase.from("workshops").delete().eq("id", id);
+    if (error) toast.error("שגיאה: " + error.message);
+    else { toast.success("נמחק"); queryClient.invalidateQueries({ queryKey: ["workshops"] }); }
     setEditing(null);
   };
 
@@ -148,7 +190,7 @@ const Workshops = () => {
         </section>
       )}
 
-      {/* Edit Dialog - WYSIWYG style */}
+      {/* Edit Dialog */}
       <Dialog open={!!editing} onOpenChange={(open) => !open && setEditing(null)}>
         <DialogContent className="max-w-lg p-0 overflow-hidden" dir="rtl">
           <WorkshopEditPreview
@@ -161,7 +203,7 @@ const Workshops = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Add Dialog - WYSIWYG style */}
+      {/* Add Dialog */}
       <Dialog open={isAdding} onOpenChange={setIsAdding}>
         <DialogContent className="max-w-lg p-0 overflow-hidden" dir="rtl">
           <WorkshopEditPreview
@@ -241,7 +283,7 @@ function WorkshopCard({ workshop: w, isEditMode, onEdit, imgSrc }: { workshop: W
   );
 }
 
-/* WYSIWYG Workshop Editor - looks like the final card while editing */
+/* WYSIWYG Workshop Editor */
 function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew = false }: {
   value: any; onChange: (v: any) => void; onSave: () => void;
   onDelete?: () => void; onCancel: () => void; isNew?: boolean;
@@ -253,7 +295,7 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
 
   return (
     <div className="bg-card rounded-3xl overflow-hidden">
-      {/* Image preview */}
+      {/* Image preview with title overlay */}
       <div className="aspect-video overflow-hidden relative">
         <img src={workshopImg1} alt="preview" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
@@ -267,30 +309,30 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
         </div>
       </div>
 
-      <div className="p-5 space-y-4">
+      <div className="p-5 space-y-5">
         {/* Description */}
-        <Textarea
-          value={value.description || ""}
-          onChange={(e) => onChange({ ...value, description: e.target.value })}
-          placeholder="תיאור הסדנה..."
-          className="rounded-xl border-dashed border-primary/20 focus:border-primary/40 resize-none bg-transparent"
-          rows={3}
-        />
+        <FormSection icon={FileText} title="תיאור">
+          <Textarea
+            value={value.description || ""}
+            onChange={(e) => onChange({ ...value, description: e.target.value })}
+            placeholder="תיאור הסדנה..."
+            className="rounded-xl border-0 bg-card resize-none shadow-sm"
+            rows={3}
+          />
+        </FormSection>
 
-        {/* Date picker - Calendly-style */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 shrink-0">
-            <CalendarDays className="h-5 w-5 text-primary" />
-          </div>
+        {/* Date */}
+        <FormSection icon={CalendarDays} title="תאריך">
           <Popover open={dateOpen} onOpenChange={setDateOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  "flex-1 justify-start text-right font-normal rounded-xl h-11 border-dashed border-primary/20",
+                  "w-full justify-start text-right font-normal rounded-xl h-11 border-0 bg-card shadow-sm",
                   !value.date && "text-muted-foreground"
                 )}
               >
+                <CalendarDays className="h-4 w-4 ml-2 text-primary" />
                 {value.date || "בחר תאריך"}
               </Button>
             </PopoverTrigger>
@@ -309,40 +351,34 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
               />
             </PopoverContent>
           </Popover>
-        </div>
+        </FormSection>
 
-        {/* Time range - slot picker style */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 shrink-0">
-            <Clock className="h-5 w-5 text-primary" />
-          </div>
-          <div className="flex-1 flex items-center gap-2">
+        {/* Time range */}
+        <FormSection icon={Clock} title="שעות">
+          <div className="flex items-center gap-2">
             <TimeSlotPicker
               value={getTimeStart(value.time)}
               onChange={(t) => onChange({ ...value, time: `${t}-${getTimeEnd(value.time) || "13:00"}` })}
-              placeholder="שעת התחלה"
+              placeholder="התחלה"
             />
-            <span className="text-muted-foreground font-medium">–</span>
+            <span className="text-muted-foreground font-medium text-lg">–</span>
             <TimeSlotPicker
               value={getTimeEnd(value.time)}
               onChange={(t) => onChange({ ...value, time: `${getTimeStart(value.time) || "10:00"}-${t}` })}
-              placeholder="שעת סיום"
+              placeholder="סיום"
             />
           </div>
-        </div>
+        </FormSection>
 
         {/* Location */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 shrink-0">
-            <MapPin className="h-5 w-5 text-primary" />
-          </div>
+        <FormSection icon={MapPin} title="מיקום">
           <Input
             value={value.location || ""}
             onChange={(e) => onChange({ ...value, location: e.target.value })}
             placeholder="מיקום הסדנה"
-            className="rounded-xl border-dashed border-primary/20 h-11"
+            className="rounded-xl border-0 bg-card h-11 shadow-sm"
           />
-        </div>
+        </FormSection>
 
         {/* Active toggle */}
         <label className="flex items-center gap-3 text-sm px-1 cursor-pointer">
@@ -355,68 +391,25 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
               value.is_active ? "right-0.5" : "left-0.5"
             )} />
           </div>
-          <span className="text-muted-foreground">{value.is_active ? "פעיל – מוצג באתר" : "לא פעיל – מוסתר"}</span>
+          <span className="text-muted-foreground font-medium text-sm">{value.is_active ? "פעיל – מוצג באתר" : "לא פעיל – מוסתר"}</span>
         </label>
 
         {/* Actions */}
-        <div className="flex gap-2 justify-between pt-2 border-t border-border/50">
+        <div className="flex gap-2 justify-between pt-3 border-t border-border/30">
           {onDelete && (
-            <Button variant="ghost" size="sm" onClick={onDelete} className="text-destructive gap-1 rounded-full">
+            <Button variant="ghost" size="sm" onClick={onDelete} className="text-destructive gap-1.5 rounded-full hover:bg-destructive/10">
               <Trash2 className="h-3.5 w-3.5" />מחק
             </Button>
           )}
           <div className="flex gap-2 mr-auto">
-            <Button variant="outline" size="sm" onClick={onCancel} className="rounded-full">ביטול</Button>
-            <Button size="sm" onClick={onSave} className="rounded-full gap-1">
+            <Button variant="outline" size="sm" onClick={onCancel} className="rounded-full px-5">ביטול</Button>
+            <Button size="sm" onClick={onSave} className="rounded-full gap-1.5 px-5 shadow-md shadow-primary/20">
               <Check className="h-3.5 w-3.5" />{isNew ? "הוסף" : "שמור"}
             </Button>
           </div>
         </div>
       </div>
     </div>
-  );
-}
-
-/* Time slot picker with visual chips */
-function TimeSlotPicker({ value, onChange, placeholder }: { value: string; onChange: (t: string) => void; placeholder: string }) {
-  const [open, setOpen] = useState(false);
-  const hours = Array.from({ length: 15 }, (_, i) => {
-    const h = i + 6;
-    return [`${String(h).padStart(2, "0")}:00`, `${String(h).padStart(2, "0")}:30`];
-  }).flat();
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          className={cn(
-            "flex-1 justify-center font-mono text-sm rounded-xl h-11 border-dashed border-primary/20",
-            !value && "text-muted-foreground"
-          )}
-        >
-          {value || placeholder}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-56 p-3 max-h-64 overflow-y-auto" align="center">
-        <div className="grid grid-cols-3 gap-1.5">
-          {hours.map((h) => (
-            <button
-              key={h}
-              onClick={() => { onChange(h); setOpen(false); }}
-              className={cn(
-                "px-2 py-2 rounded-lg text-xs font-mono transition-all",
-                value === h
-                  ? "bg-primary text-primary-foreground shadow-md"
-                  : "hover:bg-accent text-foreground"
-              )}
-            >
-              {h}
-            </button>
-          ))}
-        </div>
-      </PopoverContent>
-    </Popover>
   );
 }
 

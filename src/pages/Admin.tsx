@@ -10,9 +10,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
-import { LogOut, Plus, Trash2, CalendarDays, Clock, MapPin, User, BookOpen, Quote, FileText } from "lucide-react";
+import { LogOut, Plus, Trash2, CalendarDays, Clock, MapPin, User, BookOpen, Quote, FileText, Repeat, CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { AnimatePresence, motion } from "framer-motion";
 import type { Tables } from "@/integrations/supabase/types";
 import { ClockPicker } from "@/components/ui/clock-picker";
 
@@ -55,13 +56,14 @@ const Admin = () => {
         <Tabs defaultValue="classes" dir="rtl">
           <TabsList className="flex flex-wrap gap-1 h-auto bg-transparent mb-6">
             {[
-              { val: "classes", label: "שיעורים" },
-              { val: "teachers", label: "מורים" },
-              { val: "workshops", label: "סדנאות" },
-              { val: "testimonials", label: "מילים חמות" },
-              { val: "content", label: "תוכן עמודים" },
+              { val: "classes", label: "שיעורים", icon: BookOpen },
+              { val: "teachers", label: "מורים", icon: User },
+              { val: "workshops", label: "סדנאות", icon: CalendarDays },
+              { val: "testimonials", label: "מילים חמות", icon: Quote },
+              { val: "content", label: "תוכן עמודים", icon: FileText },
             ].map((t) => (
-              <TabsTrigger key={t.val} value={t.val} className="px-5 py-2 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <TabsTrigger key={t.val} value={t.val} className="px-5 py-2.5 rounded-full gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/20">
+                <t.icon className="h-3.5 w-3.5" />
                 {t.label}
               </TabsTrigger>
             ))}
@@ -78,15 +80,19 @@ const Admin = () => {
   );
 };
 
-/* ──── Labeled Field ──── */
-function Field({ label, icon: Icon, children, className }: { label: string; icon?: any; children: React.ReactNode; className?: string }) {
+/* ──── Form Section ──── */
+function FormSection({ icon: Icon, title, children, className }: { icon: any; title: string; children: React.ReactNode; className?: string }) {
   return (
-    <div className={cn("space-y-1.5", className)}>
-      <label className="text-xs text-muted-foreground font-medium flex items-center gap-1.5">
-        {Icon && <Icon className="h-3 w-3" />}
-        {label}
-      </label>
-      {children}
+    <div className={cn("space-y-3", className)}>
+      <div className="flex items-center gap-2 px-1">
+        <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+          <Icon className="h-3.5 w-3.5 text-primary" />
+        </div>
+        <span className="text-xs font-heading font-semibold text-foreground/70 uppercase tracking-wider">{title}</span>
+      </div>
+      <div className="bg-muted/30 rounded-2xl p-4 space-y-3 border border-border/30">
+        {children}
+      </div>
     </div>
   );
 }
@@ -101,7 +107,7 @@ function TimePicker({ value, onChange, placeholder }: { value: string; onChange:
         <Button
           variant="outline"
           className={cn(
-            "w-full justify-center font-mono text-sm rounded-xl h-10 border-dashed border-primary/20",
+            "w-full justify-center font-mono text-sm rounded-xl h-11 border-0 bg-card shadow-sm",
             !value && "text-muted-foreground"
           )}
         >
@@ -127,7 +133,7 @@ function DatePicker({ value, onChange }: { value: string; onChange: (v: string) 
         <Button
           variant="outline"
           className={cn(
-            "w-full justify-start text-right font-normal rounded-xl h-10 border-dashed border-primary/20",
+            "w-full justify-start text-right font-normal rounded-xl h-11 border-0 bg-card shadow-sm",
             !value && "text-muted-foreground"
           )}
         >
@@ -160,6 +166,82 @@ function parseDate(dateStr: string): Date | undefined {
   return undefined;
 }
 
+/* ──── Recurring Toggle (Alarm-style) ──── */
+function RecurringToggle({ value, onUpdate, onReload }: { value: ClassRow; onUpdate: (id: string, field: string, val: any) => Promise<void>; onReload: () => void }) {
+  const isRecurring = value.is_recurring !== false;
+  const [dateOpen, setDateOpen] = useState(false);
+  const parsedDate = value.specific_date ? parseDate(value.specific_date) : undefined;
+
+  return (
+    <div className="space-y-3">
+      <div className="flex gap-2">
+        <button
+          onClick={() => { onUpdate(value.id, "is_recurring", true).then(onReload); onUpdate(value.id, "specific_date", null); }}
+          className={cn(
+            "flex-1 py-2.5 rounded-xl text-xs font-medium transition-all duration-200 border",
+            isRecurring
+              ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20"
+              : "bg-card text-muted-foreground border-border/50 hover:border-primary/30"
+          )}
+        >
+          <Repeat className="h-3 w-3 inline ml-1" />שבועי
+        </button>
+        <button
+          onClick={() => { onUpdate(value.id, "is_recurring", false).then(onReload); }}
+          className={cn(
+            "flex-1 py-2.5 rounded-xl text-xs font-medium transition-all duration-200 border",
+            !isRecurring
+              ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20"
+              : "bg-card text-muted-foreground border-border/50 hover:border-primary/30"
+          )}
+        >
+          <CalendarIcon className="h-3 w-3 inline ml-1" />חד פעמי
+        </button>
+      </div>
+
+      {isRecurring ? (
+        <div className="flex gap-1.5">
+          {days.map((d) => (
+            <button
+              key={d}
+              onClick={() => { onUpdate(value.id, "day", d).then(onReload); }}
+              className={cn(
+                "flex-1 py-2 rounded-xl text-xs font-medium transition-all",
+                value.day === d
+                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                  : "bg-card hover:bg-accent text-foreground border border-border/40"
+              )}
+            >
+              {d}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <Popover open={dateOpen} onOpenChange={setDateOpen}>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="w-full justify-start text-right rounded-xl h-10 border-0 bg-card shadow-sm text-sm">
+              <CalendarDays className="h-3.5 w-3.5 ml-2 text-primary" />
+              {value.specific_date || "בחר תאריך"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={parsedDate}
+              onSelect={(date) => {
+                if (date) onUpdate(value.id, "specific_date", format(date, "dd.MM.yyyy")).then(onReload);
+                setDateOpen(false);
+              }}
+              initialFocus
+              className="p-3 pointer-events-auto"
+            />
+          </PopoverContent>
+        </Popover>
+      )}
+    </div>
+  );
+}
+
 // ──── Classes ────
 function ClassesManager() {
   const [items, setItems] = useState<ClassRow[]>([]);
@@ -172,69 +254,51 @@ function ClassesManager() {
 
   const add = async () => {
     const { error } = await supabase.from("classes").insert({ day: "ראשון", time: "09:00", name: "", teacher: "", description: "" });
-    if (error) toast.error("שגיאה"); else { toast.success("נוסף"); load(); }
+    if (error) toast.error("שגיאה: " + error.message); else { toast.success("נוסף"); load(); }
   };
-  const update = async (id: string, field: string, value: string) => {
-    await supabase.from("classes").update({ [field]: value }).eq("id", id);
+  const update = async (id: string, field: string, value: any) => {
+    const { error } = await supabase.from("classes").update({ [field]: value }).eq("id", id);
+    if (error) { console.error("Update error:", error); toast.error("שגיאה: " + error.message); }
   };
   const remove = async (id: string) => {
-    await supabase.from("classes").delete().eq("id", id);
-    toast.success("נמחק"); load();
+    const { error } = await supabase.from("classes").delete().eq("id", id);
+    if (error) toast.error("שגיאה: " + error.message); else { toast.success("נמחק"); load(); }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex justify-between items-center">
         <h2 className="font-heading font-semibold text-lg">ניהול שיעורים</h2>
-        <Button size="sm" onClick={add} className="gap-1 rounded-full"><Plus className="h-4 w-4" />הוסף שיעור</Button>
+        <Button size="sm" onClick={add} className="gap-1.5 rounded-full shadow-md shadow-primary/20"><Plus className="h-4 w-4" />הוסף שיעור</Button>
       </div>
       {items.map((item) => (
-        <Card key={item.id} className="rounded-2xl border-border/50 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="p-5 space-y-4">
-            {/* Day chips */}
-            <Field label="יום" icon={CalendarDays}>
-              <div className="flex gap-1.5 flex-wrap">
-                {days.map((d) => (
-                  <button
-                    key={d}
-                    onClick={() => update(item.id, "day", d)}
-                    className={cn(
-                      "px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
-                      item.day === d
-                        ? "bg-primary text-primary-foreground shadow-md"
-                        : "bg-muted hover:bg-accent text-foreground"
-                    )}
-                  >
-                    יום {d}
-                  </button>
-                ))}
-              </div>
-            </Field>
+        <Card key={item.id} className="rounded-2xl border-0 shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden">
+          <CardContent className="p-6 space-y-5">
+            {/* Recurring toggle */}
+            <FormSection icon={Repeat} title="תדירות">
+              <RecurringToggle value={item} onUpdate={update} onReload={load} />
+            </FormSection>
 
-            {/* Time picker */}
-            <Field label="שעה" icon={Clock}>
+            {/* Time */}
+            <FormSection icon={Clock} title="שעה">
               <TimePicker
                 value={item.time}
-                onChange={(v) => { update(item.id, "time", v); load(); }}
+                onChange={(v) => { update(item.id, "time", v).then(load); }}
                 placeholder="בחר שעה"
               />
-            </Field>
+            </FormSection>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="שם השיעור" icon={BookOpen}>
-                <Input defaultValue={item.name} placeholder="לדוגמה: ויניאסה" onBlur={(e) => update(item.id, "name", e.target.value)} className="rounded-xl h-10" />
-              </Field>
-              <Field label="מורה" icon={User}>
-                <Input defaultValue={item.teacher} placeholder="שם המורה" onBlur={(e) => update(item.id, "teacher", e.target.value)} className="rounded-xl h-10" />
-              </Field>
-            </div>
+            {/* Details */}
+            <FormSection icon={BookOpen} title="פרטי השיעור">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Input defaultValue={item.name} placeholder="שם השיעור" onBlur={(e) => update(item.id, "name", e.target.value)} className="rounded-xl h-11 border-0 bg-card shadow-sm" />
+                <Input defaultValue={item.teacher} placeholder="שם המורה" onBlur={(e) => update(item.id, "teacher", e.target.value)} className="rounded-xl h-11 border-0 bg-card shadow-sm" />
+              </div>
+              <Textarea defaultValue={item.description} placeholder="תיאור קצר" onBlur={(e) => update(item.id, "description", e.target.value)} className="rounded-xl border-0 bg-card shadow-sm" rows={2} />
+            </FormSection>
 
-            <Field label="תיאור">
-              <Textarea defaultValue={item.description} placeholder="תיאור קצר של השיעור" onBlur={(e) => update(item.id, "description", e.target.value)} className="rounded-xl" rows={2} />
-            </Field>
-
-            <div className="flex justify-end pt-1 border-t border-border/30">
-              <Button variant="ghost" size="sm" onClick={() => remove(item.id)} className="text-destructive gap-1 rounded-full text-xs">
+            <div className="flex justify-end pt-2 border-t border-border/20">
+              <Button variant="ghost" size="sm" onClick={() => remove(item.id)} className="text-destructive gap-1.5 rounded-full text-xs hover:bg-destructive/10">
                 <Trash2 className="h-3.5 w-3.5" />מחק שיעור
               </Button>
             </div>
@@ -256,38 +320,37 @@ function TeachersManager() {
 
   const add = async () => {
     const { error } = await supabase.from("teachers").insert({ name: "", role: "", description: "" });
-    if (error) toast.error("שגיאה"); else { toast.success("נוסף"); load(); }
+    if (error) toast.error("שגיאה: " + error.message); else { toast.success("נוסף"); load(); }
   };
   const update = async (id: string, field: string, value: string) => {
-    await supabase.from("teachers").update({ [field]: value }).eq("id", id);
+    const { error } = await supabase.from("teachers").update({ [field]: value }).eq("id", id);
+    if (error) toast.error("שגיאה: " + error.message);
   };
   const remove = async (id: string) => {
-    await supabase.from("teachers").delete().eq("id", id);
-    toast.success("נמחק"); load();
+    const { error } = await supabase.from("teachers").delete().eq("id", id);
+    if (error) toast.error("שגיאה: " + error.message); else { toast.success("נמחק"); load(); }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex justify-between items-center">
         <h2 className="font-heading font-semibold text-lg">ניהול מורים</h2>
-        <Button size="sm" onClick={add} className="gap-1 rounded-full"><Plus className="h-4 w-4" />הוסף מורה</Button>
+        <Button size="sm" onClick={add} className="gap-1.5 rounded-full shadow-md shadow-primary/20"><Plus className="h-4 w-4" />הוסף מורה</Button>
       </div>
       {items.map((item) => (
-        <Card key={item.id} className="rounded-2xl border-border/50 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="p-5 space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="שם המורה" icon={User}>
-                <Input defaultValue={item.name} placeholder="שם מלא" onBlur={(e) => update(item.id, "name", e.target.value)} className="rounded-xl h-10" />
-              </Field>
-              <Field label="תפקיד / התמחות">
-                <Input defaultValue={item.role} placeholder="לדוגמה: מורה ויניאסה" onBlur={(e) => update(item.id, "role", e.target.value)} className="rounded-xl h-10" />
-              </Field>
-            </div>
-            <Field label="תיאור">
-              <Textarea defaultValue={item.description} placeholder="כמה מילים על המורה..." onBlur={(e) => update(item.id, "description", e.target.value)} className="rounded-xl" rows={2} />
-            </Field>
-            <div className="flex justify-end pt-1 border-t border-border/30">
-              <Button variant="ghost" size="sm" onClick={() => remove(item.id)} className="text-destructive gap-1 rounded-full text-xs">
+        <Card key={item.id} className="rounded-2xl border-0 shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden">
+          <CardContent className="p-6 space-y-5">
+            <FormSection icon={User} title="פרטים">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Input defaultValue={item.name} placeholder="שם מלא" onBlur={(e) => update(item.id, "name", e.target.value)} className="rounded-xl h-11 border-0 bg-card shadow-sm" />
+                <Input defaultValue={item.role} placeholder="תפקיד / התמחות" onBlur={(e) => update(item.id, "role", e.target.value)} className="rounded-xl h-11 border-0 bg-card shadow-sm" />
+              </div>
+            </FormSection>
+            <FormSection icon={FileText} title="תיאור">
+              <Textarea defaultValue={item.description} placeholder="כמה מילים על המורה..." onBlur={(e) => update(item.id, "description", e.target.value)} className="rounded-xl border-0 bg-card shadow-sm" rows={2} />
+            </FormSection>
+            <div className="flex justify-end pt-2 border-t border-border/20">
+              <Button variant="ghost" size="sm" onClick={() => remove(item.id)} className="text-destructive gap-1.5 rounded-full text-xs hover:bg-destructive/10">
                 <Trash2 className="h-3.5 w-3.5" />מחק מורה
               </Button>
             </div>
@@ -309,78 +372,77 @@ function WorkshopsManager() {
 
   const add = async () => {
     const { error } = await supabase.from("workshops").insert({ title: "", date: "", description: "" });
-    if (error) toast.error("שגיאה"); else { toast.success("נוסף"); load(); }
+    if (error) toast.error("שגיאה: " + error.message); else { toast.success("נוסף"); load(); }
   };
   const update = async (id: string, field: string, value: string | boolean) => {
-    await supabase.from("workshops").update({ [field]: value }).eq("id", id);
+    const { error } = await supabase.from("workshops").update({ [field]: value }).eq("id", id);
+    if (error) toast.error("שגיאה: " + error.message);
   };
   const remove = async (id: string) => {
-    await supabase.from("workshops").delete().eq("id", id);
-    toast.success("נמחק"); load();
+    const { error } = await supabase.from("workshops").delete().eq("id", id);
+    if (error) toast.error("שגיאה: " + error.message); else { toast.success("נמחק"); load(); }
   };
 
   const getTimeStart = (time: string | null) => time?.split("-")[0]?.trim() || "";
   const getTimeEnd = (time: string | null) => time?.split("-")[1]?.trim() || "";
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex justify-between items-center">
         <h2 className="font-heading font-semibold text-lg">ניהול סדנאות</h2>
-        <Button size="sm" onClick={add} className="gap-1 rounded-full"><Plus className="h-4 w-4" />הוסף סדנה</Button>
+        <Button size="sm" onClick={add} className="gap-1.5 rounded-full shadow-md shadow-primary/20"><Plus className="h-4 w-4" />הוסף סדנה</Button>
       </div>
       {items.map((item) => (
-        <Card key={item.id} className="rounded-2xl border-border/50 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="p-5 space-y-4">
-            <Field label="שם הסדנה" icon={BookOpen}>
-              <Input defaultValue={item.title} placeholder="שם הסדנה" onBlur={(e) => update(item.id, "title", e.target.value)} className="rounded-xl h-10" />
-            </Field>
+        <Card key={item.id} className="rounded-2xl border-0 shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden">
+          <CardContent className="p-6 space-y-5">
+            <FormSection icon={BookOpen} title="שם הסדנה">
+              <Input defaultValue={item.title} placeholder="שם הסדנה" onBlur={(e) => update(item.id, "title", e.target.value)} className="rounded-xl h-11 border-0 bg-card shadow-sm" />
+            </FormSection>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="תאריך" icon={CalendarDays}>
+            <FormSection icon={CalendarDays} title="תאריך ומיקום">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <DatePicker value={item.date} onChange={(v) => { update(item.id, "date", v); load(); }} />
-              </Field>
-              <Field label="מיקום" icon={MapPin}>
-                <Input defaultValue={item.location ?? ""} placeholder="מיקום הסדנה" onBlur={(e) => update(item.id, "location", e.target.value)} className="rounded-xl h-10" />
-              </Field>
-            </div>
+                <Input defaultValue={item.location ?? ""} placeholder="מיקום הסדנה" onBlur={(e) => update(item.id, "location", e.target.value)} className="rounded-xl h-11 border-0 bg-card shadow-sm" />
+              </div>
+            </FormSection>
 
-            <Field label="טווח שעות" icon={Clock}>
+            <FormSection icon={Clock} title="שעות">
               <div className="flex items-center gap-2">
                 <TimePicker
                   value={getTimeStart(item.time)}
                   onChange={(v) => { update(item.id, "time", `${v}-${getTimeEnd(item.time) || "13:00"}`); load(); }}
-                  placeholder="שעת התחלה"
+                  placeholder="התחלה"
                 />
-                <span className="text-muted-foreground font-medium">–</span>
+                <span className="text-muted-foreground font-medium text-lg">–</span>
                 <TimePicker
                   value={getTimeEnd(item.time)}
                   onChange={(v) => { update(item.id, "time", `${getTimeStart(item.time) || "10:00"}-${v}`); load(); }}
-                  placeholder="שעת סיום"
+                  placeholder="סיום"
                 />
               </div>
-            </Field>
+            </FormSection>
 
-            <Field label="תיאור">
-              <Textarea defaultValue={item.description} placeholder="תיאור הסדנה" onBlur={(e) => update(item.id, "description", e.target.value)} className="rounded-xl" rows={2} />
-            </Field>
+            <FormSection icon={FileText} title="תיאור">
+              <Textarea defaultValue={item.description} placeholder="תיאור הסדנה" onBlur={(e) => update(item.id, "description", e.target.value)} className="rounded-xl border-0 bg-card shadow-sm" rows={2} />
+            </FormSection>
 
-            <div className="flex items-center justify-between pt-1 border-t border-border/30">
-              <label className="flex items-center gap-2.5 text-sm cursor-pointer">
+            <div className="flex items-center justify-between pt-3 border-t border-border/20">
+              <label className="flex items-center gap-3 text-sm cursor-pointer">
                 <div
                   className={cn(
-                    "w-9 h-5 rounded-full transition-colors relative cursor-pointer",
+                    "w-10 h-6 rounded-full transition-colors relative cursor-pointer",
                     item.is_active ? "bg-primary" : "bg-muted"
                   )}
                   onClick={() => { update(item.id, "is_active", !item.is_active); load(); }}
                 >
                   <div className={cn(
-                    "absolute top-0.5 w-4 h-4 rounded-full bg-card shadow transition-transform",
+                    "absolute top-0.5 w-5 h-5 rounded-full bg-card shadow transition-transform",
                     item.is_active ? "right-0.5" : "left-0.5"
                   )} />
                 </div>
-                <span className="text-xs text-muted-foreground">{item.is_active ? "פעיל" : "מוסתר"}</span>
+                <span className="text-xs text-muted-foreground font-medium">{item.is_active ? "פעיל" : "מוסתר"}</span>
               </label>
-              <Button variant="ghost" size="sm" onClick={() => remove(item.id)} className="text-destructive gap-1 rounded-full text-xs">
+              <Button variant="ghost" size="sm" onClick={() => remove(item.id)} className="text-destructive gap-1.5 rounded-full text-xs hover:bg-destructive/10">
                 <Trash2 className="h-3.5 w-3.5" />מחק סדנה
               </Button>
             </div>
@@ -402,45 +464,46 @@ function TestimonialsManager() {
 
   const add = async () => {
     const { error } = await supabase.from("testimonials").insert({ name: "", text: "" });
-    if (error) toast.error("שגיאה"); else { toast.success("נוסף"); load(); }
+    if (error) toast.error("שגיאה: " + error.message); else { toast.success("נוסף"); load(); }
   };
   const update = async (id: string, field: string, value: string) => {
-    await supabase.from("testimonials").update({ [field]: value }).eq("id", id);
+    const { error } = await supabase.from("testimonials").update({ [field]: value }).eq("id", id);
+    if (error) toast.error("שגיאה: " + error.message);
   };
   const remove = async (id: string) => {
-    await supabase.from("testimonials").delete().eq("id", id);
-    toast.success("נמחק"); load();
+    const { error } = await supabase.from("testimonials").delete().eq("id", id);
+    if (error) toast.error("שגיאה: " + error.message); else { toast.success("נמחק"); load(); }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex justify-between items-center">
         <h2 className="font-heading font-semibold text-lg">ניהול מילים חמות</h2>
-        <Button size="sm" onClick={add} className="gap-1 rounded-full"><Plus className="h-4 w-4" />הוסף המלצה</Button>
+        <Button size="sm" onClick={add} className="gap-1.5 rounded-full shadow-md shadow-primary/20"><Plus className="h-4 w-4" />הוסף המלצה</Button>
       </div>
       {items.map((item) => (
-        <Card key={item.id} className="rounded-2xl border-border/50 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="p-5 space-y-4">
-            {/* Preview of how it'll look */}
-            <div className="bg-accent/30 rounded-xl p-4 border border-border/30">
+        <Card key={item.id} className="rounded-2xl border-0 shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden">
+          <CardContent className="p-6 space-y-5">
+            {/* Live preview */}
+            <div className="bg-accent/20 rounded-2xl p-5 border border-border/20">
               <Quote className="h-5 w-5 text-primary/30 mb-2" />
               <p className="text-sm text-foreground/70 leading-relaxed mb-3">{item.text || "תוכן ההמלצה..."}</p>
-              <div className="flex items-center gap-2 pt-2 border-t border-border/30">
-                <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+              <div className="flex items-center gap-2 pt-3 border-t border-border/20">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                   <span className="font-heading font-bold text-primary text-xs">{(item.name || "?").charAt(0)}</span>
                 </div>
-                <span className="font-heading font-medium text-xs">{item.name || "שם"}</span>
+                <span className="font-heading font-medium text-sm">{item.name || "שם"}</span>
               </div>
             </div>
 
-            <Field label="שם" icon={User}>
-              <Input defaultValue={item.name} placeholder="שם המממליץ/ה" onBlur={(e) => update(item.id, "name", e.target.value)} className="rounded-xl h-10" />
-            </Field>
-            <Field label="תוכן ההמלצה" icon={Quote}>
-              <Textarea defaultValue={item.text} placeholder="תוכן ההמלצה" onBlur={(e) => update(item.id, "text", e.target.value)} className="rounded-xl" rows={3} />
-            </Field>
-            <div className="flex justify-end pt-1 border-t border-border/30">
-              <Button variant="ghost" size="sm" onClick={() => remove(item.id)} className="text-destructive gap-1 rounded-full text-xs">
+            <FormSection icon={User} title="שם">
+              <Input defaultValue={item.name} placeholder="שם הממליץ/ה" onBlur={(e) => update(item.id, "name", e.target.value)} className="rounded-xl h-11 border-0 bg-card shadow-sm" />
+            </FormSection>
+            <FormSection icon={Quote} title="תוכן">
+              <Textarea defaultValue={item.text} placeholder="תוכן ההמלצה" onBlur={(e) => update(item.id, "text", e.target.value)} className="rounded-xl border-0 bg-card shadow-sm" rows={3} />
+            </FormSection>
+            <div className="flex justify-end pt-2 border-t border-border/20">
+              <Button variant="ghost" size="sm" onClick={() => remove(item.id)} className="text-destructive gap-1.5 rounded-full text-xs hover:bg-destructive/10">
                 <Trash2 className="h-3.5 w-3.5" />מחק
               </Button>
             </div>
@@ -465,35 +528,34 @@ function ContentManager() {
     if (error) toast.error(error.message); else { toast.success("נוסף"); load(); }
   };
   const update = async (id: string, field: string, value: string) => {
-    await supabase.from("page_content").update({ [field]: value }).eq("id", id);
+    const { error } = await supabase.from("page_content").update({ [field]: value }).eq("id", id);
+    if (error) toast.error("שגיאה: " + error.message);
   };
   const remove = async (id: string) => {
-    await supabase.from("page_content").delete().eq("id", id);
-    toast.success("נמחק"); load();
+    const { error } = await supabase.from("page_content").delete().eq("id", id);
+    if (error) toast.error("שגיאה: " + error.message); else { toast.success("נמחק"); load(); }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex justify-between items-center">
         <h2 className="font-heading font-semibold text-lg">ניהול תוכן עמודים</h2>
-        <Button size="sm" onClick={add} className="gap-1 rounded-full"><Plus className="h-4 w-4" />הוסף תוכן</Button>
+        <Button size="sm" onClick={add} className="gap-1.5 rounded-full shadow-md shadow-primary/20"><Plus className="h-4 w-4" />הוסף תוכן</Button>
       </div>
       {items.map((item) => (
-        <Card key={item.id} className="rounded-2xl border-border/50 shadow-sm hover:shadow-md transition-shadow">
-          <CardContent className="p-5 space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="עמוד" icon={FileText}>
-                <Input defaultValue={item.page} placeholder="home, about..." onBlur={(e) => update(item.id, "page", e.target.value)} className="rounded-xl h-10" />
-              </Field>
-              <Field label="סקשן">
-                <Input defaultValue={item.section} placeholder="hero-title, about-text..." onBlur={(e) => update(item.id, "section", e.target.value)} className="rounded-xl h-10" />
-              </Field>
-            </div>
-            <Field label="תוכן">
-              <Textarea defaultValue={item.content} placeholder="תוכן" onBlur={(e) => update(item.id, "content", e.target.value)} className="rounded-xl" rows={4} />
-            </Field>
-            <div className="flex justify-end pt-1 border-t border-border/30">
-              <Button variant="ghost" size="sm" onClick={() => remove(item.id)} className="text-destructive gap-1 rounded-full text-xs">
+        <Card key={item.id} className="rounded-2xl border-0 shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden">
+          <CardContent className="p-6 space-y-5">
+            <FormSection icon={FileText} title="מיקום">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Input defaultValue={item.page} placeholder="home, about..." onBlur={(e) => update(item.id, "page", e.target.value)} className="rounded-xl h-11 border-0 bg-card shadow-sm" />
+                <Input defaultValue={item.section} placeholder="hero-title, about-text..." onBlur={(e) => update(item.id, "section", e.target.value)} className="rounded-xl h-11 border-0 bg-card shadow-sm" />
+              </div>
+            </FormSection>
+            <FormSection icon={BookOpen} title="תוכן">
+              <Textarea defaultValue={item.content} placeholder="תוכן" onBlur={(e) => update(item.id, "content", e.target.value)} className="rounded-xl border-0 bg-card shadow-sm" rows={4} />
+            </FormSection>
+            <div className="flex justify-end pt-2 border-t border-border/20">
+              <Button variant="ghost" size="sm" onClick={() => remove(item.id)} className="text-destructive gap-1.5 rounded-full text-xs hover:bg-destructive/10">
                 <Trash2 className="h-3.5 w-3.5" />מחק
               </Button>
             </div>

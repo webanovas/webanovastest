@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Clock, User, Plus, Trash2, Check, Pencil } from "lucide-react";
+import { Clock, User, Plus, Trash2, Check, Pencil, CalendarDays, BookOpen, Repeat, CalendarIcon } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminMode } from "@/hooks/useAdminMode";
@@ -15,6 +15,8 @@ import { cn } from "@/lib/utils";
 import type { Tables } from "@/integrations/supabase/types";
 import { Link } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
 import {
   Dialog,
   DialogContent,
@@ -42,7 +44,7 @@ const Schedule = () => {
   const [selectedDay, setSelectedDay] = useState(days[0]);
   const [editingClass, setEditingClass] = useState<ClassRow | null>(null);
   const [isAddingClass, setIsAddingClass] = useState(false);
-  const [newClass, setNewClass] = useState({ day: "ראשון", time: "", name: "", teacher: "", description: "" });
+  const [newClass, setNewClass] = useState({ day: "ראשון", time: "", name: "", teacher: "", description: "", is_recurring: true, specific_date: null as string | null });
 
   const { data: classes = [] } = useQuery({
     queryKey: ["classes"],
@@ -69,8 +71,9 @@ const Schedule = () => {
   const saveClass = async (cls: ClassRow) => {
     const { error } = await supabase.from("classes").update({
       day: cls.day, time: cls.time, name: cls.name, teacher: cls.teacher, description: cls.description,
+      is_recurring: cls.is_recurring, specific_date: cls.specific_date,
     }).eq("id", cls.id);
-    if (error) toast.error("שגיאה בשמירה");
+    if (error) { console.error("Save error:", error); toast.error("שגיאה בשמירה: " + error.message); }
     else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["classes"] }); }
     setEditingClass(null);
   };
@@ -80,20 +83,21 @@ const Schedule = () => {
     const { error } = await supabase.from("classes").insert({
       day: newClass.day, time: newClass.time, name: newClass.name,
       teacher: newClass.teacher, description: newClass.description,
+      is_recurring: newClass.is_recurring, specific_date: newClass.specific_date,
     });
-    if (error) toast.error("שגיאה");
+    if (error) { console.error("Add error:", error); toast.error("שגיאה: " + error.message); }
     else {
       toast.success("נוסף");
       queryClient.invalidateQueries({ queryKey: ["classes"] });
-      setNewClass({ day: "ראשון", time: "", name: "", teacher: "", description: "" });
+      setNewClass({ day: "ראשון", time: "", name: "", teacher: "", description: "", is_recurring: true, specific_date: null });
       setIsAddingClass(false);
     }
   };
 
   const deleteClass = async (id: string) => {
-    await supabase.from("classes").delete().eq("id", id);
-    toast.success("נמחק");
-    queryClient.invalidateQueries({ queryKey: ["classes"] });
+    const { error } = await supabase.from("classes").delete().eq("id", id);
+    if (error) { console.error("Delete error:", error); toast.error("שגיאה במחיקה: " + error.message); }
+    else { toast.success("נמחק"); queryClient.invalidateQueries({ queryKey: ["classes"] }); }
     setEditingClass(null);
   };
 
@@ -101,7 +105,7 @@ const Schedule = () => {
     const { error } = await supabase.from("teachers").update({
       name: t.name, role: t.role, description: t.description,
     }).eq("id", t.id);
-    if (error) toast.error("שגיאה");
+    if (error) { console.error("Save error:", error); toast.error("שגיאה: " + error.message); }
     else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["teachers"] }); }
     setEditingTeacher(null);
   };
@@ -109,7 +113,7 @@ const Schedule = () => {
   const addTeacher = async () => {
     if (!newTeacher.name) { toast.error("שם חובה"); return; }
     const { error } = await supabase.from("teachers").insert(newTeacher);
-    if (error) toast.error("שגיאה");
+    if (error) { console.error("Add error:", error); toast.error("שגיאה: " + error.message); }
     else {
       toast.success("נוסף");
       queryClient.invalidateQueries({ queryKey: ["teachers"] });
@@ -119,9 +123,9 @@ const Schedule = () => {
   };
 
   const deleteTeacher = async (id: string) => {
-    await supabase.from("teachers").delete().eq("id", id);
-    toast.success("נמחק");
-    queryClient.invalidateQueries({ queryKey: ["teachers"] });
+    const { error } = await supabase.from("teachers").delete().eq("id", id);
+    if (error) toast.error("שגיאה: " + error.message);
+    else { toast.success("נמחק"); queryClient.invalidateQueries({ queryKey: ["teachers"] }); }
     setEditingTeacher(null);
   };
 
@@ -217,7 +221,12 @@ const Schedule = () => {
                           </div>
                           <div className="flex-1 p-5 flex items-center justify-between gap-4">
                             <div className="flex-1">
-                              <h3 className="font-heading font-semibold text-base mb-1">{cls.name}</h3>
+                              <div className="flex items-center gap-2 mb-1">
+                                <h3 className="font-heading font-semibold text-base">{cls.name}</h3>
+                                {!cls.is_recurring && (
+                                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-accent text-accent-foreground font-medium">חד פעמי</span>
+                                )}
+                              </div>
                               <p className="text-sm text-muted-foreground flex items-center gap-1.5">
                                 <User className="h-3.5 w-3.5" />{cls.teacher}
                               </p>
@@ -289,7 +298,7 @@ const Schedule = () => {
         </div>
       </section>
 
-      {/* Class Edit - WYSIWYG */}
+      {/* Class Edit */}
       <Dialog open={!!editingClass} onOpenChange={(open) => !open && setEditingClass(null)}>
         <DialogContent className="max-w-md p-0 overflow-hidden" dir="rtl">
           {editingClass && (
@@ -304,7 +313,7 @@ const Schedule = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Class Add - WYSIWYG */}
+      {/* Class Add */}
       <Dialog open={isAddingClass} onOpenChange={setIsAddingClass}>
         <DialogContent className="max-w-md p-0 overflow-hidden" dir="rtl">
           <ClassEditPreview
@@ -317,7 +326,7 @@ const Schedule = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Teacher Edit - WYSIWYG */}
+      {/* Teacher Edit */}
       <Dialog open={!!editingTeacher} onOpenChange={(open) => !open && setEditingTeacher(null)}>
         <DialogContent className="max-w-md p-0 overflow-hidden" dir="rtl">
           {editingTeacher && (
@@ -332,7 +341,7 @@ const Schedule = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Teacher Add - WYSIWYG */}
+      {/* Teacher Add */}
       <Dialog open={isAddingTeacher} onOpenChange={setIsAddingTeacher}>
         <DialogContent className="max-w-md p-0 overflow-hidden" dir="rtl">
           <TeacherEditPreview
@@ -348,25 +357,163 @@ const Schedule = () => {
   );
 };
 
-/* WYSIWYG Class Editor - looks like the actual class card */
+/* ──── Section Group for forms ──── */
+function FormSection({ icon: Icon, title, children }: { icon: any; title: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2 px-1">
+        <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+          <Icon className="h-3.5 w-3.5 text-primary" />
+        </div>
+        <span className="text-xs font-heading font-semibold text-foreground/70 uppercase tracking-wider">{title}</span>
+      </div>
+      <div className="bg-muted/30 rounded-2xl p-4 space-y-3 border border-border/30">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/* ──── Alarm-style Recurring/One-time Toggle ──── */
+function RecurringToggle({ value, onChange }: { value: any; onChange: (v: any) => void }) {
+  const isRecurring = value.is_recurring !== false;
+  const [dateOpen, setDateOpen] = useState(false);
+  const parsedDate = value.specific_date ? parseDateStr(value.specific_date) : undefined;
+
+  return (
+    <FormSection icon={Repeat} title="תדירות">
+      {/* Toggle pills */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => onChange({ ...value, is_recurring: true, specific_date: null })}
+          className={cn(
+            "flex-1 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 border",
+            isRecurring
+              ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20"
+              : "bg-card text-muted-foreground border-border/50 hover:border-primary/30"
+          )}
+        >
+          <Repeat className="h-3.5 w-3.5 inline ml-1.5" />
+          שבועי קבוע
+        </button>
+        <button
+          onClick={() => onChange({ ...value, is_recurring: false, day: value.day })}
+          className={cn(
+            "flex-1 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 border",
+            !isRecurring
+              ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20"
+              : "bg-card text-muted-foreground border-border/50 hover:border-primary/30"
+          )}
+        >
+          <CalendarIcon className="h-3.5 w-3.5 inline ml-1.5" />
+          חד פעמי
+        </button>
+      </div>
+
+      <AnimatePresence mode="wait">
+        {isRecurring ? (
+          <motion.div
+            key="recurring"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <p className="text-[11px] text-muted-foreground mb-2">חוזר בכל שבוע ביום:</p>
+            <div className="flex gap-1.5">
+              {days.map((d) => (
+                <button
+                  key={d}
+                  onClick={() => onChange({ ...value, day: d })}
+                  className={cn(
+                    "flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-200",
+                    value.day === d
+                      ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                      : "bg-card hover:bg-accent text-foreground border border-border/40"
+                  )}
+                >
+                  {d}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="onetime"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <p className="text-[11px] text-muted-foreground mb-2">בחר תאריך ספציפי:</p>
+            <Popover open={dateOpen} onOpenChange={setDateOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-right font-normal rounded-xl h-11 border-border/50",
+                    !value.specific_date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarDays className="h-4 w-4 ml-2 text-primary" />
+                  {value.specific_date || "בחר תאריך"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={parsedDate}
+                  onSelect={(date) => {
+                    if (date) {
+                      const formatted = format(date, "dd.MM.yyyy");
+                      onChange({ ...value, specific_date: formatted });
+                    }
+                    setDateOpen(false);
+                  }}
+                  initialFocus
+                  className="p-3 pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </FormSection>
+  );
+}
+
+function parseDateStr(str: string): Date | undefined {
+  const parts = str?.split(".");
+  if (parts?.length === 3) {
+    const d = parseInt(parts[0]), m = parseInt(parts[1]) - 1, y = parseInt(parts[2]);
+    if (!isNaN(d) && !isNaN(m) && !isNaN(y)) return new Date(y, m, d);
+  }
+  return undefined;
+}
+
+/* WYSIWYG Class Editor */
 function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew = false }: {
   value: any; onChange: (v: any) => void; onSave: () => void;
   onDelete?: () => void; onCancel: () => void; isNew?: boolean;
 }) {
   return (
     <div className="bg-card">
-      {/* Preview header that matches the real card */}
-      <div className="bg-primary/5 px-5 py-4 border-b border-primary/10">
-        <p className="text-xs text-primary font-medium mb-2">תצוגה מקדימה</p>
-        {/* Mini preview of how it'll look */}
-        <div className="bg-card rounded-xl shadow-sm overflow-hidden">
+      {/* Live preview header */}
+      <div className="bg-gradient-to-b from-primary/8 to-primary/3 px-5 py-4 border-b border-border/30">
+        <p className="text-[11px] text-primary font-medium mb-2.5 tracking-wider uppercase">תצוגה מקדימה</p>
+        <div className="bg-card rounded-xl shadow-md overflow-hidden border border-border/20">
           <div className="flex items-stretch" dir="rtl">
             <div className="flex flex-col items-center justify-center px-4 py-3 bg-primary/8 border-l border-primary/10 min-w-[80px]">
               <Clock className="h-3 w-3 text-primary mb-1" />
               <span className="font-heading font-bold text-sm text-primary">{value.time || "--:--"}</span>
             </div>
             <div className="flex-1 p-3">
-              <h3 className="font-heading font-semibold text-sm">{value.name || "שם השיעור"}</h3>
+              <div className="flex items-center gap-1.5">
+                <h3 className="font-heading font-semibold text-sm">{value.name || "שם השיעור"}</h3>
+                {value.is_recurring === false && (
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent text-accent-foreground font-medium">חד פעמי</span>
+                )}
+              </div>
               <p className="text-xs text-muted-foreground flex items-center gap-1">
                 <User className="h-3 w-3" />{value.teacher || "מורה"}
               </p>
@@ -375,72 +522,51 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
         </div>
       </div>
 
-      <div className="p-5 space-y-4">
-        {/* Day selector as chips */}
-        <div>
-          <label className="text-xs text-muted-foreground block mb-2">יום</label>
-          <div className="flex gap-1.5">
-            {days.map((d) => (
-              <button
-                key={d}
-                onClick={() => onChange({ ...value, day: d })}
-                className={cn(
-                  "px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
-                  value.day === d
-                    ? "bg-primary text-primary-foreground shadow-md"
-                    : "bg-muted hover:bg-accent text-foreground"
-                )}
-              >
-                {d}
-              </button>
-            ))}
-          </div>
-        </div>
+      <div className="p-5 space-y-5">
+        {/* Recurring toggle */}
+        <RecurringToggle value={value} onChange={onChange} />
 
-        {/* Time picker with chips */}
-        <div>
-          <label className="text-xs text-muted-foreground block mb-2">שעה</label>
+        {/* Time */}
+        <FormSection icon={Clock} title="שעה">
           <TimePickerField
             value={value.time}
             onChange={(t) => onChange({ ...value, time: t })}
           />
-        </div>
+        </FormSection>
 
-        {/* Name */}
-        <Input
-          value={value.name}
-          onChange={(e) => onChange({ ...value, name: e.target.value })}
-          placeholder="שם השיעור"
-          className="rounded-xl border-dashed border-primary/20 h-11"
-        />
-
-        {/* Teacher */}
-        <Input
-          value={value.teacher}
-          onChange={(e) => onChange({ ...value, teacher: e.target.value })}
-          placeholder="שם המורה"
-          className="rounded-xl border-dashed border-primary/20 h-11"
-        />
-
-        {/* Description */}
-        <Textarea
-          value={value.description || ""}
-          onChange={(e) => onChange({ ...value, description: e.target.value })}
-          placeholder="תיאור (אופציונלי)"
-          className="rounded-xl border-dashed border-primary/20 resize-none"
-          rows={2}
-        />
+        {/* Details */}
+        <FormSection icon={BookOpen} title="פרטי השיעור">
+          <Input
+            value={value.name}
+            onChange={(e) => onChange({ ...value, name: e.target.value })}
+            placeholder="שם השיעור"
+            className="rounded-xl border-0 bg-card h-11 shadow-sm"
+          />
+          <Input
+            value={value.teacher}
+            onChange={(e) => onChange({ ...value, teacher: e.target.value })}
+            placeholder="שם המורה"
+            className="rounded-xl border-0 bg-card h-11 shadow-sm"
+          />
+          <Textarea
+            value={value.description || ""}
+            onChange={(e) => onChange({ ...value, description: e.target.value })}
+            placeholder="תיאור (אופציונלי)"
+            className="rounded-xl border-0 bg-card resize-none shadow-sm"
+            rows={2}
+          />
+        </FormSection>
 
         {/* Actions */}
-        <div className="flex gap-2 justify-between pt-2 border-t border-border/50">
+        <div className="flex gap-2 justify-between pt-3 border-t border-border/30">
           {onDelete && (
-            <Button variant="ghost" size="sm" onClick={onDelete} className="text-destructive gap-1 rounded-full">
+            <Button variant="ghost" size="sm" onClick={onDelete} className="text-destructive gap-1.5 rounded-full hover:bg-destructive/10">
               <Trash2 className="h-3.5 w-3.5" />מחק
             </Button>
           )}
           <div className="flex gap-2 mr-auto">
-            <Button variant="outline" size="sm" onClick={onCancel} className="rounded-full">ביטול</Button>
-            <Button size="sm" onClick={onSave} className="rounded-full gap-1">
+            <Button variant="outline" size="sm" onClick={onCancel} className="rounded-full px-5">ביטול</Button>
+            <Button size="sm" onClick={onSave} className="rounded-full gap-1.5 px-5 shadow-md shadow-primary/20">
               <Check className="h-3.5 w-3.5" />{isNew ? "הוסף" : "שמור"}
             </Button>
           </div>
@@ -460,7 +586,7 @@ function TimePickerField({ value, onChange }: { value: string; onChange: (t: str
         <Button
           variant="outline"
           className={cn(
-            "w-full justify-center font-mono text-sm rounded-xl h-11 border-dashed border-primary/20",
+            "w-full justify-center font-mono text-sm rounded-xl h-11 border-0 bg-card shadow-sm",
             !value && "text-muted-foreground"
           )}
         >
@@ -485,7 +611,7 @@ function TeacherEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew
       {/* Image preview */}
       <div className="aspect-[4/3] overflow-hidden relative">
         <img src={value.image_url || teacherImg} alt="preview" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-foreground/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
         <div className="absolute bottom-4 right-4 left-4 space-y-2">
           <Input
             value={value.name}
@@ -503,23 +629,25 @@ function TeacherEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew
       </div>
 
       <div className="p-5 space-y-4">
-        <Textarea
-          value={value.description || ""}
-          onChange={(e) => onChange({ ...value, description: e.target.value })}
-          placeholder="קצת על המורה..."
-          className="rounded-xl border-dashed border-primary/20 resize-none"
-          rows={3}
-        />
+        <FormSection icon={User} title="אודות">
+          <Textarea
+            value={value.description || ""}
+            onChange={(e) => onChange({ ...value, description: e.target.value })}
+            placeholder="קצת על המורה..."
+            className="rounded-xl border-0 bg-card resize-none shadow-sm"
+            rows={3}
+          />
+        </FormSection>
 
-        <div className="flex gap-2 justify-between pt-2 border-t border-border/50">
+        <div className="flex gap-2 justify-between pt-3 border-t border-border/30">
           {onDelete && (
-            <Button variant="ghost" size="sm" onClick={onDelete} className="text-destructive gap-1 rounded-full">
+            <Button variant="ghost" size="sm" onClick={onDelete} className="text-destructive gap-1.5 rounded-full hover:bg-destructive/10">
               <Trash2 className="h-3.5 w-3.5" />מחק
             </Button>
           )}
           <div className="flex gap-2 mr-auto">
-            <Button variant="outline" size="sm" onClick={onCancel} className="rounded-full">ביטול</Button>
-            <Button size="sm" onClick={onSave} className="rounded-full gap-1">
+            <Button variant="outline" size="sm" onClick={onCancel} className="rounded-full px-5">ביטול</Button>
+            <Button size="sm" onClick={onSave} className="rounded-full gap-1.5 px-5 shadow-md shadow-primary/20">
               <Check className="h-3.5 w-3.5" />{isNew ? "הוסף" : "שמור"}
             </Button>
           </div>
