@@ -54,20 +54,22 @@ const Admin = () => {
 
       <div className="container mx-auto p-4 pb-24 max-w-4xl">
         <Tabs defaultValue="classes" dir="rtl">
-          <TabsList className="flex flex-nowrap gap-1 h-auto bg-transparent mb-6 overflow-x-auto pb-2 -mx-2 px-2 md:mx-0 md:px-0 scrollbar-hide">
-            {[
-              { val: "classes", label: "שיעורים", icon: BookOpen },
-              { val: "teachers", label: "מורים", icon: User },
-              { val: "workshops", label: "סדנאות", icon: CalendarDays },
-              { val: "testimonials", label: "מילים חמות", icon: Quote },
-              { val: "content", label: "תוכן עמודים", icon: FileText },
-            ].map((t) => (
-              <TabsTrigger key={t.val} value={t.val} className="px-4 md:px-5 py-2.5 rounded-full gap-2 shrink-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/20 text-sm whitespace-nowrap">
-                <t.icon className="h-3.5 w-3.5" />
-                {t.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide mb-6">
+            <TabsList className="flex w-max gap-1 h-auto bg-transparent pb-2">
+              {[
+                { val: "classes", label: "שיעורים", icon: BookOpen },
+                { val: "teachers", label: "מורים", icon: User },
+                { val: "workshops", label: "סדנאות", icon: CalendarDays },
+                { val: "testimonials", label: "מילים חמות", icon: Quote },
+                { val: "content", label: "תוכן עמודים", icon: FileText },
+              ].map((t) => (
+                <TabsTrigger key={t.val} value={t.val} className="px-4 md:px-5 py-2.5 rounded-full gap-2 shrink-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/20 text-sm whitespace-nowrap">
+                  <t.icon className="h-3.5 w-3.5" />
+                  {t.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
 
           <TabsContent value="classes"><ClassesManager /></TabsContent>
           <TabsContent value="teachers"><TeachersManager /></TabsContent>
