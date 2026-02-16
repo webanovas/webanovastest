@@ -1,3 +1,4 @@
+import { useState, useCallback } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +8,7 @@ import { ScrollToTop } from "./components/ScrollToTop";
 import { AuthProvider } from "./hooks/useAuth";
 import { AdminModeProvider } from "./hooks/useAdminMode";
 import AdminToolbar from "./components/admin/AdminToolbar";
+import SplashScreen from "./components/SplashScreen";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Schedule from "./pages/Schedule";
@@ -20,33 +22,39 @@ import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <AuthProvider>
-        <AdminModeProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <ScrollToTop />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/schedule" element={<Schedule />} />
-              <Route path="/workshops" element={<Workshops />} />
-              <Route path="/testimonials" element={<Testimonials />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/admin-login" element={<AdminLogin />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <AdminToolbar />
-          </BrowserRouter>
-        </AdminModeProvider>
-      </AuthProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  const [showSplash, setShowSplash] = useState(true);
+  const handleSplashComplete = useCallback(() => setShowSplash(false), []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <AuthProvider>
+          <AdminModeProvider>
+            <Toaster />
+            <Sonner />
+            {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
+            <BrowserRouter>
+              <ScrollToTop />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/schedule" element={<Schedule />} />
+                <Route path="/workshops" element={<Workshops />} />
+                <Route path="/testimonials" element={<Testimonials />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/admin-login" element={<AdminLogin />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+              <AdminToolbar />
+            </BrowserRouter>
+          </AdminModeProvider>
+        </AuthProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
