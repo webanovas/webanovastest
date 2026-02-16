@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
       let targetUser = users?.find((u) => u.email === email);
 
       if (!targetUser) {
-        // Create user with random password - they'll need to reset
+        // Create user with random password
         const tempPassword = crypto.randomUUID();
         const { data: newUser, error: createErr } = await adminClient.auth.admin.createUser({
           email,
@@ -71,6 +71,21 @@ Deno.serve(async (req) => {
           return new Response(JSON.stringify({ error: createErr.message }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
         }
         targetUser = newUser.user;
+      }
+
+      // Generate a password reset link so the new admin can set their own password
+      const { data: linkData, error: linkErr } = await adminClient.auth.admin.generateLink({
+        type: "recovery",
+        email,
+      });
+      // We'll return the reset info - the frontend will show instructions
+      let resetSent = false;
+      if (!linkErr && linkData) {
+        // Send the recovery email via Supabase's built-in mailer
+        const { error: resetErr } = await adminClient.auth.resetPasswordForEmail(email, {
+          redirectTo: `${req.headers.get("origin") || supabaseUrl}/admin-login`,
+        });
+        resetSent = !resetErr;
       }
 
       // Check if already admin
