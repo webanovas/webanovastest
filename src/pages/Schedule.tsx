@@ -510,9 +510,9 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
   onDelete?: () => void; onCancel: () => void; isNew?: boolean;
 }) {
   return (
-    <div className="bg-card">
-      {/* Live preview header */}
-      <div className="bg-gradient-to-b from-primary/8 to-primary/3 px-5 py-4 border-b border-border/30">
+     <div className="bg-card max-h-[85vh] overflow-y-auto">
+       {/* Live preview header */}
+       <div className="bg-gradient-to-b from-primary/8 to-primary/3 px-5 py-4 border-b border-border/30">
         <p className="text-[11px] text-primary font-medium mb-2.5 tracking-wider uppercase">תצוגה מקדימה</p>
         <div className="bg-card rounded-xl shadow-md overflow-hidden border border-border/20">
           <div className="flex items-stretch" dir="rtl">
