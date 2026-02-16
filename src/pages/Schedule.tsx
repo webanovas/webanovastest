@@ -20,6 +20,7 @@ import {
   DialogContent,
 } from "@/components/ui/dialog";
 import teacherImg from "@/assets/teacher-placeholder.jpg";
+import { ClockPicker } from "@/components/ui/clock-picker";
 
 type ClassRow = Tables<"classes">;
 type TeacherRow = Tables<"teachers">;
@@ -399,7 +400,7 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
         {/* Time picker with chips */}
         <div>
           <label className="text-xs text-muted-foreground block mb-2">שעה</label>
-          <TimeChipPicker
+          <TimePickerField
             value={value.time}
             onChange={(t) => onChange({ ...value, time: t })}
           />
@@ -449,13 +450,9 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
   );
 }
 
-/* Time chip picker */
-function TimeChipPicker({ value, onChange }: { value: string; onChange: (t: string) => void }) {
+/* Time picker (Clock Face) */
+function TimePickerField({ value, onChange }: { value: string; onChange: (t: string) => void }) {
   const [open, setOpen] = useState(false);
-  const hours = Array.from({ length: 15 }, (_, i) => {
-    const h = i + 6;
-    return [`${String(h).padStart(2, "0")}:00`, `${String(h).padStart(2, "0")}:30`];
-  }).flat();
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -471,23 +468,8 @@ function TimeChipPicker({ value, onChange }: { value: string; onChange: (t: stri
           {value || "בחר שעה"}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-64 p-3 max-h-64 overflow-y-auto" align="center">
-        <div className="grid grid-cols-4 gap-1.5">
-          {hours.map((h) => (
-            <button
-              key={h}
-              onClick={() => { onChange(h); setOpen(false); }}
-              className={cn(
-                "px-2 py-2 rounded-lg text-xs font-mono transition-all",
-                value === h
-                  ? "bg-primary text-primary-foreground shadow-md"
-                  : "hover:bg-accent text-foreground"
-              )}
-            >
-              {h}
-            </button>
-          ))}
-        </div>
+      <PopoverContent className="w-auto p-4" align="center">
+        <ClockPicker value={value} onChange={onChange} onDone={() => setOpen(false)} />
       </PopoverContent>
     </Popover>
   );

@@ -14,6 +14,7 @@ import { LogOut, Plus, Trash2, CalendarDays, Clock, MapPin, User, BookOpen, Quot
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import type { Tables } from "@/integrations/supabase/types";
+import { ClockPicker } from "@/components/ui/clock-picker";
 
 type ClassRow = Tables<"classes">;
 type TeacherRow = Tables<"teachers">;
@@ -90,13 +91,9 @@ function Field({ label, icon: Icon, children, className }: { label: string; icon
   );
 }
 
-/* ──── Time Chip Picker ──── */
-function TimeChipPicker({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
+/* ──── Time Picker (Clock Face) ──── */
+function TimePicker({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
   const [open, setOpen] = useState(false);
-  const hours = Array.from({ length: 15 }, (_, i) => {
-    const h = i + 6;
-    return [`${String(h).padStart(2, "0")}:00`, `${String(h).padStart(2, "0")}:30`];
-  }).flat();
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -112,23 +109,8 @@ function TimeChipPicker({ value, onChange, placeholder }: { value: string; onCha
           {value || placeholder}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-56 p-3 max-h-64 overflow-y-auto" align="center">
-        <div className="grid grid-cols-3 gap-1.5">
-          {hours.map((h) => (
-            <button
-              key={h}
-              onClick={() => { onChange(h); setOpen(false); }}
-              className={cn(
-                "px-2 py-2 rounded-lg text-xs font-mono transition-all",
-                value === h
-                  ? "bg-primary text-primary-foreground shadow-md"
-                  : "hover:bg-accent text-foreground"
-              )}
-            >
-              {h}
-            </button>
-          ))}
-        </div>
+      <PopoverContent className="w-auto p-4" align="center">
+        <ClockPicker value={value} onChange={onChange} onDone={() => setOpen(false)} />
       </PopoverContent>
     </Popover>
   );
@@ -231,7 +213,7 @@ function ClassesManager() {
 
             {/* Time picker */}
             <Field label="שעה" icon={Clock}>
-              <TimeChipPicker
+              <TimePicker
                 value={item.time}
                 onChange={(v) => { update(item.id, "time", v); load(); }}
                 placeholder="בחר שעה"
@@ -364,13 +346,13 @@ function WorkshopsManager() {
 
             <Field label="טווח שעות" icon={Clock}>
               <div className="flex items-center gap-2">
-                <TimeChipPicker
+                <TimePicker
                   value={getTimeStart(item.time)}
                   onChange={(v) => { update(item.id, "time", `${v}-${getTimeEnd(item.time) || "13:00"}`); load(); }}
                   placeholder="שעת התחלה"
                 />
                 <span className="text-muted-foreground font-medium">–</span>
-                <TimeChipPicker
+                <TimePicker
                   value={getTimeEnd(item.time)}
                   onChange={(v) => { update(item.id, "time", `${getTimeStart(item.time) || "10:00"}-${v}`); load(); }}
                   placeholder="שעת סיום"
