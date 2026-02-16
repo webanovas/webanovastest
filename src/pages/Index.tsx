@@ -13,6 +13,9 @@ import {
 import Layout from "@/components/Layout";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAdminMode } from "@/hooks/useAdminMode";
+import { usePageContent } from "@/hooks/usePageContent";
+import EditableText from "@/components/admin/EditableText";
 
 import heroYoga from "@/assets/hero-yoga.jpg";
 import teacherShira from "@/assets/teacher-shira.jpg";
@@ -47,6 +50,9 @@ const benefits = [
 ];
 
 const Index = () => {
+  const { isEditMode } = useAdminMode();
+  const { getText, saveText } = usePageContent("home");
+
   const { data: testimonials = [] } = useQuery({
     queryKey: ["testimonials-home"],
     queryFn: async () => {
@@ -54,6 +60,16 @@ const Index = () => {
       return data ?? [];
     },
   });
+
+  // Helper for editable text
+  const E = ({ section, fallback, as, className, multiline }: { section: string; fallback: string; as?: "h1"|"h2"|"h3"|"p"|"span"|"div"; className?: string; multiline?: boolean }) => {
+    const val = getText(section, fallback);
+    if (!isEditMode) {
+      const Tag = as || "span";
+      return <Tag className={className}>{val}</Tag>;
+    }
+    return <EditableText value={val} onSave={(v) => saveText(section, v)} as={as} className={className} multiline={multiline} />;
+  };
 
   return (
     <Layout>
@@ -67,17 +83,17 @@ const Index = () => {
         <div className="container mx-auto px-4 relative z-10 pb-20 md:pb-28 pt-40">
           <motion.div initial="hidden" animate="visible" variants={stagger} className="max-w-2xl">
             <motion.div variants={fadeUp} className="mb-5">
-              <span className="inline-block px-4 py-1.5 rounded-full bg-primary-foreground/15 backdrop-blur-md text-primary-foreground/90 text-sm font-body border border-primary-foreground/20">
-                כיכר המושבה, הוד השרון
-              </span>
+              <E section="hero-badge" fallback="כיכר המושבה, הוד השרון" as="span"
+                className="inline-block px-4 py-1.5 rounded-full bg-primary-foreground/15 backdrop-blur-md text-primary-foreground/90 text-sm font-body border border-primary-foreground/20" />
             </motion.div>
-            <motion.h1 variants={fadeUp} className="font-heading text-5xl md:text-7xl lg:text-8xl font-extrabold text-primary-foreground mb-6 leading-[1.05] tracking-tight">
-              יוגה<br /><span className="font-light italic opacity-90">במושבה</span>
-            </motion.h1>
-            <motion.p variants={fadeUp} className="text-lg md:text-xl text-primary-foreground/80 leading-relaxed mb-10 max-w-lg">
-              מקום של שקט, נשימה וחיבור.<br />
-              בואו לתרגל במרחב חם ומזמין עם שירה פלג וצוות המורים שלנו.
-            </motion.p>
+            <motion.div variants={fadeUp}>
+              <E section="hero-title" fallback="יוגה במושבה" as="h1"
+                className="font-heading text-5xl md:text-7xl lg:text-8xl font-extrabold text-primary-foreground mb-6 leading-[1.05] tracking-tight" />
+            </motion.div>
+            <motion.div variants={fadeUp}>
+              <E section="hero-subtitle" fallback="מקום של שקט, נשימה וחיבור. בואו לתרגל במרחב חם ומזמין עם שירה פלג וצוות המורים שלנו." as="p"
+                className="text-lg md:text-xl text-primary-foreground/80 leading-relaxed mb-10 max-w-lg" multiline />
+            </motion.div>
             <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
               <Button size="lg" className="rounded-full px-10 h-14 text-base shadow-xl shadow-primary/30 text-lg" asChild>
                 <Link to="/schedule">לוח שיעורים</Link>
@@ -95,16 +111,14 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
-              <span className="text-primary font-medium text-sm tracking-wider uppercase mb-4 block">ברוכים הבאים</span>
-              <h2 className="font-heading text-3xl md:text-5xl font-bold mb-6 leading-tight">
-                מרחב של שקט<br /><span className="font-light italic text-primary">ונשימה</span>
-              </h2>
-              <p className="text-muted-foreground leading-relaxed mb-5 text-lg">
-                יוגה במושבה הוא סטודיו בוטיק בלב הוד השרון. אנחנו מאמינים שיוגה היא לא רק תרגול גופני – אלא דרך חיים של מודעות, נשימה וחיבור פנימי.
-              </p>
-              <p className="text-muted-foreground leading-relaxed mb-8">
-                שירה פלג, מורה ומטפלת ביוגה מנוסה, מובילה את הסטודיו מתוך אהבה אמיתית לתרגול ומחויבות לכל מתרגל ומתרגלת.
-              </p>
+              <E section="welcome-label" fallback="ברוכים הבאים" as="span"
+                className="text-primary font-medium text-sm tracking-wider uppercase mb-4 block" />
+              <E section="welcome-title" fallback="מרחב של שקט ונשימה" as="h2"
+                className="font-heading text-3xl md:text-5xl font-bold mb-6 leading-tight" />
+              <E section="welcome-text-1" fallback="יוגה במושבה הוא סטודיו בוטיק בלב הוד השרון. אנחנו מאמינים שיוגה היא לא רק תרגול גופני – אלא דרך חיים של מודעות, נשימה וחיבור פנימי." as="p"
+                className="text-muted-foreground leading-relaxed mb-5 text-lg" multiline />
+              <E section="welcome-text-2" fallback="שירה פלג, מורה ומטפלת ביוגה מנוסה, מובילה את הסטודיו מתוך אהבה אמיתית לתרגול ומחויבות לכל מתרגל ומתרגלת." as="p"
+                className="text-muted-foreground leading-relaxed mb-8" multiline />
               <div className="pt-6 border-t border-border"></div>
               <Button variant="outline" className="rounded-full gap-2 px-8 h-12" asChild>
                 <Link to="/about">קראו עוד עלינו<ArrowLeft className="h-4 w-4" /></Link>
@@ -127,9 +141,15 @@ const Index = () => {
       <section className="py-24 md:py-36 bg-yoga-cream relative overflow-hidden">
         <div className="container mx-auto px-4">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger} className="text-center mb-16">
-            <motion.span variants={fadeUp} className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">מה אנחנו מציעים</motion.span>
-            <motion.h2 variants={fadeUp} className="font-heading text-3xl md:text-5xl font-bold mb-4">אפשרויות תרגול</motion.h2>
-            <motion.p variants={fadeUp} className="text-muted-foreground max-w-md mx-auto text-lg">מגוון אפשרויות שמותאמות לכל אחת ואחד</motion.p>
+            <motion.div variants={fadeUp}>
+              <E section="services-label" fallback="מה אנחנו מציעים" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
+            </motion.div>
+            <motion.div variants={fadeUp}>
+              <E section="services-title" fallback="אפשרויות תרגול" as="h2" className="font-heading text-3xl md:text-5xl font-bold mb-4" />
+            </motion.div>
+            <motion.div variants={fadeUp}>
+              <E section="services-subtitle" fallback="מגוון אפשרויות שמותאמות לכל אחת ואחד" as="p" className="text-muted-foreground max-w-md mx-auto text-lg" />
+            </motion.div>
           </motion.div>
 
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-5xl mx-auto">
@@ -161,10 +181,10 @@ const Index = () => {
         <img src={yogaSunset} alt="יוגה" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-yoga-dark/50 flex items-center justify-center">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center px-4">
-            <h2 className="font-heading text-4xl md:text-6xl font-bold text-primary-foreground mb-4">
-              התחילו <span className="font-light italic">לנשום</span>
-            </h2>
-            <p className="text-primary-foreground/70 text-lg mb-8 max-w-md mx-auto">הצטרפו למשפחת יוגה במושבה ותגלו מרחב חדש של שקט ורוגע</p>
+            <E section="cta-title" fallback="התחילו לנשום" as="h2"
+              className="font-heading text-4xl md:text-6xl font-bold text-primary-foreground mb-4" />
+            <E section="cta-subtitle" fallback="הצטרפו למשפחת יוגה במושבה ותגלו מרחב חדש של שקט ורוגע" as="p"
+              className="text-primary-foreground/70 text-lg mb-8 max-w-md mx-auto" />
             <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild>
               <Link to="/contact">בואו נתחיל</Link>
             </Button>
@@ -181,8 +201,12 @@ const Index = () => {
             </motion.div>
 
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
-              <motion.span variants={fadeUp} className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">למה יוגה?</motion.span>
-              <motion.h2 variants={fadeUp} className="font-heading text-3xl md:text-4xl font-bold mb-10">יתרונות התרגול</motion.h2>
+              <motion.div variants={fadeUp}>
+                <E section="benefits-label" fallback="למה יוגה?" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <E section="benefits-title" fallback="יתרונות התרגול" as="h2" className="font-heading text-3xl md:text-4xl font-bold mb-10" />
+              </motion.div>
               <div className="flex flex-col gap-8">
                 {benefits.map((b) => (
                   <motion.div key={b.title} variants={fadeUp} className="flex gap-5 items-start group">
@@ -205,8 +229,12 @@ const Index = () => {
       <section className="py-24 md:py-36 bg-yoga-cream">
         <div className="container mx-auto px-4">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center mb-16">
-            <motion.span variants={fadeUp} className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">המלצות</motion.span>
-            <motion.h2 variants={fadeUp} className="font-heading text-3xl md:text-5xl font-bold mb-4">מילים חמות</motion.h2>
+            <motion.div variants={fadeUp}>
+              <E section="testimonials-label" fallback="המלצות" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
+            </motion.div>
+            <motion.div variants={fadeUp}>
+              <E section="testimonials-title" fallback="מילים חמות" as="h2" className="font-heading text-3xl md:text-5xl font-bold mb-4" />
+            </motion.div>
           </motion.div>
 
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -243,9 +271,15 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-14 max-w-5xl mx-auto">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
-              <motion.span variants={fadeUp} className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">צרו קשר</motion.span>
-              <motion.h2 variants={fadeUp} className="font-heading text-3xl md:text-4xl font-bold mb-4">בואו נדבר</motion.h2>
-              <motion.p variants={fadeUp} className="text-muted-foreground mb-8 text-lg">רוצים לשמוע עוד? השאירו פרטים ונחזור אליכם בהקדם.</motion.p>
+              <motion.div variants={fadeUp}>
+                <E section="contact-label" fallback="צרו קשר" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <E section="contact-title" fallback="בואו נדבר" as="h2" className="font-heading text-3xl md:text-4xl font-bold mb-4" />
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <E section="contact-subtitle" fallback="רוצים לשמוע עוד? השאירו פרטים ונחזור אליכם בהקדם." as="p" className="text-muted-foreground mb-8 text-lg" />
+              </motion.div>
               <motion.div variants={fadeUp} className="flex flex-col gap-5 text-sm">
                 <a href="tel:0542131254" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Phone className="h-4 w-4 text-primary" /></div>

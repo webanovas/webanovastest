@@ -6,6 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, MessageCircle, MapPin, Instagram, Send } from "lucide-react";
 import studioInterior from "@/assets/studio-interior.jpg";
+import { useAdminMode } from "@/hooks/useAdminMode";
+import { usePageContent } from "@/hooks/usePageContent";
+import EditableText from "@/components/admin/EditableText";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -17,12 +20,28 @@ const stagger = {
 };
 
 const Contact = () => {
+  const { isEditMode } = useAdminMode();
+  const { getText, saveText } = usePageContent("contact");
+
+  const E = ({ section, fallback, as, className, multiline }: { section: string; fallback: string; as?: "h1"|"h2"|"h3"|"p"|"span"|"div"; className?: string; multiline?: boolean }) => {
+    const val = getText(section, fallback);
+    if (!isEditMode) {
+      const Tag = as || "span";
+      return <Tag className={className}>{val}</Tag>;
+    }
+    return <EditableText value={val} onSave={(v) => saveText(section, v)} as={as} className={className} multiline={multiline} />;
+  };
+
   return (
     <Layout>
       <PageHero
         label="נשמח לשמוע"
         title="צור קשר"
         subtitle="נשמח לשמוע מכם ולענות על כל שאלה"
+        page="contact"
+        labelSection="hero-label"
+        titleSection="hero-title"
+        subtitleSection="hero-subtitle"
       />
 
       <section className="py-24 md:py-36">
@@ -30,8 +49,12 @@ const Contact = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-14 max-w-5xl mx-auto">
             {/* Contact info */}
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
-              <motion.span variants={fadeUp} className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">פרטים</motion.span>
-              <motion.h2 variants={fadeUp} className="font-heading text-2xl font-bold mb-8">פרטי התקשרות</motion.h2>
+              <motion.div variants={fadeUp}>
+                <E section="info-label" fallback="פרטים" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <E section="info-title" fallback="פרטי התקשרות" as="h2" className="font-heading text-2xl font-bold mb-8" />
+              </motion.div>
 
               <motion.div variants={fadeUp} className="flex flex-col gap-5 mb-10">
                 <a href="tel:0542131254" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
@@ -63,8 +86,12 @@ const Contact = () => {
 
             {/* Form */}
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
-              <motion.span variants={fadeUp} className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">טופס</motion.span>
-              <motion.h2 variants={fadeUp} className="font-heading text-2xl font-bold mb-8">השאירו פרטים</motion.h2>
+              <motion.div variants={fadeUp}>
+                <E section="form-label" fallback="טופס" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <E section="form-title" fallback="השאירו פרטים" as="h2" className="font-heading text-2xl font-bold mb-8" />
+              </motion.div>
 
               <form onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-4">
                 <motion.div variants={fadeUp}><Input placeholder="שם מלא" className="bg-accent/30 border-0 rounded-xl h-12" /></motion.div>

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 interface EditableTextProps {
   value: string;
   onSave: (value: string) => void;
-  as?: "h1" | "h2" | "h3" | "p" | "span";
+  as?: "h1" | "h2" | "h3" | "p" | "span" | "div";
   className?: string;
   multiline?: boolean;
   placeholder?: string;
@@ -41,11 +41,8 @@ const EditableText = ({
   }
 
   if (editing) {
-    const sharedClass =
-      "w-full bg-primary/5 border border-primary/30 rounded-lg px-3 py-1.5 text-inherit font-inherit focus:outline-none focus:ring-2 focus:ring-primary/40";
-
     return (
-      <div className="relative inline-flex items-center gap-1.5 w-full">
+      <div className="relative inline-flex items-center gap-1.5 w-full" onClick={(e) => e.stopPropagation()}>
         {multiline ? (
           <textarea
             ref={inputRef as React.RefObject<HTMLTextAreaElement>}
@@ -54,7 +51,10 @@ const EditableText = ({
             onKeyDown={(e) => {
               if (e.key === "Escape") { setDraft(value); setEditing(false); }
             }}
-            className={cn(sharedClass, "min-h-[60px] resize-y", className)}
+            className={cn(
+              "w-full bg-primary/5 border-2 border-primary/40 rounded-lg px-3 py-2 text-inherit focus:outline-none focus:ring-2 focus:ring-primary/40 min-h-[60px] resize-y",
+              className
+            )}
             rows={3}
           />
         ) : (
@@ -66,7 +66,10 @@ const EditableText = ({
               if (e.key === "Enter") { onSave(draft); setEditing(false); }
               if (e.key === "Escape") { setDraft(value); setEditing(false); }
             }}
-            className={cn(sharedClass, className)}
+            className={cn(
+              "w-full bg-primary/5 border-2 border-primary/40 rounded-lg px-3 py-1.5 text-inherit focus:outline-none focus:ring-2 focus:ring-primary/40",
+              className
+            )}
           />
         )}
         <button
@@ -86,13 +89,20 @@ const EditableText = ({
   }
 
   return (
-    <span
-      className={cn("group relative inline-flex items-center gap-2 cursor-pointer rounded-md hover:bg-primary/5 transition-colors", className)}
-      onClick={() => setEditing(true)}
+    <Tag
+      className={cn(
+        className,
+        "cursor-pointer relative group/edit rounded-md transition-all duration-200",
+        "hover:outline hover:outline-2 hover:outline-primary/40 hover:outline-offset-4",
+        "hover:bg-primary/5"
+      )}
+      onClick={(e: React.MouseEvent) => { e.stopPropagation(); setEditing(true); }}
     >
-      <Tag className={cn(className, "!m-0")}>{value || <span className="text-muted-foreground italic">{placeholder}</span>}</Tag>
-      <Pencil className="h-3.5 w-3.5 text-primary opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-    </span>
+      {value || <span className="text-muted-foreground italic">{placeholder}</span>}
+      <span className="absolute -top-2 -left-2 bg-primary text-primary-foreground rounded-full p-1 opacity-0 group-hover/edit:opacity-100 transition-opacity shadow-lg">
+        <Pencil className="h-3 w-3" />
+      </span>
+    </Tag>
   );
 };
 

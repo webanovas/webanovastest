@@ -69,7 +69,7 @@ const Testimonials = () => {
 
   return (
     <Layout>
-      <PageHero label="המלצות" title="מילים חמות" subtitle="מה אומרים המתרגלים שלנו" />
+      <PageHero label="המלצות" title="מילים חמות" subtitle="מה אומרים המתרגלים שלנו" page="testimonials" labelSection="hero-label" titleSection="hero-title" subtitleSection="hero-subtitle" />
 
       <section className="py-24 md:py-36">
         <div className="container mx-auto px-4">
