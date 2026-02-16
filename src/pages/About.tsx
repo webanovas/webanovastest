@@ -67,9 +67,9 @@ const About = () => {
       />
 
       {/* About Shira */}
-      <section className="py-24 md:py-36">
+      <section className="py-14 md:py-36">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative">
               <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[3/4]">
                 <img src={teacherShira} alt="שירה פלג" className="w-full h-full object-cover" />
@@ -118,7 +118,7 @@ const About = () => {
       </section>
 
       {/* Values */}
-      <section className="py-24 md:py-36 bg-yoga-cream relative">
+      <section className="py-14 md:py-36 bg-yoga-cream relative">
         <div className="container mx-auto px-4">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center mb-16">
             <motion.div variants={fadeUp}>
@@ -147,7 +147,7 @@ const About = () => {
       </section>
 
       {/* CTA Banner */}
-      <section className="relative h-[50vh] overflow-hidden">
+      <section className="relative h-[40vh] md:h-[50vh] overflow-hidden">
         <img src={yogaSunset} alt="יוגה בשקיעה" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-yoga-dark/50 flex items-center justify-center">
           <div className="text-center px-4">
@@ -161,7 +161,7 @@ const About = () => {
       </section>
 
       {/* Blog placeholder */}
-      <section className="py-24 md:py-36">
+      <section className="py-14 md:py-36">
         <div className="container mx-auto px-4 text-center">
           <E section="blog-label" fallback="בקרוב" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
           <E section="blog-title" fallback="מאמרים ותוכן" as="h2" className="font-heading text-3xl font-bold mb-4" />

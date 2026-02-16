@@ -76,13 +76,13 @@ const Index = () => {
   return (
     <Layout>
       {/* Hero */}
-      <section className="relative min-h-screen flex items-end overflow-hidden">
+      <section className="relative min-h-[85vh] md:min-h-screen flex items-end overflow-hidden">
         <div className="absolute inset-0">
           <img src={heroYoga} alt="יוגה במושבה" className="w-full h-full object-cover" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-yoga-dark/90 via-yoga-dark/30 to-transparent" />
 
-        <div className="container mx-auto px-4 relative z-10 pb-20 md:pb-28 pt-40">
+        <div className="container mx-auto px-4 relative z-10 pb-12 md:pb-28 pt-28 md:pt-40">
           <motion.div initial="hidden" animate="visible" variants={stagger} className="max-w-2xl">
             <motion.div variants={fadeUp} className="mb-5">
               <E section="hero-badge" fallback="כיכר המושבה, הוד השרון" as="span"
@@ -90,17 +90,17 @@ const Index = () => {
             </motion.div>
             <motion.div variants={fadeUp}>
               <E section="hero-title" fallback="יוגה במושבה" as="h1"
-                className="font-heading text-5xl md:text-7xl lg:text-8xl font-extrabold text-primary-foreground mb-6 leading-[1.05] tracking-tight" />
+                className="font-heading text-4xl md:text-7xl lg:text-8xl font-extrabold text-primary-foreground mb-4 md:mb-6 leading-[1.05] tracking-tight" />
             </motion.div>
             <motion.div variants={fadeUp}>
               <E section="hero-subtitle" fallback="מקום של שקט, נשימה וחיבור. בואו לתרגל במרחב חם ומזמין עם שירה פלג וצוות המורים שלנו." as="p"
-                className="text-lg md:text-xl text-primary-foreground/80 leading-relaxed mb-10 max-w-lg" multiline />
+                className="text-base md:text-xl text-primary-foreground/80 leading-relaxed mb-8 md:mb-10 max-w-lg" multiline />
             </motion.div>
             <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
-              <Button size="lg" className="rounded-full px-10 h-14 text-base shadow-xl shadow-primary/30 text-lg" asChild>
+              <Button size="lg" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base shadow-xl shadow-primary/30" asChild>
                 <Link to="/schedule"><E section="hero-btn-schedule" fallback="לוח שיעורים" /></Link>
               </Button>
-              <Button size="lg" variant="outline" className="rounded-full px-10 h-14 text-base border-primary-foreground/50 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:text-primary-foreground text-lg backdrop-blur-md" asChild>
+              <Button size="lg" variant="outline" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base border-primary-foreground/50 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:text-primary-foreground backdrop-blur-md" asChild>
                 <Link to="/about"><E section="hero-btn-about" fallback="הכירו אותנו" /></Link>
               </Button>
             </motion.div>
@@ -109,14 +109,14 @@ const Index = () => {
       </section>
 
       {/* Welcome / About */}
-      <section className="py-24 md:py-36">
+      <section className="py-14 md:py-36">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
               <E section="welcome-label" fallback="ברוכים הבאים" as="span"
                 className="text-primary font-medium text-sm tracking-wider uppercase mb-4 block" />
               <E section="welcome-title" fallback="מרחב של שקט ונשימה" as="h2"
-                className="font-heading text-3xl md:text-5xl font-bold mb-6 leading-tight" />
+                className="font-heading text-2xl md:text-5xl font-bold mb-4 md:mb-6 leading-tight" />
               <E section="welcome-text-1" fallback="יוגה במושבה הוא סטודיו בוטיק בלב הוד השרון. אנחנו מאמינים שיוגה היא לא רק תרגול גופני – אלא דרך חיים של מודעות, נשימה וחיבור פנימי." as="p"
                 className="text-muted-foreground leading-relaxed mb-5 text-lg" multiline />
               <E section="welcome-text-2" fallback="שירה פלג, מורה ומטפלת ביוגה מנוסה, מובילה את הסטודיו מתוך אהבה אמיתית לתרגול ומחויבות לכל מתרגל ומתרגלת." as="p"
@@ -140,7 +140,7 @@ const Index = () => {
       </section>
 
       {/* Services */}
-      <section className="py-24 md:py-36 bg-yoga-cream relative overflow-hidden">
+      <section className="py-14 md:py-36 bg-yoga-cream relative overflow-hidden">
         <div className="container mx-auto px-4">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger} className="text-center mb-16">
             <motion.div variants={fadeUp}>
@@ -182,12 +182,12 @@ const Index = () => {
       </section>
 
       {/* Full-width image divider */}
-      <section className="relative h-[60vh] overflow-hidden">
+      <section className="relative h-[50vh] md:h-[60vh] overflow-hidden">
         <img src={yogaSunset} alt="יוגה" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-yoga-dark/50 flex items-center justify-center">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center px-4">
             <E section="cta-title" fallback="התחילו לנשום" as="h2"
-              className="font-heading text-4xl md:text-6xl font-bold text-primary-foreground mb-4" />
+              className="font-heading text-3xl md:text-6xl font-bold text-primary-foreground mb-4" />
             <E section="cta-subtitle" fallback="הצטרפו למשפחת יוגה במושבה ותגלו מרחב חדש של שקט ורוגע" as="p"
               className="text-primary-foreground/70 text-lg mb-8 max-w-md mx-auto" />
             <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild>
@@ -198,9 +198,9 @@ const Index = () => {
       </section>
 
       {/* Benefits */}
-      <section className="py-24 md:py-36 relative overflow-hidden">
+      <section className="py-14 md:py-36 relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="rounded-3xl overflow-hidden shadow-xl aspect-square">
               <img src={meditationHands} alt="תרגול יוגה" className="w-full h-full object-cover" />
             </motion.div>
@@ -234,7 +234,7 @@ const Index = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-24 md:py-36 bg-yoga-cream">
+      <section className="py-14 md:py-36 bg-yoga-cream">
         <div className="container mx-auto px-4">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center mb-16">
             <motion.div variants={fadeUp}>
@@ -275,7 +275,7 @@ const Index = () => {
       </section>
 
       {/* Contact preview */}
-      <section className="py-24 md:py-36 relative overflow-hidden">
+      <section className="py-14 md:py-36 relative overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-14 max-w-5xl mx-auto">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>

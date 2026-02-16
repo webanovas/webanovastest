@@ -145,7 +145,7 @@ const Workshops = () => {
       <PageHero label="אירועים" title="סדנאות" subtitle="סדנאות מיוחדות להעמקת התרגול והחוויה" page="workshops" labelSection="hero-label" titleSection="hero-title" subtitleSection="hero-subtitle" />
 
       {/* Active */}
-      <section className="py-24 md:py-36">
+      <section className="py-12 md:py-36">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <WE section="active-label" fallback="קרוב" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
@@ -173,7 +173,7 @@ const Workshops = () => {
 
       {/* Archive */}
       {pastWorkshops.length > 0 && (
-        <section className="py-24 md:py-36 bg-yoga-cream relative">
+        <section className="py-14 md:py-36 bg-yoga-cream relative">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <WE section="archive-label" fallback="ארכיון" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />

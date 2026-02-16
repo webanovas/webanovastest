@@ -28,8 +28,8 @@ const Footer = () => {
         </svg>
       </div>
 
-      <div className="container mx-auto px-4 pt-16 pb-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
+      <div className="container mx-auto px-4 pt-12 md:pt-16 pb-6 md:pb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 mb-10 md:mb-12">
           {/* Brand */}
           <div>
             <div className="flex items-center gap-3 mb-4">

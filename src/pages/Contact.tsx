@@ -44,9 +44,9 @@ const Contact = () => {
         subtitleSection="hero-subtitle"
       />
 
-      <section className="py-24 md:py-36">
+      <section className="py-12 md:py-36">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-14 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 max-w-5xl mx-auto">
             {/* Contact info */}
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
               <motion.div variants={fadeUp}>

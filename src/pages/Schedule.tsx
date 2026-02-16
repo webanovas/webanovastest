@@ -155,7 +155,7 @@ const Schedule = () => {
       />
 
       {/* Schedule with Day Tabs */}
-      <section className="py-24 md:py-36">
+      <section className="py-12 md:py-36">
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
             <ScheduleE section="schedule-label" fallback="שבועי" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
@@ -163,14 +163,14 @@ const Schedule = () => {
           </div>
 
           {/* Day Tabs */}
-          <div className="flex justify-center mb-12">
-            <div className="inline-flex items-center bg-muted/50 rounded-2xl p-1.5 gap-1">
+          <div className="flex justify-center mb-8 md:mb-12 overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0">
+            <div className="inline-flex items-center bg-muted/50 rounded-2xl p-1.5 gap-1 min-w-max">
               {days.map((day) => (
                 <button
                   key={day}
                   onClick={() => setSelectedDay(day)}
                   className={cn(
-                    "relative px-6 py-2.5 rounded-xl text-sm font-heading font-medium transition-all duration-300",
+                    "relative px-4 md:px-6 py-2.5 rounded-xl text-sm font-heading font-medium transition-all duration-300",
                     selectedDay === day
                       ? "text-primary-foreground"
                       : "text-muted-foreground hover:text-foreground"
@@ -232,11 +232,11 @@ const Schedule = () => {
                       )}
                       <CardContent className="p-0">
                         <div className="flex items-stretch" dir="rtl">
-                          <div className="flex flex-col items-center justify-center px-6 py-5 bg-primary/8 border-l border-primary/10 min-w-[100px]">
-                            <Clock className="h-4 w-4 text-primary mb-1.5" />
-                            <span className="font-heading font-bold text-lg text-primary">{cls.time}</span>
+                          <div className="flex flex-col items-center justify-center px-4 md:px-6 py-4 md:py-5 bg-primary/8 border-l border-primary/10 min-w-[80px] md:min-w-[100px]">
+                            <Clock className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary mb-1" />
+                            <span className="font-heading font-bold text-base md:text-lg text-primary">{cls.time}</span>
                           </div>
-                          <div className="flex-1 p-5 flex items-center justify-between gap-4">
+                          <div className="flex-1 p-3.5 md:p-5 flex items-center justify-between gap-3 md:gap-4">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
                                 <h3 className="font-heading font-semibold text-base">{cls.name}</h3>
@@ -269,7 +269,7 @@ const Schedule = () => {
       </section>
 
       {/* Teachers */}
-      <section className="py-24 md:py-36 bg-yoga-cream relative">
+      <section className="py-14 md:py-36 bg-yoga-cream relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <ScheduleE section="teachers-label" fallback="הצוות" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />

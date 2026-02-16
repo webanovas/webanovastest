@@ -32,7 +32,7 @@ const PageHero = ({ title, subtitle, label, image, page, titleSection, subtitleS
   const resolvedSubtitle = page && subtitleSection ? getText(subtitleSection, subtitle || "") : subtitle;
 
   return (
-    <section className="relative min-h-[50vh] flex items-end overflow-hidden">
+    <section className="relative min-h-[40vh] md:min-h-[50vh] flex items-end overflow-hidden">
       {image ? (
         <>
           <div className="absolute inset-0">
@@ -44,7 +44,7 @@ const PageHero = ({ title, subtitle, label, image, page, titleSection, subtitleS
         <div className="absolute inset-0 page-hero-gradient" />
       )}
 
-      <div className="container mx-auto px-4 relative z-10 pb-14 md:pb-20 pt-32">
+      <div className="container mx-auto px-4 relative z-10 pb-10 md:pb-20 pt-24 md:pt-32">
         <motion.div initial="hidden" animate="visible" variants={stagger}>
           {resolvedLabel && (
             <motion.div variants={fadeUp}>
@@ -53,10 +53,10 @@ const PageHero = ({ title, subtitle, label, image, page, titleSection, subtitleS
                   value={resolvedLabel}
                   onSave={(v) => saveText(labelSection, v)}
                   as="span"
-                  className={`font-medium text-sm tracking-wider uppercase mb-3 block ${image ? "text-primary-foreground/80" : "text-primary"}`}
+                  className={`font-medium text-xs md:text-sm tracking-wider uppercase mb-2 md:mb-3 block ${image ? "text-primary-foreground/80" : "text-primary"}`}
                 />
               ) : (
-                <span className={`font-medium text-sm tracking-wider uppercase mb-3 block ${image ? "text-primary-foreground/80" : "text-primary"}`}>
+                <span className={`font-medium text-xs md:text-sm tracking-wider uppercase mb-2 md:mb-3 block ${image ? "text-primary-foreground/80" : "text-primary"}`}>
                   {resolvedLabel}
                 </span>
               )}
@@ -68,10 +68,10 @@ const PageHero = ({ title, subtitle, label, image, page, titleSection, subtitleS
                 value={resolvedTitle}
                 onSave={(v) => saveText(titleSection, v)}
                 as="h1"
-                className={`font-heading text-4xl md:text-6xl font-extrabold mb-4 tracking-tight ${image ? "text-primary-foreground" : ""}`}
+                className={`font-heading text-3xl md:text-6xl font-extrabold mb-3 md:mb-4 tracking-tight ${image ? "text-primary-foreground" : ""}`}
               />
             ) : (
-              <h1 className={`font-heading text-4xl md:text-6xl font-extrabold mb-4 tracking-tight ${image ? "text-primary-foreground" : ""}`}>
+              <h1 className={`font-heading text-3xl md:text-6xl font-extrabold mb-3 md:mb-4 tracking-tight ${image ? "text-primary-foreground" : ""}`}>
                 {resolvedTitle}
               </h1>
             )}
@@ -83,10 +83,10 @@ const PageHero = ({ title, subtitle, label, image, page, titleSection, subtitleS
                   value={resolvedSubtitle}
                   onSave={(v) => saveText(subtitleSection, v)}
                   as="p"
-                  className={`text-lg max-w-xl ${image ? "text-primary-foreground/70" : "text-muted-foreground"}`}
+                  className={`text-base md:text-lg max-w-xl ${image ? "text-primary-foreground/70" : "text-muted-foreground"}`}
                 />
               ) : (
-                <p className={`text-lg max-w-xl ${image ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                <p className={`text-base md:text-lg max-w-xl ${image ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
                   {resolvedSubtitle}
                 </p>
               )}
