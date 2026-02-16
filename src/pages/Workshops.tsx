@@ -25,6 +25,8 @@ import { ClockPicker } from "@/components/ui/clock-picker";
 import workshopImg1 from "@/assets/workshop-1.jpg";
 import workshopImg2 from "@/assets/workshop-2.jpg";
 import ImageUpload from "@/components/admin/ImageUpload";
+import { usePageContent } from "@/hooks/usePageContent";
+import EditableText from "@/components/admin/EditableText";
 
 type WorkshopRow = Tables<"workshops">;
 
@@ -83,6 +85,16 @@ function TimeSlotPicker({ value, onChange, placeholder }: { value: string; onCha
 const Workshops = () => {
   const { isEditMode } = useAdminMode();
   const queryClient = useQueryClient();
+  const { getText, saveText } = usePageContent("workshops");
+
+  const WE = ({ section, fallback, as, className }: { section: string; fallback: string; as?: "h1"|"h2"|"h3"|"h4"|"p"|"span"|"div"; className?: string }) => {
+    const val = getText(section, fallback);
+    if (!isEditMode) {
+      const Tag = as || "span";
+      return <Tag className={className}>{val}</Tag>;
+    }
+    return <EditableText value={val} onSave={(v) => saveText(section, v)} as={as} className={className} />;
+  };
   const [editing, setEditing] = useState<WorkshopRow | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [newItem, setNewItem] = useState({ title: "", date: "", time: "", location: "", description: "", is_active: true });
@@ -136,8 +148,8 @@ const Workshops = () => {
       <section className="py-24 md:py-36">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <span className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">קרוב</span>
-            <h2 className="font-heading text-3xl md:text-4xl font-bold">סדנאות קרובות</h2>
+            <WE section="active-label" fallback="קרוב" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
+            <WE section="active-title" fallback="סדנאות קרובות" as="h2" className="font-heading text-3xl md:text-4xl font-bold" />
             {isEditMode && (
               <Button size="sm" onClick={() => setIsAdding(true)} className="mt-4 rounded-full gap-2">
                 <Plus className="h-4 w-4" />הוסף סדנה
@@ -164,8 +176,8 @@ const Workshops = () => {
         <section className="py-24 md:py-36 bg-yoga-cream relative">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <span className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">ארכיון</span>
-              <h2 className="font-heading text-3xl md:text-4xl font-bold">סדנאות שהיו</h2>
+              <WE section="archive-label" fallback="ארכיון" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
+              <WE section="archive-title" fallback="סדנאות שהיו" as="h2" className="font-heading text-3xl md:text-4xl font-bold" />
             </div>
             <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
               {pastWorkshops.map((w, i) => (

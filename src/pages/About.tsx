@@ -34,6 +34,13 @@ const galleryImages = [
   { src: yogaSunset, alt: "יוגה בשקיעה" },
 ];
 
+const valueIcons = [Leaf, Award, Heart];
+const valueDefaults = [
+  { title: "טבעיות", desc: "תרגול שמכבד את הגוף ואת הקצב האישי" },
+  { title: "מקצועיות", desc: "הכשרה מעמיקה וליווי מותאם אישית" },
+  { title: "קהילה", desc: "מרחב חם, קשוב ותומך לכל המתרגלים" },
+];
+
 const About = () => {
   const { isEditMode } = useAdminMode();
   const { getText, saveText } = usePageContent("about");
@@ -84,7 +91,7 @@ const About = () => {
               </motion.div>
               <motion.div variants={fadeUp}>
                 <Button variant="outline" className="rounded-full gap-2 px-8 h-12" asChild>
-                  <Link to="/schedule">לוח שיעורים<ArrowLeft className="h-4 w-4" /></Link>
+                  <Link to="/schedule"><E section="shira-btn" fallback="לוח שיעורים" /><ArrowLeft className="h-4 w-4" /></Link>
                 </Button>
               </motion.div>
             </motion.div>
@@ -123,19 +130,18 @@ const About = () => {
           </motion.div>
 
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-4xl mx-auto">
-            {[
-              { icon: Leaf, title: "טבעיות", desc: "תרגול שמכבד את הגוף ואת הקצב האישי" },
-              { icon: Award, title: "מקצועיות", desc: "הכשרה מעמיקה וליווי מותאם אישית" },
-              { icon: Heart, title: "קהילה", desc: "מרחב חם, קשוב ותומך לכל המתרגלים" },
-            ].map((v) => (
-              <motion.div key={v.title} variants={fadeUp} className="text-center group">
-                <div className="w-20 h-20 rounded-full bg-primary/8 flex items-center justify-center mx-auto mb-5 group-hover:bg-primary/15 group-hover:scale-110 transition-all duration-300">
-                  <v.icon className="h-9 w-9 text-primary" />
-                </div>
-                <h3 className="font-heading font-semibold text-xl mb-2">{v.title}</h3>
-                <p className="text-muted-foreground text-sm">{v.desc}</p>
-              </motion.div>
-            ))}
+            {valueDefaults.map((v, i) => {
+              const Icon = valueIcons[i];
+              return (
+                <motion.div key={i} variants={fadeUp} className="text-center group">
+                  <div className="w-20 h-20 rounded-full bg-primary/8 flex items-center justify-center mx-auto mb-5 group-hover:bg-primary/15 group-hover:scale-110 transition-all duration-300">
+                    <Icon className="h-9 w-9 text-primary" />
+                  </div>
+                  <E section={`value-${i}-title`} fallback={v.title} as="h3" className="font-heading font-semibold text-xl mb-2" />
+                  <E section={`value-${i}-desc`} fallback={v.desc} as="p" className="text-muted-foreground text-sm" />
+                </motion.div>
+              );
+            })}
           </motion.div>
         </div>
       </section>
@@ -148,7 +154,7 @@ const About = () => {
             <E section="cta-title" fallback="בואו לתרגל" as="h2"
               className="font-heading text-3xl md:text-5xl font-bold text-primary-foreground mb-4" />
             <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild>
-              <Link to="/contact">צרו קשר</Link>
+              <Link to="/contact"><E section="cta-btn" fallback="צרו קשר" /></Link>
             </Button>
           </div>
         </div>
@@ -161,7 +167,7 @@ const About = () => {
           <E section="blog-title" fallback="מאמרים ותוכן" as="h2" className="font-heading text-3xl font-bold mb-4" />
           <E section="blog-subtitle" fallback="בקרוב – מאמרים, טיפים ותכנים מעולם היוגה" as="p" className="text-muted-foreground mb-8 text-lg" />
           <div className="bg-accent/40 rounded-3xl p-14 max-w-2xl mx-auto border border-border/30">
-            <p className="text-muted-foreground text-sm">מקום שמור לבלוג עתידי 🌿</p>
+            <E section="blog-placeholder" fallback="מקום שמור לבלוג עתידי 🌿" as="p" className="text-muted-foreground text-sm" />
           </div>
         </div>
       </section>

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 interface EditableTextProps {
   value: string;
   onSave: (value: string) => void;
-  as?: "h1" | "h2" | "h3" | "p" | "span" | "div";
+  as?: "h1" | "h2" | "h3" | "h4" | "p" | "span" | "div";
   className?: string;
   multiline?: boolean;
   placeholder?: string;

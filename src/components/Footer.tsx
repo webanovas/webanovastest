@@ -1,9 +1,23 @@
 import { Link } from "react-router-dom";
 import { Instagram, Phone, MapPin, ArrowUp, Settings } from "lucide-react";
 import logo from "@/assets/logo.png";
+import { useAdminMode } from "@/hooks/useAdminMode";
+import { usePageContent } from "@/hooks/usePageContent";
+import EditableText from "@/components/admin/EditableText";
 
 const Footer = () => {
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  const { isEditMode } = useAdminMode();
+  const { getText, saveText } = usePageContent("footer");
+
+  const E = ({ section, fallback, as, className, multiline }: { section: string; fallback: string; as?: "h1"|"h2"|"h3"|"h4"|"p"|"span"|"div"; className?: string; multiline?: boolean }) => {
+    const val = getText(section, fallback);
+    if (!isEditMode) {
+      const Tag = as || "span";
+      return <Tag className={className}>{val}</Tag>;
+    }
+    return <EditableText value={val} onSave={(v) => saveText(section, v)} as={as} className={className} multiline={multiline} />;
+  };
 
   return (
     <footer className="relative bg-yoga-dark text-primary-foreground">
@@ -20,17 +34,14 @@ const Footer = () => {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <img src={logo} alt="יוגה במושבה" className="w-10 h-10 rounded-full object-contain" />
-              <h3 className="font-heading text-xl font-bold">יוגה במושבה</h3>
+              <E section="brand-name" fallback="יוגה במושבה" as="h3" className="font-heading text-xl font-bold" />
             </div>
-            <p className="text-primary-foreground/60 text-sm font-body leading-relaxed max-w-xs">
-              סטודיו יוגה בכיכר המושבה, הוד השרון.
-              מקום של שקט, נשימה וחיבור.
-            </p>
+            <E section="brand-desc" fallback="סטודיו יוגה בכיכר המושבה, הוד השרון. מקום של שקט, נשימה וחיבור." as="p" className="text-primary-foreground/60 text-sm font-body leading-relaxed max-w-xs" multiline />
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-heading font-semibold mb-4 text-primary-foreground/90">ניווט</h4>
+            <E section="nav-title" fallback="ניווט" as="h4" className="font-heading font-semibold mb-4 text-primary-foreground/90" />
             <nav className="flex flex-col gap-2.5 text-sm">
               <Link to="/about" className="text-primary-foreground/50 hover:text-primary-foreground transition-colors">על הסטודיו</Link>
               <Link to="/schedule" className="text-primary-foreground/50 hover:text-primary-foreground transition-colors">מערכת שעות</Link>
@@ -41,15 +52,15 @@ const Footer = () => {
 
           {/* Contact */}
           <div>
-            <h4 className="font-heading font-semibold mb-4 text-primary-foreground/90">צרו קשר</h4>
+            <E section="contact-title" fallback="צרו קשר" as="h4" className="font-heading font-semibold mb-4 text-primary-foreground/90" />
             <div className="flex flex-col gap-3 text-sm">
               <a href="tel:0542131254" className="flex items-center gap-3 text-primary-foreground/50 hover:text-primary-foreground transition-colors">
                 <Phone className="h-4 w-4" />
-                054-213-1254
+                <E section="phone" fallback="054-213-1254" />
               </a>
               <div className="flex items-center gap-3 text-primary-foreground/50">
                 <MapPin className="h-4 w-4" />
-                כיכר המושבה, הוד השרון
+                <E section="address" fallback="כיכר המושבה, הוד השרון" />
               </div>
               <a
                 href="https://instagram.com"
@@ -58,7 +69,7 @@ const Footer = () => {
                 className="flex items-center gap-3 text-primary-foreground/50 hover:text-primary-foreground transition-colors"
               >
                 <Instagram className="h-4 w-4" />
-                @yogabamoshava
+                <E section="instagram" fallback="@yogabamoshava" />
               </a>
             </div>
           </div>
@@ -66,9 +77,7 @@ const Footer = () => {
 
         <div className="flex items-center justify-between border-t border-primary-foreground/10 pt-6">
           <div className="flex items-center gap-3">
-            <p className="text-xs text-primary-foreground/40">
-              © {new Date().getFullYear()} יוגה במושבה – כל הזכויות שמורות
-            </p>
+            <E section="copyright" fallback={`© ${new Date().getFullYear()} יוגה במושבה – כל הזכויות שמורות`} as="p" className="text-xs text-primary-foreground/40" />
             <Link to="/admin-login" className="text-primary-foreground/20 hover:text-primary-foreground/40 transition-colors" aria-label="כניסת מנהל">
               <Settings className="h-3 w-3" />
             </Link>
