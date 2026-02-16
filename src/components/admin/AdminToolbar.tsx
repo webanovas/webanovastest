@@ -33,7 +33,7 @@ const AdminToolbar = () => {
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
-          className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 bg-card/95 backdrop-blur-xl border border-border shadow-2xl rounded-full px-2.5 py-2 max-w-[calc(100vw-2rem)]"
+          className="fixed bottom-4 inset-x-0 mx-auto z-50 flex items-center justify-center gap-1.5 bg-card/95 backdrop-blur-xl border border-border shadow-2xl rounded-full px-2.5 py-2 w-fit max-w-[calc(100vw-2rem)]"
         >
           <Button
             size="sm"
