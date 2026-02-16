@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, MessageCircle, MapPin, Instagram, Send } from "lucide-react";
-import ImagePlaceholder from "@/components/ImagePlaceholder";
+import studioInterior from "@/assets/studio-interior.jpg";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -57,7 +57,7 @@ const Contact = () => {
               </motion.div>
 
               <motion.div variants={fadeUp} className="rounded-2xl overflow-hidden shadow-md border border-border/30 aspect-video">
-                <ImagePlaceholder label="מפת הגעה" />
+                <img src={studioInterior} alt="הסטודיו שלנו" className="w-full h-full object-cover" />
               </motion.div>
             </motion.div>
 
