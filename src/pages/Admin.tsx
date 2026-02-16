@@ -52,7 +52,7 @@ const Admin = () => {
         </div>
       </header>
 
-      <div className="container mx-auto p-4 max-w-4xl">
+      <div className="container mx-auto p-4 pb-24 max-w-4xl">
         <Tabs defaultValue="classes" dir="rtl">
           <TabsList className="flex flex-nowrap gap-1 h-auto bg-transparent mb-6 overflow-x-auto pb-2 -mx-2 px-2 md:mx-0 md:px-0 scrollbar-hide">
             {[
