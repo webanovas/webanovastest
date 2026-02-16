@@ -24,6 +24,8 @@ import {
 import teacherImg from "@/assets/teacher-placeholder.jpg";
 import { ClockPicker } from "@/components/ui/clock-picker";
 import ImageUpload from "@/components/admin/ImageUpload";
+import { usePageContent } from "@/hooks/usePageContent";
+import EditableText from "@/components/admin/EditableText";
 
 type ClassRow = Tables<"classes">;
 type TeacherRow = Tables<"teachers">;
@@ -42,6 +44,16 @@ const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי"];
 const Schedule = () => {
   const { isEditMode } = useAdminMode();
   const queryClient = useQueryClient();
+  const { getText, saveText } = usePageContent("schedule");
+
+  const ScheduleE = ({ section, fallback, as, className, multiline }: { section: string; fallback: string; as?: "h1"|"h2"|"h3"|"h4"|"p"|"span"|"div"; className?: string; multiline?: boolean }) => {
+    const val = getText(section, fallback);
+    if (!isEditMode) {
+      const Tag = as || "span";
+      return <Tag className={className}>{val}</Tag>;
+    }
+    return <EditableText value={val} onSave={(v) => saveText(section, v)} as={as} className={className} multiline={multiline} />;
+  };
   const [selectedDay, setSelectedDay] = useState(days[0]);
   const [editingClass, setEditingClass] = useState<ClassRow | null>(null);
   const [isAddingClass, setIsAddingClass] = useState(false);
@@ -146,8 +158,8 @@ const Schedule = () => {
       <section className="py-24 md:py-36">
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
-            <span className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">שבועי</span>
-            <h2 className="font-heading text-3xl md:text-4xl font-bold">לוח שיעורים</h2>
+            <ScheduleE section="schedule-label" fallback="שבועי" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
+            <ScheduleE section="schedule-title" fallback="לוח שיעורים" as="h2" className="font-heading text-3xl md:text-4xl font-bold" />
           </div>
 
           {/* Day Tabs */}
@@ -260,8 +272,8 @@ const Schedule = () => {
       <section className="py-24 md:py-36 bg-yoga-cream relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <span className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">הצוות</span>
-            <h2 className="font-heading text-3xl md:text-4xl font-bold">המורים שלנו</h2>
+            <ScheduleE section="teachers-label" fallback="הצוות" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
+            <ScheduleE section="teachers-title" fallback="המורים שלנו" as="h2" className="font-heading text-3xl md:text-4xl font-bold" />
             {isEditMode && (
               <Button size="sm" onClick={() => setIsAddingTeacher(true)} className="mt-4 rounded-full gap-2">
                 <Plus className="h-4 w-4" />הוסף מורה

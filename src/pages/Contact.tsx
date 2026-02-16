@@ -59,23 +59,23 @@ const Contact = () => {
               <motion.div variants={fadeUp} className="flex flex-col gap-5 mb-10">
                 <a href="tel:0542131254" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Phone className="h-5 w-5 text-primary" /></div>
-                  054-213-1254
+                  <E section="phone" fallback="054-213-1254" />
                 </a>
                 <a href="https://wa.me/972542131254" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><MessageCircle className="h-5 w-5 text-primary" /></div>
-                  וואטסאפ
+                  <E section="whatsapp" fallback="וואטסאפ" />
                 </a>
                 <a href="mailto:shira.pelleg@gmail.com" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Mail className="h-5 w-5 text-primary" /></div>
-                  shira.pelleg@gmail.com
+                  <E section="email" fallback="shira.pelleg@gmail.com" />
                 </a>
                 <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Instagram className="h-5 w-5 text-primary" /></div>
-                  @yogabamoshava
+                  <E section="instagram" fallback="@yogabamoshava" />
                 </a>
                 <div className="flex items-center gap-4 text-foreground/70">
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><MapPin className="h-5 w-5 text-primary" /></div>
-                  כיכר המושבה, הוד השרון
+                  <E section="address" fallback="כיכר המושבה, הוד השרון" />
                 </div>
               </motion.div>
 
@@ -100,7 +100,7 @@ const Contact = () => {
                 <motion.div variants={fadeUp}><Textarea placeholder="הודעה" rows={5} className="bg-accent/30 border-0 rounded-xl" /></motion.div>
                 <motion.div variants={fadeUp}>
                   <Button type="submit" className="w-full gap-2 rounded-full h-12 text-base shadow-lg shadow-primary/20">
-                    <Send className="h-4 w-4" />שלחו הודעה
+                    <Send className="h-4 w-4" /><E section="send-btn" fallback="שלחו הודעה" />
                   </Button>
                 </motion.div>
               </form>
@@ -108,7 +108,7 @@ const Contact = () => {
               <motion.div variants={fadeUp} className="mt-5">
                 <Button variant="outline" asChild className="w-full gap-2 rounded-full h-12">
                   <a href="https://wa.me/972542131254" target="_blank" rel="noopener noreferrer">
-                    <MessageCircle className="h-4 w-4" />שלחו הודעה בוואטסאפ
+                    <MessageCircle className="h-4 w-4" /><E section="whatsapp-btn" fallback="שלחו הודעה בוואטסאפ" />
                   </a>
                 </Button>
               </motion.div>

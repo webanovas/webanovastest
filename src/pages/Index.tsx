@@ -35,18 +35,21 @@ const stagger = {
   visible: { transition: { staggerChildren: 0.12 } },
 };
 
-const services = [
-  { icon: Users, title: "שיעורים בסטודיו", desc: "שיעורי יוגה קבוצתיים באווירה חמה ומזמינה", img: yogaGroup },
-  { icon: Monitor, title: "שיעורי זום", desc: "תרגלו מהנוחות של הבית בשיעורים אונליין", img: zoomYoga },
-  { icon: User, title: "שיעורים פרטיים", desc: "תרגול מותאם אישית לצרכים שלכם", img: privateLesson },
-  { icon: Heart, title: "קבוצות מיוחדות", desc: "שיעורים לקבוצות, ימי כיף ואירועים", img: meditationHands },
+const serviceIcons = [Users, Monitor, User, Heart];
+const serviceImages = [yogaGroup, zoomYoga, privateLesson, meditationHands];
+const serviceDefaults = [
+  { title: "שיעורים בסטודיו", desc: "שיעורי יוגה קבוצתיים באווירה חמה ומזמינה" },
+  { title: "שיעורי זום", desc: "תרגלו מהנוחות של הבית בשיעורים אונליין" },
+  { title: "שיעורים פרטיים", desc: "תרגול מותאם אישית לצרכים שלכם" },
+  { title: "קבוצות מיוחדות", desc: "שיעורים לקבוצות, ימי כיף ואירועים" },
 ];
 
-const benefits = [
-  { icon: Leaf, title: "גמישות ובריאות", desc: "שיפור גמישות הגוף וחיזוק שרירים" },
-  { icon: Brain, title: "מיקוד ושקט", desc: "הרגעת המחשבות ושיפור הריכוז" },
-  { icon: Sunrise, title: "אנרגיה וחיוניות", desc: "תחושת רעננות ואנרגיה לאורך היום" },
-  { icon: Wind, title: "הפחתת מתח", desc: "שחרור מתחים ושיפור איכות השינה" },
+const benefitIcons = [Leaf, Brain, Sunrise, Wind];
+const benefitDefaults = [
+  { title: "גמישות ובריאות", desc: "שיפור גמישות הגוף וחיזוק שרירים" },
+  { title: "מיקוד ושקט", desc: "הרגעת המחשבות ושיפור הריכוז" },
+  { title: "אנרגיה וחיוניות", desc: "תחושת רעננות ואנרגיה לאורך היום" },
+  { title: "הפחתת מתח", desc: "שחרור מתחים ושיפור איכות השינה" },
 ];
 
 const Index = () => {
@@ -61,7 +64,6 @@ const Index = () => {
     },
   });
 
-  // Helper for editable text
   const E = ({ section, fallback, as, className, multiline }: { section: string; fallback: string; as?: "h1"|"h2"|"h3"|"p"|"span"|"div"; className?: string; multiline?: boolean }) => {
     const val = getText(section, fallback);
     if (!isEditMode) {
@@ -96,10 +98,10 @@ const Index = () => {
             </motion.div>
             <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
               <Button size="lg" className="rounded-full px-10 h-14 text-base shadow-xl shadow-primary/30 text-lg" asChild>
-                <Link to="/schedule">לוח שיעורים</Link>
+                <Link to="/schedule"><E section="hero-btn-schedule" fallback="לוח שיעורים" /></Link>
               </Button>
               <Button size="lg" variant="outline" className="rounded-full px-10 h-14 text-base border-primary-foreground/50 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:text-primary-foreground text-lg backdrop-blur-md" asChild>
-                <Link to="/about">הכירו אותנו</Link>
+                <Link to="/about"><E section="hero-btn-about" fallback="הכירו אותנו" /></Link>
               </Button>
             </motion.div>
           </motion.div>
@@ -121,7 +123,7 @@ const Index = () => {
                 className="text-muted-foreground leading-relaxed mb-8" multiline />
               <div className="pt-6 border-t border-border"></div>
               <Button variant="outline" className="rounded-full gap-2 px-8 h-12" asChild>
-                <Link to="/about">קראו עוד עלינו<ArrowLeft className="h-4 w-4" /></Link>
+                <Link to="/about"><E section="welcome-btn" fallback="קראו עוד עלינו" /><ArrowLeft className="h-4 w-4" /></Link>
               </Button>
             </motion.div>
 
@@ -153,25 +155,28 @@ const Index = () => {
           </motion.div>
 
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-5xl mx-auto">
-            {services.map((s) => (
-              <motion.div key={s.title} variants={fadeUp}>
-                <Card className="group rounded-3xl border-0 overflow-hidden hover-lift shadow-lg">
-                  <div className="aspect-[16/10] overflow-hidden relative">
-                    <img src={s.img} alt={s.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-yoga-dark/70 to-transparent" />
-                    <div className="absolute bottom-0 p-6 text-primary-foreground">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="w-10 h-10 rounded-full bg-primary-foreground/20 backdrop-blur-sm flex items-center justify-center">
-                          <s.icon className="h-5 w-5" />
+            {serviceDefaults.map((s, i) => {
+              const Icon = serviceIcons[i];
+              return (
+                <motion.div key={i} variants={fadeUp}>
+                  <Card className="group rounded-3xl border-0 overflow-hidden hover-lift shadow-lg">
+                    <div className="aspect-[16/10] overflow-hidden relative">
+                      <img src={serviceImages[i]} alt={s.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-yoga-dark/70 to-transparent" />
+                      <div className="absolute bottom-0 p-6 text-primary-foreground">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-10 h-10 rounded-full bg-primary-foreground/20 backdrop-blur-sm flex items-center justify-center">
+                            <Icon className="h-5 w-5" />
+                          </div>
+                          <E section={`service-${i}-title`} fallback={s.title} as="h3" className="font-heading font-bold text-xl" />
                         </div>
-                        <h3 className="font-heading font-bold text-xl">{s.title}</h3>
+                        <E section={`service-${i}-desc`} fallback={s.desc} as="p" className="text-sm text-primary-foreground/80" />
                       </div>
-                      <p className="text-sm text-primary-foreground/80">{s.desc}</p>
                     </div>
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
+                  </Card>
+                </motion.div>
+              );
+            })}
           </motion.div>
         </div>
       </section>
@@ -186,7 +191,7 @@ const Index = () => {
             <E section="cta-subtitle" fallback="הצטרפו למשפחת יוגה במושבה ותגלו מרחב חדש של שקט ורוגע" as="p"
               className="text-primary-foreground/70 text-lg mb-8 max-w-md mx-auto" />
             <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild>
-              <Link to="/contact">בואו נתחיל</Link>
+              <Link to="/contact"><E section="cta-btn" fallback="בואו נתחיל" /></Link>
             </Button>
           </motion.div>
         </div>
@@ -208,17 +213,20 @@ const Index = () => {
                 <E section="benefits-title" fallback="יתרונות התרגול" as="h2" className="font-heading text-3xl md:text-4xl font-bold mb-10" />
               </motion.div>
               <div className="flex flex-col gap-8">
-                {benefits.map((b) => (
-                  <motion.div key={b.title} variants={fadeUp} className="flex gap-5 items-start group">
-                    <div className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center flex-shrink-0 group-hover:bg-primary/15 transition-colors">
-                      <b.icon className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-heading font-semibold text-lg mb-1">{b.title}</h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">{b.desc}</p>
-                    </div>
-                  </motion.div>
-                ))}
+                {benefitDefaults.map((b, i) => {
+                  const Icon = benefitIcons[i];
+                  return (
+                    <motion.div key={i} variants={fadeUp} className="flex gap-5 items-start group">
+                      <div className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center flex-shrink-0 group-hover:bg-primary/15 transition-colors">
+                        <Icon className="h-6 w-6 text-primary" />
+                      </div>
+                      <div>
+                        <E section={`benefit-${i}-title`} fallback={b.title} as="h3" className="font-heading font-semibold text-lg mb-1" />
+                        <E section={`benefit-${i}-desc`} fallback={b.desc} as="p" className="text-sm text-muted-foreground leading-relaxed" />
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
             </motion.div>
           </div>
@@ -260,7 +268,7 @@ const Index = () => {
 
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-center mt-12">
             <Button variant="outline" className="rounded-full gap-2 h-12 px-8" asChild>
-              <Link to="/testimonials">לכל המילים החמות<ArrowLeft className="h-4 w-4" /></Link>
+              <Link to="/testimonials"><E section="testimonials-btn" fallback="לכל המילים החמות" /><ArrowLeft className="h-4 w-4" /></Link>
             </Button>
           </motion.div>
         </div>
@@ -283,15 +291,15 @@ const Index = () => {
               <motion.div variants={fadeUp} className="flex flex-col gap-5 text-sm">
                 <a href="tel:0542131254" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Phone className="h-4 w-4 text-primary" /></div>
-                  054-213-1254
+                  <E section="contact-phone" fallback="054-213-1254" />
                 </a>
                 <a href="mailto:shira.pelleg@gmail.com" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Mail className="h-4 w-4 text-primary" /></div>
-                  shira.pelleg@gmail.com
+                  <E section="contact-email" fallback="shira.pelleg@gmail.com" />
                 </a>
                 <a href="https://wa.me/972542131254" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><MessageCircle className="h-4 w-4 text-primary" /></div>
-                  שלחו הודעה בוואטסאפ
+                  <E section="contact-whatsapp" fallback="שלחו הודעה בוואטסאפ" />
                 </a>
               </motion.div>
             </motion.div>
@@ -303,7 +311,7 @@ const Index = () => {
               <motion.div variants={fadeUp}><Textarea placeholder="הודעה" rows={4} className="bg-accent/30 border-0 rounded-xl" /></motion.div>
               <motion.div variants={fadeUp}>
                 <Button type="submit" className="w-full gap-2 rounded-full h-12 text-base shadow-lg shadow-primary/20">
-                  <Send className="h-4 w-4" />שלחו הודעה
+                  <Send className="h-4 w-4" /><E section="contact-send-btn" fallback="שלחו הודעה" />
                 </Button>
               </motion.div>
             </motion.form>
