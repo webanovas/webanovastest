@@ -139,7 +139,11 @@ const AdminManagerDialog = ({ isMobileDrawer, onClose }: AdminManagerDialogProps
       });
       if (error) throw error;
       if (data?.error) { toast.error(data.error); return; }
-      toast.success(`${newEmail} נוסף כמנהל`);
+      if (data?.resetSent) {
+        toast.success(`${newEmail} נוסף כמנהל. נשלח מייל לאיפוס סיסמה`);
+      } else {
+        toast.success(`${newEmail} נוסף כמנהל. לא הצלחנו לשלוח מייל - שלח לו קישור לאיפוס סיסמה ידנית`);
+      }
       setNewEmail("");
       queryClient.invalidateQueries({ queryKey: ["admin-list"] });
     } catch (err: any) {

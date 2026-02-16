@@ -73,19 +73,14 @@ Deno.serve(async (req) => {
         targetUser = newUser.user;
       }
 
-      // Generate a password reset link so the new admin can set their own password
-      const { data: linkData, error: linkErr } = await adminClient.auth.admin.generateLink({
-        type: "recovery",
-        email,
+      // Send a password reset email so the new admin can set their own password
+      const origin = req.headers.get("origin") || req.headers.get("referer")?.replace(/\/$/, "") || supabaseUrl;
+      const { error: resetErr } = await adminClient.auth.resetPasswordForEmail(email, {
+        redirectTo: `${origin}/reset-password`,
       });
-      // We'll return the reset info - the frontend will show instructions
-      let resetSent = false;
-      if (!linkErr && linkData) {
-        // Send the recovery email via Supabase's built-in mailer
-        const { error: resetErr } = await adminClient.auth.resetPasswordForEmail(email, {
-          redirectTo: `${req.headers.get("origin") || supabaseUrl}/admin-login`,
-        });
-        resetSent = !resetErr;
+      const resetSent = !resetErr;
+      if (resetErr) {
+        console.error("Failed to send reset email:", resetErr.message);
       }
 
       // Check if already admin
@@ -100,7 +95,7 @@ Deno.serve(async (req) => {
         return new Response(JSON.stringify({ error: insertErr.message }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
-      return new Response(JSON.stringify({ success: true, email }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ success: true, email, resetSent }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     if (action === "remove") {
