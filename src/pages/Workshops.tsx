@@ -24,6 +24,7 @@ import {
 import { ClockPicker } from "@/components/ui/clock-picker";
 import workshopImg1 from "@/assets/workshop-1.jpg";
 import workshopImg2 from "@/assets/workshop-2.jpg";
+import ImageUpload from "@/components/admin/ImageUpload";
 
 type WorkshopRow = Tables<"workshops">;
 
@@ -100,7 +101,7 @@ const Workshops = () => {
   const save = async (w: WorkshopRow) => {
     const { error } = await supabase.from("workshops").update({
       title: w.title, date: w.date, time: w.time, location: w.location,
-      description: w.description, is_active: w.is_active,
+      description: w.description, is_active: w.is_active, image_url: w.image_url,
     }).eq("id", w.id);
     if (error) { console.error("Save error:", error); toast.error("שגיאה: " + error.message); }
     else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["workshops"] }); }
@@ -129,7 +130,7 @@ const Workshops = () => {
 
   return (
     <Layout>
-      <PageHero label="אירועים" title="סדנאות" subtitle="סדנאות מיוחדות להעמקת התרגול והחוויה" />
+      <PageHero label="אירועים" title="סדנאות" subtitle="סדנאות מיוחדות להעמקת התרגול והחוויה" page="workshops" labelSection="hero-label" titleSection="hero-title" subtitleSection="hero-subtitle" />
 
       {/* Active */}
       <section className="py-24 md:py-36">
@@ -150,7 +151,7 @@ const Workshops = () => {
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
               {activeWorkshops.map((w, i) => (
                 <motion.div key={w.id} variants={fadeUp}>
-                  <WorkshopCard workshop={w} isEditMode={isEditMode} onEdit={() => setEditing({ ...w })} imgSrc={workshopImages[i % workshopImages.length]} />
+                  <WorkshopCard workshop={w} isEditMode={isEditMode} onEdit={() => setEditing({ ...w })} imgSrc={w.image_url || workshopImages[i % workshopImages.length]} />
                 </motion.div>
               ))}
             </motion.div>
@@ -177,7 +178,7 @@ const Workshops = () => {
                   onClick={() => isEditMode && setEditing({ ...w })}
                 >
                   <div className="aspect-video overflow-hidden">
-                    <img src={workshopImages[i % workshopImages.length]} alt={w.title} className="w-full h-full object-cover" />
+                    <img src={w.image_url || workshopImages[i % workshopImages.length]} alt={w.title} className="w-full h-full object-cover" />
                   </div>
                   <CardContent className="p-5">
                     <span className="font-heading font-medium text-sm">{w.title}</span>
@@ -295,9 +296,15 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
 
   return (
     <div className="bg-card rounded-3xl overflow-hidden">
-      {/* Image preview with title overlay */}
+      {/* Image preview with upload */}
       <div className="aspect-video overflow-hidden relative">
-        <img src={workshopImg1} alt="preview" className="w-full h-full object-cover" />
+        <img src={value.image_url || workshopImg1} alt="preview" className="w-full h-full object-cover" />
+        <ImageUpload
+          currentUrl={value.image_url}
+          onUpload={(url) => onChange({ ...value, image_url: url })}
+          folder="workshops"
+          className="bottom-20 left-4"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
         <div className="absolute bottom-4 right-4 left-4">
           <Input

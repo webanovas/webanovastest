@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Clock, User, Plus, Trash2, Check, Pencil, CalendarDays, BookOpen, Repeat, CalendarIcon } from "lucide-react";
+import { Clock, User, Plus, Trash2, Check, Pencil, CalendarDays, BookOpen, Repeat, CalendarIcon, ImageIcon } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminMode } from "@/hooks/useAdminMode";
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import teacherImg from "@/assets/teacher-placeholder.jpg";
 import { ClockPicker } from "@/components/ui/clock-picker";
+import ImageUpload from "@/components/admin/ImageUpload";
 
 type ClassRow = Tables<"classes">;
 type TeacherRow = Tables<"teachers">;
@@ -103,7 +104,7 @@ const Schedule = () => {
 
   const saveTeacher = async (t: TeacherRow) => {
     const { error } = await supabase.from("teachers").update({
-      name: t.name, role: t.role, description: t.description,
+      name: t.name, role: t.role, description: t.description, image_url: t.image_url,
     }).eq("id", t.id);
     if (error) { console.error("Save error:", error); toast.error("שגיאה: " + error.message); }
     else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["teachers"] }); }
@@ -135,6 +136,10 @@ const Schedule = () => {
         label="לוח שיעורים"
         title="מערכת שעות ומורים"
         subtitle="הצטרפו לשיעור שמתאים לכם – בסטודיו או בזום"
+        page="schedule"
+        labelSection="hero-label"
+        titleSection="hero-title"
+        subtitleSection="hero-subtitle"
       />
 
       {/* Schedule with Day Tabs */}
@@ -410,42 +415,38 @@ function RecurringToggle({ value, onChange }: { value: any; onChange: (v: any) =
         </button>
       </div>
 
+      {/* Day selector - always shown */}
+      <div>
+        <p className="text-[11px] text-muted-foreground mb-2">{isRecurring ? "חוזר בכל שבוע ביום:" : "יום בשבוע:"}</p>
+        <div className="flex gap-1.5">
+          {days.map((d) => (
+            <button
+              key={d}
+              onClick={() => onChange({ ...value, day: d })}
+              className={cn(
+                "flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-200",
+                value.day === d
+                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                  : "bg-card hover:bg-accent text-foreground border border-border/40"
+              )}
+            >
+              {d}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Date picker - only for one-time */}
       <AnimatePresence mode="wait">
-        {isRecurring ? (
+        {!isRecurring && (
           <motion.div
-            key="recurring"
+            key="onetime-date"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <p className="text-[11px] text-muted-foreground mb-2">חוזר בכל שבוע ביום:</p>
-            <div className="flex gap-1.5">
-              {days.map((d) => (
-                <button
-                  key={d}
-                  onClick={() => onChange({ ...value, day: d })}
-                  className={cn(
-                    "flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-200",
-                    value.day === d
-                      ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                      : "bg-card hover:bg-accent text-foreground border border-border/40"
-                  )}
-                >
-                  {d}
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="onetime"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <p className="text-[11px] text-muted-foreground mb-2">בחר תאריך ספציפי:</p>
+            <p className="text-[11px] text-muted-foreground mb-2">תאריך ספציפי:</p>
             <Popover open={dateOpen} onOpenChange={setDateOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -608,9 +609,15 @@ function TeacherEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew
 }) {
   return (
     <div className="bg-card">
-      {/* Image preview */}
+      {/* Image preview with upload */}
       <div className="aspect-[4/3] overflow-hidden relative">
         <img src={value.image_url || teacherImg} alt="preview" className="w-full h-full object-cover" />
+        <ImageUpload
+          currentUrl={value.image_url}
+          onUpload={(url) => onChange({ ...value, image_url: url })}
+          folder="teachers"
+          className="bottom-20 left-4"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
         <div className="absolute bottom-4 right-4 left-4 space-y-2">
           <Input

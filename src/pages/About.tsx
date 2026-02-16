@@ -4,6 +4,9 @@ import PageHero from "@/components/PageHero";
 import { Leaf, Award, Heart, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useAdminMode } from "@/hooks/useAdminMode";
+import { usePageContent } from "@/hooks/usePageContent";
+import EditableText from "@/components/admin/EditableText";
 
 import teacherShira from "@/assets/teacher-shira.jpg";
 import studioInterior from "@/assets/studio-interior.jpg";
@@ -32,12 +35,28 @@ const galleryImages = [
 ];
 
 const About = () => {
+  const { isEditMode } = useAdminMode();
+  const { getText, saveText } = usePageContent("about");
+
+  const E = ({ section, fallback, as, className, multiline }: { section: string; fallback: string; as?: "h1"|"h2"|"h3"|"p"|"span"|"div"; className?: string; multiline?: boolean }) => {
+    const val = getText(section, fallback);
+    if (!isEditMode) {
+      const Tag = as || "span";
+      return <Tag className={className}>{val}</Tag>;
+    }
+    return <EditableText value={val} onSave={(v) => saveText(section, v)} as={as} className={className} multiline={multiline} />;
+  };
+
   return (
     <Layout>
       <PageHero
         label="הסטודיו שלנו"
         title="על הסטודיו"
         subtitle="יוגה במושבה הוא סטודיו בוטיק בכיכר המושבה בהוד השרון"
+        page="about"
+        labelSection="hero-label"
+        titleSection="hero-title"
+        subtitleSection="hero-subtitle"
       />
 
       {/* About Shira */}
@@ -51,14 +70,18 @@ const About = () => {
             </motion.div>
 
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
-              <motion.span variants={fadeUp} className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">בעלת הסטודיו</motion.span>
-              <motion.h2 variants={fadeUp} className="font-heading text-3xl md:text-4xl font-bold mb-5">שירה פלג</motion.h2>
-              <motion.p variants={fadeUp} className="text-muted-foreground leading-relaxed mb-4 text-lg">
-                מורה ומטפלת ביוגה עם ניסיון של שנים רבות. שירה מלמדת מתוך אהבה אמיתית לתרגול ומאמינה שכל אחד יכול למצוא את הדרך שלו על המזרן.
-              </motion.p>
-              <motion.p variants={fadeUp} className="text-muted-foreground leading-relaxed mb-8">
-                הסטודיו מציע מרחב חם ומזמין, עם קבוצות קטנות שמאפשרות תשומת לב אישית לכל מתרגל ומתרגלת.
-              </motion.p>
+              <motion.div variants={fadeUp}>
+                <E section="shira-label" fallback="בעלת הסטודיו" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <E section="shira-name" fallback="שירה פלג" as="h2" className="font-heading text-3xl md:text-4xl font-bold mb-5" />
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <E section="shira-bio-1" fallback="מורה ומטפלת ביוגה עם ניסיון של שנים רבות. שירה מלמדת מתוך אהבה אמיתית לתרגול ומאמינה שכל אחד יכול למצוא את הדרך שלו על המזרן." as="p" className="text-muted-foreground leading-relaxed mb-4 text-lg" multiline />
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <E section="shira-bio-2" fallback="הסטודיו מציע מרחב חם ומזמין, עם קבוצות קטנות שמאפשרות תשומת לב אישית לכל מתרגל ומתרגלת." as="p" className="text-muted-foreground leading-relaxed mb-8" multiline />
+              </motion.div>
               <motion.div variants={fadeUp}>
                 <Button variant="outline" className="rounded-full gap-2 px-8 h-12" asChild>
                   <Link to="/schedule">לוח שיעורים<ArrowLeft className="h-4 w-4" /></Link>
@@ -91,8 +114,12 @@ const About = () => {
       <section className="py-24 md:py-36 bg-yoga-cream relative">
         <div className="container mx-auto px-4">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center mb-16">
-            <motion.span variants={fadeUp} className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">מי אנחנו</motion.span>
-            <motion.h2 variants={fadeUp} className="font-heading text-3xl md:text-4xl font-bold">הערכים שלנו</motion.h2>
+            <motion.div variants={fadeUp}>
+              <E section="values-label" fallback="מי אנחנו" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
+            </motion.div>
+            <motion.div variants={fadeUp}>
+              <E section="values-title" fallback="הערכים שלנו" as="h2" className="font-heading text-3xl md:text-4xl font-bold" />
+            </motion.div>
           </motion.div>
 
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-4xl mx-auto">
@@ -118,9 +145,8 @@ const About = () => {
         <img src={yogaSunset} alt="יוגה בשקיעה" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-yoga-dark/50 flex items-center justify-center">
           <div className="text-center px-4">
-            <h2 className="font-heading text-3xl md:text-5xl font-bold text-primary-foreground mb-4">
-              בואו <span className="font-light italic">לתרגל</span>
-            </h2>
+            <E section="cta-title" fallback="בואו לתרגל" as="h2"
+              className="font-heading text-3xl md:text-5xl font-bold text-primary-foreground mb-4" />
             <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild>
               <Link to="/contact">צרו קשר</Link>
             </Button>
@@ -131,9 +157,9 @@ const About = () => {
       {/* Blog placeholder */}
       <section className="py-24 md:py-36">
         <div className="container mx-auto px-4 text-center">
-          <span className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block">בקרוב</span>
-          <h2 className="font-heading text-3xl font-bold mb-4">מאמרים ותוכן</h2>
-          <p className="text-muted-foreground mb-8 text-lg">בקרוב – מאמרים, טיפים ותכנים מעולם היוגה</p>
+          <E section="blog-label" fallback="בקרוב" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
+          <E section="blog-title" fallback="מאמרים ותוכן" as="h2" className="font-heading text-3xl font-bold mb-4" />
+          <E section="blog-subtitle" fallback="בקרוב – מאמרים, טיפים ותכנים מעולם היוגה" as="p" className="text-muted-foreground mb-8 text-lg" />
           <div className="bg-accent/40 rounded-3xl p-14 max-w-2xl mx-auto border border-border/30">
             <p className="text-muted-foreground text-sm">מקום שמור לבלוג עתידי 🌿</p>
           </div>
