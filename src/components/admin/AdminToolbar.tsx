@@ -4,6 +4,7 @@ import { Pencil, Eye, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import AdminManagerDialog from "./AdminManagerDialog";
 
 const AdminToolbar = () => {
   const { isAdmin, isEditMode, toggleEditMode } = useAdminMode();
@@ -35,6 +36,8 @@ const AdminToolbar = () => {
             <Settings className="h-3.5 w-3.5" />דשבורד
           </Link>
         </Button>
+
+        <AdminManagerDialog />
 
         <div className="w-px h-5 bg-border" />
 
