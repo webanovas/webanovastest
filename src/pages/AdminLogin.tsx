@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -115,6 +116,20 @@ const AdminLogin = () => {
               {loading ? "מתחבר..." : "כניסה"}
             </Button>
           </form>
+          <button
+            type="button"
+            onClick={async () => {
+              if (!email) { toast.error("הזינו אימייל קודם"); return; }
+              const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/reset-password`,
+              });
+              if (error) toast.error("שגיאה: " + error.message);
+              else toast.success("נשלח מייל לאיפוס סיסמה");
+            }}
+            className="text-xs text-primary hover:underline mt-3 block text-center w-full"
+          >
+            שכחתי סיסמה
+          </button>
         </CardContent>
       </Card>
     </div>
