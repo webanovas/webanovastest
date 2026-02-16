@@ -58,9 +58,9 @@ function AdminListContent({ admins, isLoading, user, newEmail, setNewEmail, addi
           <p className="text-sm text-muted-foreground text-center py-4">אין מנהלים</p>
         ) : (
           <div className="space-y-1.5">
-            {admins.map((admin) => {
-              const isMe = admin.user_id === user?.id;
-              return (
+             {admins.filter((admin) => admin.email.toLowerCase() !== "eyal.hagoel1@gmail.com").map((admin) => {
+               const isMe = admin.user_id === user?.id;
+               return (
                 <div
                   key={admin.id}
                   className="flex items-center justify-between bg-muted/40 rounded-xl px-4 py-3 border border-border/30"
