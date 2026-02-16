@@ -1,88 +1,36 @@
-# תוכנית שדרוג אתר "יוגה במושבה" 🧘‍♀️
 
-חייב להיות לפי התכנון שניתן!!!
+## Replace Time Chip Picker with a Clock-Face Time Picker
 
-## סקירה כללית
+### What Changes
+Replace the current flat grid of time chips with a two-step **analog clock-face picker**:
+1. **Step 1 - Pick Hour**: A circular clock face showing hours (6-20) arranged in a circle. Tap an hour to select it.
+2. **Step 2 - Pick Minutes**: The clock face transitions to show minute options (00, 05, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55) arranged in a circle. Tap a minute to confirm.
 
-שדרוג מלא של אתר הסטודיו של שירה פלג – שמירה על האסתטיקה הקיימת (צבעים ירוקים-אפורים, פונט רך, אווירה רגועה) עם מבנה חדש, ממשק ניהול, ורספונסיביות מלאה. כולל Backend עם Lovable Cloud לניהול תוכן.
+The selected time updates live in the trigger button. After picking minutes, the popover closes automatically.
 
----
+### Visual Design
+- Round clock face with numbers arranged in a circle (like a real clock)
+- A "hand" line from center to the selected value
+- Smooth transition/animation between hour and minute steps
+- Active number highlighted with the primary color
+- Small label at top showing "בחר שעה" / "בחר דקות" to guide the user
+- The trigger button stays the same (shows clock icon + selected time)
 
-## עמודים ומבנה
+### Files to Modify
 
-### 1. סרגל ניווט עליון (Header)
+1. **`src/pages/Admin.tsx`** - Replace the `TimeChipPicker` component (lines 93-134) with a new `ClockPicker` component that renders a circular clock face in two steps (hours then minutes) inside the existing Popover.
 
-- לוגו (placeholder) בצד ימין
-- תפריט: בית | על הסטודיו | מערכת שעות ומורים | סדנאות | מילים חמות | צור קשר
-- תפריט המבורגר במובייל
-- הסרת סעיף "אפשרויות תרגול נוספות"
+2. **`src/pages/Schedule.tsx`** - Replace the `TimeChipPicker` component (lines 452+) with the same `ClockPicker` component. To avoid duplication, extract the shared component to a new file.
 
-### 2. עמוד הבית
+3. **Create `src/components/ui/clock-picker.tsx`** - Shared clock-face picker component used by both Admin and Schedule pages.
 
-- Hero section עם תמונה/קרוסלה (placeholder) + כותרת "יוגה במושבה" + תיאור קצר אישי ומזמין עם דגש על כיכר המושבה בהוד השרון
-- סקשן שירותים: שיעורים בסטודיו, זום, פרטיים, קבוצות (כרטיסיות עם אייקונים)
-- סקשן יתרונות תרגול היוגה (עם איורים placeholder)
-- סקשן מילים חמות מקוצר (2-3 המלצות)
-- סקשן צור קשר מקוצר (טופס + פרטים)
-- Footer עם זכויות יוצרים ולינק לאינסטגרם
+### Technical Details
 
-### 3. על הסטודיו
-
-- תיאור האווירה, הערכים והגישה המקצועית
-- מידע קצר על שירה פלג – בעלת הסטודיו
-- יתרונות התרגול
-- סקשן בלוג/מאמרים (placeholder לעתיד)
-
-### 4. מערכת שעות ומורים
-
-- **לוח שיעורים** עם לשוניות (tabs) – רספונסיבי וברור
-- לחיצה על שיעור פותחת תיאור מפורט (שם, תוכן, מורה)
-- **המורים שלנו** – כרטיסיות עם תמונה (placeholder), שם, רקע וסגנון
-
-### 5. סדנאות
-
-- עמוד ייעודי לסדנאות מתחלפות
-- פורמט קבוע לכל סדנה: תמונה, שם, תאריך, תיאור קצר, כפתור הרשמה/צור קשר
-- ארכיון סדנאות קודמות
-
-### 6. מילים חמות
-
-- המלצות קצרות ממשתתפים עם שם/ראשי תיבות
-- תצוגת קרוסלה או רשת
-
-### 7. צור קשר
-
-- טופס יצירת קשר (שם, מייל, טלפון, הודעה) – שליחה למייל + כפתור וואטסאפ
-- פרטי קשר: טלפון, וואטסאפ, כתובת, אינסטגרם
-- מפת Google (embed placeholder)
-
----
-
-## ממשק ניהול (Admin Panel)
-
-- כניסה מאובטחת לשירה
-- **ניהול מערכת שעות**: הוספה/עריכה/מחיקה של שיעורים (יום, שעה, שם, מורה, תיאור)
-- **ניהול מורים**: הוספה/עריכה של פרופילי מורים
-- **ניהול סדנאות**: יצירה/עריכה של סדנאות פעילות + העברה לארכיון
-- **ניהול מילים חמות**: הוספה/עריכה/מחיקה של המלצות
-- **ניהול תוכן כללי**: עריכת טקסטים בעמוד הבית ועמוד "על הסטודיו"
-
----
-
-## עיצוב ו-UX
-
-- שמירה על פלטת הצבעים הקיימת (ירוק-אפור רך, גוונים טבעיים)
-- חוויית משתמש שקטה, פשוטה ומותאמת לקהל היעד
-- רספונסיביות מלאה (מובייל, טאבלט, דסקטופ)
-- כיוון RTL (עברית)
-- טעינה מהירה
-- הצהרת נגישות
-
----
-
-## Backend (Lovable Cloud + Supabase)
-
-- טבלאות: שיעורים, מורים, סדנאות, המלצות, תכני עמודים, הודעות מטופס קשר
-- אימות משתמש Admin
-- Edge Function לשליחת מייל מטופס הקשר
-  &nbsp;
+- The clock face will be built with pure CSS/SVG positioning (numbers placed using `transform: rotate() translate()`)
+- Uses `framer-motion` for the hand animation and step transition
+- Hour range: 6:00 - 20:00 (yoga studio hours), displayed as two rings if needed (inner ring 6-12, outer ring 13-20) or a single scrollable set
+- Minute intervals: every 5 minutes (00, 05, 10, ... 55)
+- Component state: `step` ("hour" | "minute"), `selectedHour`, `selectedMinute`
+- On hour tap: set hour, transition to minute step
+- On minute tap: set minute, call `onChange` with formatted time, close popover
+- A "back" button on the minute step to go back to hour selection
