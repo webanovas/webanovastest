@@ -1,38 +1,39 @@
 
-## חיבור טופס "דברו איתנו" לשליחת מייל
 
-הטופס הצף ישלח את ההודעות ישירות למייל **shira.pelleg@gmail.com** באמצעות פונקציית backend.
+## Send Contact Form Emails via Resend
 
-### מה ייבנה
+Both contact forms (floating button + contact page) will send emails directly to shira.pelleg@gmail.com when submitted, with WhatsApp as a secondary option.
 
-1. **פונקציית backend חדשה (`send-contact-email`)**
-   - תקבל שם, טלפון והודעה מהטופס
-   - תשלח מייל ל-shira.pelleg@gmail.com עם כל הפרטים
-   - תשתמש ב-Resend API לשליחת המייל (שירות מייל אמין וחינמי עד 100 מיילים ביום)
+### Changes
 
-2. **עדכון הטופס הצף (`FloatingContact.tsx`)**
-   - במקום ה-setTimeout המדומה, הטופס יקרא לפונקציית ה-backend
-   - טיפול בשגיאות - אם השליחה נכשלת, המשתמש יקבל הודעת שגיאה
+**1. Store the Resend API key securely**
+- Save `RESEND_API_KEY` (`re_bKgWG7Xx_8bF6DBCdisKjA7KtSXgGyaVT`) as a backend secret
 
-3. **הגדרת סוד (Secret)**
-   - יידרש מפתח API של Resend (שירות שליחת מיילים) - נבקש ממך להירשם בחינם ולהזין את המפתח
+**2. Create backend function: `send-contact-email`**
+- New file: `supabase/functions/send-contact-email/index.ts`
+- Accepts POST with `{ name, phone, message }` (all optional except name+phone)
+- Sends a nicely formatted email to `shira.pelleg@gmail.com` from `onboarding@resend.dev`
+- Public endpoint (no JWT required -- it's a contact form)
+- Proper CORS headers included
 
-### פרטים טכניים
+**3. Update `supabase/config.toml`**
+- Add `[functions.send-contact-email]` with `verify_jwt = false`
 
-**קובץ חדש: `supabase/functions/send-contact-email/index.ts`**
-- מקבל POST עם `{ name, phone, message }`
-- שולח מייל באמצעות Resend API
-- כולל CORS headers
-- ללא אימות JWT (טופס ציבורי)
+**4. Update Floating Contact (`FloatingContact.tsx`)**
+- Replace the current `mailto:` form submission with a call to the backend function
+- Add a loading/sending state on the submit button
+- Show success toast on completion, error toast on failure
+- Keep the WhatsApp link as a secondary option (already exists below the form)
 
-**עדכון: `supabase/config.toml`**
-- הוספת הגדרת `verify_jwt = false` לפונקציה
+**5. Update Contact Page (`Contact.tsx`)**
+- Wire the contact page form to also call the same backend function
+- Add form state management (name, email, phone, message)
+- Add loading state and success/error feedback
+- The WhatsApp button already exists as a secondary option -- no change needed there
 
-**עדכון: `src/components/FloatingContact.tsx`**
-- החלפת ה-setTimeout בקריאה ל-`supabase.functions.invoke('send-contact-email', ...)`
-- הוספת טיפול בשגיאות
+### How it will work for visitors
+1. User fills out the form (name, phone, optional message)
+2. Clicks the send button -- email is sent silently in the background
+3. Success message appears: "ההודעה נשלחה בהצלחה"
+4. Alternatively, they can click the WhatsApp button to message directly
 
-### שלבים
-1. בקשת מפתח Resend API ממך (הרשמה חינמית ב-resend.com)
-2. יצירת פונקציית ה-backend
-3. עדכון הטופס בקוד
