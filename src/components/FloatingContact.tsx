@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send, Phone, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,13 +10,6 @@ const FloatingContact = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", message: "" });
   const [sending, setSending] = useState(false);
-  const [showLabel, setShowLabel] = useState(true);
-
-  // Auto-hide label after 6 seconds
-  useEffect(() => {
-    const t = setTimeout(() => setShowLabel(false), 6000);
-    return () => clearTimeout(t);
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,41 +122,27 @@ const FloatingContact = () => {
         )}
       </AnimatePresence>
 
-      {/* FAB with label */}
-      <div className="fixed bottom-6 left-4 sm:left-6 z-[70] flex items-center gap-2.5">
-        <motion.button
-          onClick={() => { setIsOpen(!isOpen); setShowLabel(false); }}
-          className="w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/25 flex items-center justify-center transition-shadow hover:shadow-xl hover:shadow-primary/35"
-          whileHover={{ scale: 1.06 }}
-          whileTap={{ scale: 0.94 }}
-          aria-label="צור קשר"
-        >
-          <AnimatePresence mode="wait">
-            {isOpen ? (
-              <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.15 }}>
-                <X className="h-5 w-5" />
-              </motion.div>
-            ) : (
-              <motion.div key="open" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.15 }}>
-                <MessageCircle className="h-5 w-5" />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.button>
-        <AnimatePresence>
-          {!isOpen && showLabel && (
-            <motion.span
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -8 }}
-              transition={{ duration: 0.3 }}
-              className="bg-card/95 backdrop-blur-sm text-foreground text-[11px] font-medium px-3 py-1.5 rounded-full shadow-sm border border-border/30 whitespace-nowrap pointer-events-none"
-            >
-              דברו איתנו ✨
-            </motion.span>
+      {/* FAB as pill button with persistent label */}
+      <motion.button
+        onClick={() => setIsOpen(!isOpen)}
+        className="fixed bottom-6 left-4 sm:left-6 z-[70] flex items-center gap-2 bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/35 transition-shadow rounded-full px-5 h-12"
+        whileHover={{ scale: 1.04 }}
+        whileTap={{ scale: 0.96 }}
+        aria-label="צור קשר"
+      >
+        <AnimatePresence mode="wait">
+          {isOpen ? (
+            <motion.div key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.15 }}>
+              <X className="h-5 w-5" />
+            </motion.div>
+          ) : (
+            <motion.div key="open" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.15 }}>
+              <MessageCircle className="h-5 w-5" />
+            </motion.div>
           )}
         </AnimatePresence>
-      </div>
+        <span className="text-sm font-medium">{isOpen ? "סגירה" : "דברו איתנו"}</span>
+      </motion.button>
     </>
   );
 };
