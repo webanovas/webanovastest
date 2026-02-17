@@ -1,30 +1,38 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, X, Send, Phone, Mail, Sparkles } from "lucide-react";
+import { MessageCircle, X, Send, Phone, Mail, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const FloatingContact = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", message: "" });
-  
+  const [sending, setSending] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.phone) {
       toast.error("נא למלא שם וטלפון");
       return;
     }
-    const subject = encodeURIComponent("פנייה חדשה מהאתר");
-    const body = encodeURIComponent(
-      `שם: ${form.name}\nטלפון: ${form.phone}\nהודעה: ${form.message || "ללא הודעה"}`
-    );
-    window.open(`mailto:shira.pelleg@gmail.com?subject=${subject}&body=${body}`, "_self");
-    toast.success("נפתח חלון מייל לשליחה");
-    setForm({ name: "", phone: "", message: "" });
-    setIsOpen(false);
+    setSending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("send-contact-email", {
+        body: { name: form.name, phone: form.phone, message: form.message },
+      });
+      if (error) throw error;
+      toast.success("ההודעה נשלחה בהצלחה!");
+      setForm({ name: "", phone: "", message: "" });
+      setIsOpen(false);
+    } catch (err) {
+      console.error(err);
+      toast.error("שגיאה בשליחה, נסו שוב או פנו בוואטסאפ");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -104,10 +112,15 @@ const FloatingContact = () => {
               />
               <Button
                 type="submit"
+                disabled={sending}
                 className="w-full gap-2 rounded-xl h-10 text-sm mt-1 shadow-sm"
               >
-                <Mail className="h-3.5 w-3.5" />
-                שליחה במייל
+                {sending ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Send className="h-3.5 w-3.5" />
+                )}
+                {sending ? "שולח..." : "שליחה"}
               </Button>
               <div className="flex items-center justify-center gap-3 pt-1">
                 <a
@@ -116,16 +129,16 @@ const FloatingContact = () => {
                   rel="noopener noreferrer"
                   className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1.5"
                 >
-                  <Phone className="h-3 w-3" />
+                  <MessageCircle className="h-3 w-3" />
                   וואטסאפ
                 </a>
                 <span className="text-muted-foreground/30 text-xs">|</span>
                 <a
-                  href="mailto:shira.pelleg@gmail.com"
+                  href="tel:0542131254"
                   className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1.5"
                 >
-                  <Mail className="h-3 w-3" />
-                  אימייל
+                  <Phone className="h-3 w-3" />
+                  התקשרו
                 </a>
               </div>
             </form>
