@@ -125,7 +125,8 @@ const FloatingContact = () => {
       {/* FAB as pill button with persistent label */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 left-4 sm:left-6 z-[70] flex items-center gap-2 bg-yoga-sage-light text-yoga-dark shadow-lg shadow-yoga-sage/20 hover:shadow-xl hover:shadow-yoga-sage/30 transition-shadow rounded-full px-5 h-12 border border-yoga-sage/20"
+        className="fixed bottom-6 left-4 sm:left-6 z-[70] flex items-center gap-2 text-yoga-dark shadow-lg hover:shadow-xl transition-shadow rounded-full px-5 h-12 border border-[hsl(170,25%,70%)]/30"
+        style={{ backgroundColor: "hsl(170, 25%, 78%)" }}
         whileHover={{ scale: 1.04 }}
         whileTap={{ scale: 0.96 }}
         aria-label="צור קשר"
