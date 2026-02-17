@@ -1,26 +1,33 @@
 
 
-## Add Boostapp Registration Button to Schedule Page
+## הוספת כפתור צור קשר צף ופופאפ אסטטי בדף הנחיתה
 
-Add a prominent "Register for Class" button on the Schedule page that directs users to the Boostapp registration link.
+### מה ישתנה
 
-### What Will Change
+**כפתור צף (Floating Action Button)** - כפתור עגול קטן ויפה בפינה השמאלית התחתונה של המסך (כמו WhatsApp Web), שמופיע בכל הדפים. לחיצה עליו פותחת טופס יצירת קשר קומפקטי בפופאפ.
 
-**Schedule Page** - A styled call-to-action button will be added at the top of the schedule section (below the page hero) with text like "להרשמה לשיעור" that opens `https://1pa.co/dXjqxqYBbb` in a new browser tab.
+**הפופאפ יכלול:**
+- שם מלא, טלפון, הודעה (שדות מינימליים)
+- כפתור שליחה
+- כפתור וואטסאפ ישיר
+- אנימציה רכה של פתיחה/סגירה
+- עיצוב שמתאים לשפה העיצובית של האתר (rounded corners, צבעי yoga)
 
-The button will:
-- Be visually prominent with the site's primary color scheme
-- Include a short description line above it (e.g., "להרשמה ולצפייה בלוח השעות המלא")
-- Open in a new tab so users don't lose the website
-- Be visible to all visitors (not just admin)
-- Match the existing RTL Hebrew design of the site
+**התנהגות:**
+- הכפתור הצף מופיע תמיד (בכל הדפים) אבל לא חוסם תוכן
+- הפופאפ נפתח מלמטה באנימציה חלקה
+- ניתן לסגור בלחיצה על X או מחוץ לפופאפ
+- הטופס שולח את הפרטים למייל (דרך ה-edge function הקיים)
 
-### Technical Details
+### פרטים טכניים
 
-**File to modify:** `src/pages/Schedule.tsx`
+**קובץ חדש:** `src/components/FloatingContact.tsx`
+- קומפוננטה של כפתור צף + פופאפ עם Framer Motion לאנימציות
+- שימוש ב-Popover או Sheet (drawer) למובייל
+- אייקון MessageCircle או Phone בכפתור הצף
 
-- Add a styled CTA section between the PageHero and the day-tabs/class list
-- The section will contain a brief text and a Button component wrapped in an anchor tag (`<a>`) targeting `https://1pa.co/dXjqxqYBbb` with `target="_blank"` and `rel="noopener noreferrer"`
-- No database changes needed
-- No new dependencies needed
+**קובץ לעדכון:** `src/components/Layout.tsx`
+- הוספת FloatingContact בתוך ה-Layout כך שיופיע בכל דף
+
+**ללא שינויים בבסיס הנתונים** - משתמשים ב-edge function הקיים לשליחת מיילים.
 
