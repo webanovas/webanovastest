@@ -154,6 +154,20 @@ const Schedule = () => {
         subtitleSection="hero-subtitle"
       />
 
+      {/* Boostapp Registration CTA */}
+      <section className="py-8 md:py-12">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <p className="text-muted-foreground mb-4 text-sm md:text-base">להרשמה ולצפייה בלוח השעות המלא</p>
+            <Button asChild size="lg" className="rounded-full text-base px-8 shadow-lg shadow-primary/20">
+              <a href="https://1pa.co/dXjqxqYBbb" target="_blank" rel="noopener noreferrer">
+                להרשמה לשיעור
+              </a>
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* Schedule with Day Tabs */}
       <section className="py-12 md:py-36">
         <div className="container mx-auto px-4">
@@ -253,7 +267,7 @@ const Schedule = () => {
                             </div>
                             {!isEditMode && (
                               <Button asChild size="sm" className="rounded-full shadow-sm shadow-primary/20 shrink-0">
-                                <Link to="/contact">הרשמה</Link>
+                                <a href="https://1pa.co/dXjqxqYBbb" target="_blank" rel="noopener noreferrer">הרשמה</a>
                               </Button>
                             )}
                           </div>
