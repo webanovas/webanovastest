@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, X, Send, Phone, Sparkles } from "lucide-react";
+import { MessageCircle, X, Send, Phone, Mail, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -108,15 +108,25 @@ const FloatingContact = () => {
                 <Send className="h-3.5 w-3.5" />
                 {sending ? "שולח..." : "שליחה"}
               </Button>
-              <a
-                href="https://wa.me/972542131254"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors py-1.5"
-              >
-                <Phone className="h-3 w-3" />
-                או דברו איתנו בוואטסאפ
-              </a>
+              <div className="flex items-center justify-center gap-3 pt-1">
+                <a
+                  href="https://wa.me/972542131254"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1.5"
+                >
+                  <Phone className="h-3 w-3" />
+                  וואטסאפ
+                </a>
+                <span className="text-muted-foreground/30 text-xs">|</span>
+                <a
+                  href="mailto:shira.pelleg@gmail.com"
+                  className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1.5"
+                >
+                  <Mail className="h-3 w-3" />
+                  אימייל
+                </a>
+              </div>
             </form>
           </motion.div>
         )}
