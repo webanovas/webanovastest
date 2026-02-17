@@ -9,19 +9,21 @@ import { toast } from "sonner";
 const FloatingContact = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", message: "" });
-  const [sending, setSending] = useState(false);
+  
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.phone) {
       toast.error("נא למלא שם וטלפון");
       return;
     }
-    setSending(true);
-    await new Promise((r) => setTimeout(r, 800));
-    toast.success("ההודעה נשלחה בהצלחה!");
+    const subject = encodeURIComponent("פנייה חדשה מהאתר");
+    const body = encodeURIComponent(
+      `שם: ${form.name}\nטלפון: ${form.phone}\nהודעה: ${form.message || "ללא הודעה"}`
+    );
+    window.open(`mailto:shira.pelleg@gmail.com?subject=${subject}&body=${body}`, "_self");
+    toast.success("נפתח חלון מייל לשליחה");
     setForm({ name: "", phone: "", message: "" });
-    setSending(false);
     setIsOpen(false);
   };
 
@@ -102,11 +104,10 @@ const FloatingContact = () => {
               />
               <Button
                 type="submit"
-                disabled={sending}
                 className="w-full gap-2 rounded-xl h-10 text-sm mt-1 shadow-sm"
               >
-                <Send className="h-3.5 w-3.5" />
-                {sending ? "שולח..." : "שליחה"}
+                <Mail className="h-3.5 w-3.5" />
+                שליחה במייל
               </Button>
               <div className="flex items-center justify-center gap-3 pt-1">
                 <a
