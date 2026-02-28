@@ -43,10 +43,10 @@ const Footer = () => {
           <div>
             <E section="nav-title" fallback="ניווט" as="h4" className="font-heading font-semibold mb-4 text-black/90" />
             <nav className="flex flex-col gap-2.5 text-sm">
-              <Link to="/about" className="text-primary-foreground/50 hover:text-primary-foreground transition-colors">על הסטודיו</Link>
-              <Link to="/schedule" className="text-primary-foreground/50 hover:text-primary-foreground transition-colors">מערכת שעות</Link>
-              <Link to="/workshops" className="text-primary-foreground/50 hover:text-primary-foreground transition-colors">סדנאות</Link>
-              <Link to="/contact" className="text-primary-foreground/50 hover:text-primary-foreground transition-colors">צור קשר</Link>
+              <Link to="/about" className="text-black/50 hover:text-black transition-colors">על הסטודיו</Link>
+              <Link to="/schedule" className="text-black/50 hover:text-black transition-colors">מערכת שעות</Link>
+              <Link to="/workshops" className="text-black/50 hover:text-black transition-colors">סדנאות</Link>
+              <Link to="/contact" className="text-black/50 hover:text-black transition-colors">צור קשר</Link>
             </nav>
           </div>
 
