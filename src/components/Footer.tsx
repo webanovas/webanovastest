@@ -20,7 +20,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="relative bg-yoga-dark text-primary-foreground">
+    <footer className="relative bg-yoga-dark text-black">
       {/* Organic top shape */}
       <div className="absolute -top-px left-0 right-0 overflow-hidden">
         <svg viewBox="0 0 1440 40" className="w-full h-8 md:h-10" preserveAspectRatio="none">
