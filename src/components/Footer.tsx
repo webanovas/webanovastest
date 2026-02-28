@@ -20,7 +20,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="relative bg-yoga-dark text-black">
+    <footer className="relative bg-yoga-dark text-white">
       {/* Organic top shape */}
       <div className="absolute -top-px left-0 right-0 overflow-hidden">
         <svg viewBox="0 0 1440 40" className="w-full h-8 md:h-10" preserveAspectRatio="none">
@@ -34,31 +34,31 @@ const Footer = () => {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <img src={logo} alt="יוגה במושבה" className="w-10 h-10 rounded-full object-contain" />
-              <E section="brand-name" fallback="יוגה במושבה" as="h3" className="font-heading text-xl font-bold" />
+              <E section="brand-name" fallback="יוגה במושבה" as="h3" className="font-heading text-xl font-bold text-white" />
             </div>
-            <E section="brand-desc" fallback="סטודיו יוגה בכיכר המושבה, הוד השרון. מקום של שקט, נשימה וחיבור." as="p" className="text-black/60 text-sm font-body leading-relaxed max-w-xs" multiline />
+            <E section="brand-desc" fallback="סטודיו יוגה בכיכר המושבה, הוד השרון. מקום של שקט, נשימה וחיבור." as="p" className="text-white/70 text-sm font-body leading-relaxed max-w-xs" multiline />
           </div>
 
           {/* Quick Links */}
           <div>
-            <E section="nav-title" fallback="ניווט" as="h4" className="font-heading font-semibold mb-4 text-black/90" />
+            <E section="nav-title" fallback="ניווט" as="h4" className="font-heading font-semibold mb-4 text-white" />
             <nav className="flex flex-col gap-2.5 text-sm">
-              <Link to="/about" className="text-black/50 hover:text-black transition-colors">על הסטודיו</Link>
-              <Link to="/schedule" className="text-black/50 hover:text-black transition-colors">מערכת שעות</Link>
-              <Link to="/workshops" className="text-black/50 hover:text-black transition-colors">סדנאות</Link>
-              <Link to="/contact" className="text-black/50 hover:text-black transition-colors">צור קשר</Link>
+              <Link to="/about" className="text-white/60 hover:text-white transition-colors">על הסטודיו</Link>
+              <Link to="/schedule" className="text-white/60 hover:text-white transition-colors">מערכת שעות</Link>
+              <Link to="/workshops" className="text-white/60 hover:text-white transition-colors">סדנאות</Link>
+              <Link to="/contact" className="text-white/60 hover:text-white transition-colors">צור קשר</Link>
             </nav>
           </div>
 
           {/* Contact */}
           <div>
-            <E section="contact-title" fallback="צרו קשר" as="h4" className="font-heading font-semibold mb-4 text-black/90" />
+            <E section="contact-title" fallback="צרו קשר" as="h4" className="font-heading font-semibold mb-4 text-white" />
             <div className="flex flex-col gap-3 text-sm">
-              <a href="tel:0542131254" className="flex items-center gap-3 text-black/50 hover:text-black transition-colors">
+              <a href="tel:0542131254" className="flex items-center gap-3 text-white/60 hover:text-white transition-colors">
                 <Phone className="h-4 w-4" />
                 <E section="phone" fallback="054-213-1254" />
               </a>
-              <a href="https://www.google.com/maps/search/%D7%9B%D7%99%D7%9B%D7%A8+%D7%94%D7%9E%D7%95%D7%A9%D7%91%D7%94+%D7%94%D7%95%D7%93+%D7%94%D7%A9%D7%A8%D7%95%D7%9F" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-black/50 hover:text-black transition-colors">
+              <a href="https://www.google.com/maps/search/%D7%9B%D7%99%D7%9B%D7%A8+%D7%94%D7%9E%D7%95%D7%A9%D7%91%D7%94+%D7%94%D7%95%D7%93+%D7%94%D7%A9%D7%A8%D7%95%D7%9F" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-white/60 hover:text-white transition-colors">
                 <MapPin className="h-4 w-4" />
                 <E section="address" fallback="כיכר המושבה, הוד השרון" />
               </a>
@@ -66,7 +66,7 @@ const Footer = () => {
                 href="https://instagram.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 text-black/50 hover:text-black transition-colors"
+                className="flex items-center gap-3 text-white/60 hover:text-white transition-colors"
               >
                 <Instagram className="h-4 w-4" />
                 <E section="instagram" fallback="@yogabamoshava" />
@@ -75,19 +75,19 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between border-t border-black/10 pt-6">
+        <div className="flex items-center justify-between border-t border-white/20 pt-6">
           <div className="flex items-center gap-3">
-            <E section="copyright" fallback={`© ${new Date().getFullYear()} יוגה במושבה – כל הזכויות שמורות`} as="p" className="text-xs text-black/40" />
-            <Link to="/admin-login" className="text-black/20 hover:text-black/40 transition-colors" aria-label="כניסת מנהל">
+            <E section="copyright" fallback={`© ${new Date().getFullYear()} יוגה במושבה – כל הזכויות שמורות`} as="p" className="text-xs text-white/50" />
+            <Link to="/admin-login" className="text-white/30 hover:text-white/50 transition-colors" aria-label="כניסת מנהל">
               <Settings className="h-3 w-3" />
             </Link>
           </div>
           <button
             onClick={scrollToTop}
-            className="w-9 h-9 rounded-xl bg-black/10 flex items-center justify-center hover:bg-black/20 transition-colors"
+            className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
             aria-label="חזרה למעלה"
           >
-            <ArrowUp className="h-4 w-4 text-black/60" />
+            <ArrowUp className="h-4 w-4 text-white/70" />
           </button>
         </div>
       </div>
