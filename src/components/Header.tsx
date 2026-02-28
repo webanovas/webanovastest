@@ -127,9 +127,9 @@ const Header = () => {
                     to={item.path}
                     onClick={() => setMobileOpen(false)}
                     className={cn(
-                      "block px-6 py-4 rounded-2xl text-lg font-heading font-medium transition-colors text-center min-w-[200px]",
-                      "hover:bg-accent text-foreground/80 hover:text-foreground active:scale-95 transition-transform",
-                      location.pathname === item.path && "bg-primary/10 text-primary font-semibold"
+                      "block px-8 py-5 rounded-2xl text-xl font-heading font-semibold transition-colors text-center min-w-[220px]",
+                      "hover:bg-accent text-foreground/90 hover:text-foreground active:scale-95 transition-transform",
+                      location.pathname === item.path && "bg-primary/15 text-primary font-bold"
                     )}
                   >
                     {item.label}

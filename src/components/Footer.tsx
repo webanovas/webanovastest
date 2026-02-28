@@ -58,10 +58,10 @@ const Footer = () => {
                 <Phone className="h-4 w-4" />
                 <E section="phone" fallback="054-213-1254" />
               </a>
-              <div className="flex items-center gap-3 text-primary-foreground/50">
+              <a href="https://www.google.com/maps/search/%D7%9B%D7%99%D7%9B%D7%A8+%D7%94%D7%9E%D7%95%D7%A9%D7%91%D7%94+%D7%94%D7%95%D7%93+%D7%94%D7%A9%D7%A8%D7%95%D7%9F" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-primary-foreground/50 hover:text-primary-foreground transition-colors">
                 <MapPin className="h-4 w-4" />
                 <E section="address" fallback="כיכר המושבה, הוד השרון" />
-              </div>
+              </a>
               <a
                 href="https://instagram.com"
                 target="_blank"

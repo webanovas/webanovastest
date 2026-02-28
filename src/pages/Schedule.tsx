@@ -252,11 +252,6 @@ const Schedule = () => {
                                 <p className="text-xs text-muted-foreground/70 mt-1.5 line-clamp-1">{cls.description}</p>
                               )}
                             </div>
-                            {!isEditMode && (
-                              <Button asChild size="sm" className="rounded-full shadow-sm shadow-primary/20 shrink-0">
-                                <a href="https://1pa.co/dXjqxqYBbb" target="_blank" rel="noopener noreferrer">הרשמה</a>
-                              </Button>
-                            )}
                           </div>
                         </div>
                       </CardContent>

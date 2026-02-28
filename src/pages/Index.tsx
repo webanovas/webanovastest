@@ -5,10 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Link } from "react-router-dom";
 import {
-  Users, Monitor, User, Heart,
+  Heart,
   Leaf, Brain, Sunrise, Wind,
   Phone, Mail, MessageCircle, Send,
-  ArrowLeft, Quote,
+  ArrowLeft, Quote, MapPin,
 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { useQuery } from "@tanstack/react-query";
@@ -16,13 +16,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAdminMode } from "@/hooks/useAdminMode";
 import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
+import { useCallback, useEffect, useState } from "react";
 
 import heroYoga from "@/assets/hero-yoga.jpg";
 import teacherShira from "@/assets/teacher-shira.jpg";
 import studioInterior from "@/assets/studio-interior.jpg";
-import yogaGroup from "@/assets/yoga-group.jpg";
-import zoomYoga from "@/assets/zoom-yoga.jpg";
-import privateLesson from "@/assets/private-lesson.jpg";
 import meditationHands from "@/assets/meditation-hands.jpg";
 import yogaSunset from "@/assets/yoga-sunset.jpg";
 
@@ -34,15 +34,6 @@ const fadeUp = {
 const stagger = {
   visible: { transition: { staggerChildren: 0.12 } },
 };
-
-const serviceIcons = [Users, Monitor, User, Heart];
-const serviceImages = [yogaGroup, zoomYoga, privateLesson, meditationHands];
-const serviceDefaults = [
-  { title: "שיעורים בסטודיו", desc: "שיעורי יוגה קבוצתיים באווירה חמה ומזמינה" },
-  { title: "שיעורי זום", desc: "תרגלו מהנוחות של הבית בשיעורים אונליין" },
-  { title: "שיעורים פרטיים", desc: "תרגול מותאם אישית לצרכים שלכם" },
-  { title: "קבוצות מיוחדות", desc: "שיעורים לקבוצות, ימי כיף ואירועים" },
-];
 
 const benefitIcons = [Leaf, Brain, Sunrise, Wind];
 const benefitDefaults = [
@@ -59,10 +50,28 @@ const Index = () => {
   const { data: testimonials = [] } = useQuery({
     queryKey: ["testimonials-home"],
     queryFn: async () => {
-      const { data } = await supabase.from("testimonials").select("*").order("sort_order").limit(3);
+      const { data } = await supabase.from("testimonials").select("*").order("sort_order").limit(10);
       return data ?? [];
     },
   });
+
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    { loop: true, direction: "rtl", align: "start" },
+    [Autoplay({ delay: 4000, stopOnInteraction: false })]
+  );
+
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on("select", onSelect);
+    return () => { emblaApi.off("select", onSelect); };
+  }, [emblaApi, onSelect]);
 
   const E = ({ section, fallback, as, className, multiline }: { section: string; fallback: string; as?: "h1"|"h2"|"h3"|"p"|"span"|"div"; className?: string; multiline?: boolean }) => {
     const val = getText(section, fallback);
@@ -85,8 +94,15 @@ const Index = () => {
         <div className="container mx-auto px-4 relative z-10 pb-12 md:pb-28 pt-28 md:pt-40">
           <motion.div initial="hidden" animate="visible" variants={stagger} className="max-w-2xl">
             <motion.div variants={fadeUp} className="mb-5">
-              <E section="hero-badge" fallback="כיכר המושבה, הוד השרון" as="span"
-                className="inline-block px-4 py-1.5 rounded-full bg-primary-foreground/15 backdrop-blur-md text-primary-foreground/90 text-sm font-body border border-primary-foreground/20" />
+              <a
+                href="https://www.google.com/maps/search/%D7%9B%D7%99%D7%9B%D7%A8+%D7%94%D7%9E%D7%95%D7%A9%D7%91%D7%94+%D7%94%D7%95%D7%93+%D7%94%D7%A9%D7%A8%D7%95%D7%9F"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-foreground/15 backdrop-blur-md text-primary-foreground/90 text-sm font-body border border-primary-foreground/20 hover:bg-primary-foreground/25 transition-colors"
+              >
+                <MapPin className="h-3.5 w-3.5" />
+                <E section="hero-badge" fallback="כיכר המושבה, הוד השרון" as="span" className="" />
+              </a>
             </motion.div>
             <motion.div variants={fadeUp}>
               <E section="hero-title" fallback="יוגה במושבה" as="h1"
@@ -136,48 +152,6 @@ const Index = () => {
               </div>
             </motion.div>
           </div>
-        </div>
-      </section>
-
-      {/* Services */}
-      <section className="py-14 md:py-36 bg-yoga-cream relative overflow-hidden">
-        <div className="container mx-auto px-4">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger} className="text-center mb-16">
-            <motion.div variants={fadeUp}>
-              <E section="services-label" fallback="מה אנחנו מציעים" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
-            </motion.div>
-            <motion.div variants={fadeUp}>
-              <E section="services-title" fallback="אפשרויות תרגול" as="h2" className="font-heading text-3xl md:text-5xl font-bold mb-4" />
-            </motion.div>
-            <motion.div variants={fadeUp}>
-              <E section="services-subtitle" fallback="מגוון אפשרויות שמותאמות לכל אחת ואחד" as="p" className="text-muted-foreground max-w-md mx-auto text-lg" />
-            </motion.div>
-          </motion.div>
-
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-5xl mx-auto">
-            {serviceDefaults.map((s, i) => {
-              const Icon = serviceIcons[i];
-              return (
-                <motion.div key={i} variants={fadeUp}>
-                  <Card className="group rounded-3xl border-0 overflow-hidden hover-lift shadow-lg">
-                    <div className="aspect-[16/10] overflow-hidden relative">
-                      <img src={serviceImages[i]} alt={s.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-yoga-dark/70 to-transparent" />
-                      <div className="absolute bottom-0 p-6 text-primary-foreground">
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className="w-10 h-10 rounded-full bg-primary-foreground/20 backdrop-blur-sm flex items-center justify-center">
-                            <Icon className="h-5 w-5" />
-                          </div>
-                          <E section={`service-${i}-title`} fallback={s.title} as="h3" className="font-heading font-bold text-xl" />
-                        </div>
-                        <E section={`service-${i}-desc`} fallback={s.desc} as="p" className="text-sm text-primary-foreground/80" />
-                      </div>
-                    </div>
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </motion.div>
         </div>
       </section>
 
@@ -233,10 +207,10 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* Testimonials Carousel */}
       <section className="py-14 md:py-36 bg-yoga-cream">
         <div className="container mx-auto px-4">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center mb-16">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center mb-12">
             <motion.div variants={fadeUp}>
               <E section="testimonials-label" fallback="המלצות" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
             </motion.div>
@@ -245,26 +219,46 @@ const Index = () => {
             </motion.div>
           </motion.div>
 
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {testimonials.length === 0 ? (
-              <p className="text-center text-muted-foreground col-span-full">מילים חמות יעודכנו בקרוב</p>
-            ) : testimonials.map((t) => (
-              <motion.div key={t.id} variants={fadeUp}>
-                <Card className="h-full rounded-3xl border-0 shadow-md hover-lift bg-card">
-                  <CardContent className="pt-8 pb-8 px-8">
-                    <Quote className="h-8 w-8 text-primary/20 mb-4" />
-                    <p className="text-foreground/80 leading-relaxed mb-6">{t.text}</p>
-                    <div className="flex items-center gap-3 pt-4 border-t border-border">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <span className="font-heading font-bold text-primary text-sm">{t.name.charAt(0)}</span>
-                      </div>
-                      <span className="font-heading font-medium text-sm">{t.name}</span>
+          {testimonials.length === 0 ? (
+            <p className="text-center text-muted-foreground">מילים חמות יעודכנו בקרוב</p>
+          ) : (
+            <div className="max-w-5xl mx-auto">
+              <div className="overflow-hidden" ref={emblaRef}>
+                <div className="flex gap-6" style={{ direction: "rtl" }}>
+                  {testimonials.map((t) => (
+                    <div key={t.id} className="flex-none w-[85%] sm:w-[45%] md:w-[33%]">
+                      <Card className="h-full rounded-3xl border-0 shadow-md bg-card">
+                        <CardContent className="pt-8 pb-8 px-8">
+                          <Quote className="h-8 w-8 text-primary/20 mb-4" />
+                          <p className="text-foreground/80 leading-relaxed mb-6">{t.text}</p>
+                          <div className="flex items-center gap-3 pt-4 border-t border-border">
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                              <span className="font-heading font-bold text-primary text-sm">{t.name.charAt(0)}</span>
+                            </div>
+                            <span className="font-heading font-medium text-sm">{t.name}</span>
+                          </div>
+                        </CardContent>
+                      </Card>
                     </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
+                  ))}
+                </div>
+              </div>
+              {/* Dots */}
+              {testimonials.length > 1 && (
+                <div className="flex justify-center gap-2 mt-8">
+                  {testimonials.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => emblaApi?.scrollTo(i)}
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                        i === selectedIndex ? "bg-primary w-6" : "bg-primary/20"
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-center mt-12">
             <Button variant="outline" className="rounded-full gap-2 h-12 px-8" asChild>
