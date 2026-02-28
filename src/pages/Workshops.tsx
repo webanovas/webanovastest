@@ -97,6 +97,7 @@ const Workshops = () => {
   };
   const [editing, setEditing] = useState<WorkshopRow | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [activeTab, setActiveTab] = useState<"upcoming" | "past">("upcoming");
   const [newItem, setNewItem] = useState({ title: "", date: "", time: "", location: "", description: "", is_active: true });
 
   const { data: workshops = [] } = useQuery({
