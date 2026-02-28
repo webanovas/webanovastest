@@ -149,10 +149,14 @@ const Contact = () => {
               </form>
 
               <motion.div variants={fadeUp} className="mt-5">
-                <Button variant="outline" asChild className="w-full gap-2 rounded-full h-12">
-                  <a href="https://wa.me/972542131254" target="_blank" rel="noopener noreferrer">
-                    <MessageCircle className="h-4 w-4" /><E section="whatsapp-btn" fallback="שלחו הודעה בוואטסאפ" />
-                  </a>
+                <Button variant="outline" className="w-full gap-2 rounded-full h-12" asChild={!isEditMode}>
+                  {isEditMode ? (
+                    <span><MessageCircle className="h-4 w-4" /><E section="whatsapp-btn" fallback="שלחו הודעה בוואטסאפ" /></span>
+                  ) : (
+                    <a href="https://wa.me/972542131254" target="_blank" rel="noopener noreferrer">
+                      <MessageCircle className="h-4 w-4" /><E section="whatsapp-btn" fallback="שלחו הודעה בוואטסאפ" />
+                    </a>
+                  )}
                 </Button>
               </motion.div>
             </motion.div>
