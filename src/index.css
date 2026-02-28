@@ -6,44 +6,44 @@
 
 @layer base {
   :root {
-    --background: 40 20% 95%;
-    --foreground: 160 15% 15%;
+    --background: 191 24% 95%;
+    --foreground: 180 4% 25%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 160 15% 15%;
+    --card: 191 20% 98%;
+    --card-foreground: 180 4% 25%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 160 15% 15%;
+    --popover: 191 20% 98%;
+    --popover-foreground: 180 4% 25%;
 
-    --primary: 170 25% 45%;
-    --primary-foreground: 170 30% 10%;
+    --primary: 165 8% 58%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 60 8% 92%;
-    --secondary-foreground: 160 15% 20%;
+    --secondary: 191 24% 90%;
+    --secondary-foreground: 180 4% 30%;
 
-    --muted: 60 8% 93%;
-    --muted-foreground: 160 5% 45%;
+    --muted: 191 18% 92%;
+    --muted-foreground: 180 5% 45%;
 
-    --accent: 170 20% 90%;
-    --accent-foreground: 170 20% 25%;
+    --accent: 191 24% 88%;
+    --accent-foreground: 180 4% 30%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 60 10% 90%;
-    --input: 60 10% 88%;
-    --ring: 170 25% 45%;
+    --border: 191 15% 88%;
+    --input: 191 15% 85%;
+    --ring: 165 8% 58%;
 
     --radius: 1rem;
 
-    --yoga-sage: 170 25% 45%;
-    --yoga-sage-light: 170 20% 90%;
-    --yoga-olive: 95 18% 38%;
-    --yoga-sand: 38 35% 92%;
-    --yoga-warm: 30 30% 88%;
-    --yoga-cream: 45 25% 96%;
-    --yoga-dark: 160 20% 12%;
-    --yoga-glass: 0 0% 100%;
+    --yoga-sage: 165 8% 58%;
+    --yoga-sage-light: 191 24% 88%;
+    --yoga-olive: 180 4% 35%;
+    --yoga-sand: 191 24% 90%;
+    --yoga-warm: 191 20% 86%;
+    --yoga-cream: 191 20% 96%;
+    --yoga-dark: 180 4% 35%;
+    --yoga-glass: 191 20% 98%;
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 160 15% 15%;
