@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAdminMode } from "@/hooks/useAdminMode";
 import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
+import EditableImage from "@/components/admin/EditableImage";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useCallback, useEffect, useState } from "react";
@@ -25,6 +26,7 @@ import teacherShira from "@/assets/teacher-shira.jpg";
 import studioInterior from "@/assets/studio-interior.jpg";
 import meditationHands from "@/assets/meditation-hands.jpg";
 import yogaSunset from "@/assets/yoga-sunset.jpg";
+import yogaGroup from "@/assets/yoga-group.jpg";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -43,6 +45,8 @@ const benefitDefaults = [
   { title: "הפחתת מתח", desc: "שחרור מתחים ושיפור איכות השינה" },
 ];
 
+const defaultHeroImages = [heroYoga, studioInterior, yogaGroup, yogaSunset, meditationHands];
+
 const Index = () => {
   const { isEditMode } = useAdminMode();
   const { getText, saveText } = usePageContent("home");
@@ -55,6 +59,19 @@ const Index = () => {
     },
   });
 
+  // Hero carousel
+  const [heroEmblaRef] = useEmblaCarousel(
+    { loop: true, direction: "rtl" },
+    [Autoplay({ delay: 2000, stopOnInteraction: false })]
+  );
+
+  // Get hero images from page_content or use defaults
+  const heroImages = defaultHeroImages.map((defaultSrc, i) => {
+    const saved = getText(`hero-image-${i}`, "");
+    return saved || defaultSrc;
+  });
+
+  // Testimonials carousel
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: true, direction: "rtl", align: "start" },
     [Autoplay({ delay: 4000, stopOnInteraction: false })]
@@ -82,12 +99,43 @@ const Index = () => {
     return <EditableText value={val} onSave={(v) => saveText(section, v)} as={as} className={className} multiline={multiline} />;
   };
 
+  // Helper: wrap Link buttons so they don't navigate in edit mode
+  const MaybeLink = ({ to, children, ...props }: { to: string; children: React.ReactNode; [key: string]: any }) => {
+    if (isEditMode) {
+      return <span {...props} className={props.className} style={{ cursor: "default" }}>{children}</span>;
+    }
+    return <Link to={to} {...props}>{children}</Link>;
+  };
+
+  // Get section images from page_content or use defaults
+  const getImage = (section: string, fallback: string) => {
+    const saved = getText(section, "");
+    return saved || fallback;
+  };
+
   return (
     <Layout>
-      {/* Hero */}
+      {/* Hero with image carousel */}
       <section className="relative min-h-[85vh] md:min-h-screen flex items-end overflow-hidden">
-        <div className="absolute inset-0">
-          <img src={heroYoga} alt="יוגה במושבה" className="w-full h-full object-cover" />
+        {/* Image carousel background */}
+        <div className="absolute inset-0" ref={heroEmblaRef}>
+          <div className="flex h-full">
+            {heroImages.map((src, i) => (
+              <div key={i} className="flex-none w-full h-full min-w-0 relative">
+                {isEditMode ? (
+                  <EditableImage
+                    src={src}
+                    alt={`יוגה במושבה ${i + 1}`}
+                    className="w-full h-full object-cover"
+                    folder="hero"
+                    onUpload={(url) => saveText(`hero-image-${i}`, url)}
+                  />
+                ) : (
+                  <img src={src} alt={`יוגה במושבה ${i + 1}`} className="w-full h-full object-cover" />
+                )}
+              </div>
+            ))}
+          </div>
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-yoga-dark/90 via-yoga-dark/30 to-transparent" />
 
@@ -99,6 +147,7 @@ const Index = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-foreground/15 backdrop-blur-md text-primary-foreground/90 text-sm font-body border border-primary-foreground/20 hover:bg-primary-foreground/25 transition-colors"
+                onClick={(e) => isEditMode && e.preventDefault()}
               >
                 <MapPin className="h-3.5 w-3.5" />
                 <E section="hero-badge" fallback="כיכר המושבה, הוד השרון" as="span" className="" />
@@ -113,11 +162,19 @@ const Index = () => {
                 className="text-base md:text-xl text-primary-foreground/80 leading-relaxed mb-8 md:mb-10 max-w-lg" multiline />
             </motion.div>
             <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
-              <Button size="lg" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base shadow-xl shadow-primary/30" asChild>
-                <Link to="/schedule"><E section="hero-btn-schedule" fallback="לוח שיעורים" /></Link>
+              <Button size="lg" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base shadow-xl shadow-primary/30" asChild={!isEditMode} disabled={isEditMode}>
+                {isEditMode ? (
+                  <span><E section="hero-btn-schedule" fallback="לוח שיעורים" /></span>
+                ) : (
+                  <Link to="/schedule"><E section="hero-btn-schedule" fallback="לוח שיעורים" /></Link>
+                )}
               </Button>
-              <Button size="lg" variant="outline" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base border-primary-foreground/50 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:text-primary-foreground backdrop-blur-md" asChild>
-                <Link to="/about"><E section="hero-btn-about" fallback="הכירו אותנו" /></Link>
+              <Button size="lg" variant="outline" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base border-primary-foreground/50 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:text-primary-foreground backdrop-blur-md" asChild={!isEditMode} disabled={isEditMode}>
+                {isEditMode ? (
+                  <span><E section="hero-btn-about" fallback="הכירו אותנו" /></span>
+                ) : (
+                  <Link to="/about"><E section="hero-btn-about" fallback="הכירו אותנו" /></Link>
+                )}
               </Button>
             </motion.div>
           </motion.div>
@@ -138,17 +195,33 @@ const Index = () => {
               <E section="welcome-text-2" fallback="שירה פלג, מורה ומטפלת ביוגה מנוסה, מובילה את הסטודיו מתוך אהבה אמיתית לתרגול ומחויבות לכל מתרגל ומתרגלת." as="p"
                 className="text-muted-foreground leading-relaxed mb-8" multiline />
               <div className="pt-6 border-t border-border"></div>
-              <Button variant="outline" className="rounded-full gap-2 px-8 h-12" asChild>
-                <Link to="/about"><E section="welcome-btn" fallback="קראו עוד עלינו" /><ArrowLeft className="h-4 w-4" /></Link>
+              <Button variant="outline" className="rounded-full gap-2 px-8 h-12" asChild={!isEditMode} disabled={isEditMode}>
+                {isEditMode ? (
+                  <span><E section="welcome-btn" fallback="קראו עוד עלינו" /><ArrowLeft className="h-4 w-4" /></span>
+                ) : (
+                  <Link to="/about"><E section="welcome-btn" fallback="קראו עוד עלינו" /><ArrowLeft className="h-4 w-4" /></Link>
+                )}
               </Button>
             </motion.div>
 
             <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="relative">
               <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[3/4]">
-                <img src={teacherShira} alt="שירה פלג" className="w-full h-full object-cover" />
+                <EditableImage
+                  src={getImage("welcome-img-main", teacherShira)}
+                  alt="שירה פלג"
+                  className="w-full h-full object-cover"
+                  folder="welcome"
+                  onUpload={isEditMode ? (url) => saveText("welcome-img-main", url) : undefined}
+                />
               </div>
               <div className="absolute -bottom-8 -right-8 md:-right-12 w-40 h-40 md:w-52 md:h-52 rounded-2xl overflow-hidden shadow-xl border-4 border-background">
-                <img src={studioInterior} alt="הסטודיו" className="w-full h-full object-cover" />
+                <EditableImage
+                  src={getImage("welcome-img-secondary", studioInterior)}
+                  alt="הסטודיו"
+                  className="w-full h-full object-cover"
+                  folder="welcome"
+                  onUpload={isEditMode ? (url) => saveText("welcome-img-secondary", url) : undefined}
+                />
               </div>
             </motion.div>
           </div>
@@ -157,15 +230,25 @@ const Index = () => {
 
       {/* Full-width image divider */}
       <section className="relative h-[50vh] md:h-[60vh] overflow-hidden">
-        <img src={yogaSunset} alt="יוגה" className="absolute inset-0 w-full h-full object-cover" />
+        <EditableImage
+          src={getImage("cta-bg-image", yogaSunset)}
+          alt="יוגה"
+          className="absolute inset-0 w-full h-full object-cover"
+          folder="cta"
+          onUpload={isEditMode ? (url) => saveText("cta-bg-image", url) : undefined}
+        />
         <div className="absolute inset-0 bg-yoga-dark/50 flex items-center justify-center">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center px-4">
             <E section="cta-title" fallback="התחילו לנשום" as="h2"
               className="font-heading text-3xl md:text-6xl font-bold text-primary-foreground mb-4" />
             <E section="cta-subtitle" fallback="הצטרפו למשפחת יוגה במושבה ותגלו מרחב חדש של שקט ורוגע" as="p"
               className="text-primary-foreground/70 text-lg mb-8 max-w-md mx-auto" />
-            <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild>
-              <Link to="/contact"><E section="cta-btn" fallback="בואו נתחיל" /></Link>
+            <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild={!isEditMode} disabled={isEditMode}>
+              {isEditMode ? (
+                <span><E section="cta-btn" fallback="בואו נתחיל" /></span>
+              ) : (
+                <Link to="/contact"><E section="cta-btn" fallback="בואו נתחיל" /></Link>
+              )}
             </Button>
           </motion.div>
         </div>
@@ -176,7 +259,13 @@ const Index = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="rounded-3xl overflow-hidden shadow-xl aspect-square">
-              <img src={meditationHands} alt="תרגול יוגה" className="w-full h-full object-cover" />
+              <EditableImage
+                src={getImage("benefits-image", meditationHands)}
+                alt="תרגול יוגה"
+                className="w-full h-full object-cover"
+                folder="benefits"
+                onUpload={isEditMode ? (url) => saveText("benefits-image", url) : undefined}
+              />
             </motion.div>
 
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
@@ -243,7 +332,6 @@ const Index = () => {
                   ))}
                 </div>
               </div>
-              {/* Dots */}
               {testimonials.length > 1 && (
                 <div className="flex justify-center gap-2 mt-8">
                   {testimonials.map((_, i) => (
@@ -261,8 +349,12 @@ const Index = () => {
           )}
 
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-center mt-12">
-            <Button variant="outline" className="rounded-full gap-2 h-12 px-8" asChild>
-              <Link to="/testimonials"><E section="testimonials-btn" fallback="לכל המילים החמות" /><ArrowLeft className="h-4 w-4" /></Link>
+            <Button variant="outline" className="rounded-full gap-2 h-12 px-8" asChild={!isEditMode} disabled={isEditMode}>
+              {isEditMode ? (
+                <span><E section="testimonials-btn" fallback="לכל המילים החמות" /><ArrowLeft className="h-4 w-4" /></span>
+              ) : (
+                <Link to="/testimonials"><E section="testimonials-btn" fallback="לכל המילים החמות" /><ArrowLeft className="h-4 w-4" /></Link>
+              )}
             </Button>
           </motion.div>
         </div>
@@ -283,15 +375,15 @@ const Index = () => {
                 <E section="contact-subtitle" fallback="רוצים לשמוע עוד? השאירו פרטים ונחזור אליכם בהקדם." as="p" className="text-muted-foreground mb-8 text-lg" />
               </motion.div>
               <motion.div variants={fadeUp} className="flex flex-col gap-5 text-sm">
-                <a href="tel:0542131254" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
+                <a href="tel:0542131254" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => isEditMode && e.preventDefault()}>
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Phone className="h-4 w-4 text-primary" /></div>
                   <E section="contact-phone" fallback="054-213-1254" />
                 </a>
-                <a href="mailto:shira.pelleg@gmail.com" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
+                <a href="mailto:shira.pelleg@gmail.com" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => isEditMode && e.preventDefault()}>
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Mail className="h-4 w-4 text-primary" /></div>
                   <E section="contact-email" fallback="shira.pelleg@gmail.com" />
                 </a>
-                <a href="https://wa.me/972542131254" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
+                <a href="https://wa.me/972542131254" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => isEditMode && e.preventDefault()}>
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><MessageCircle className="h-4 w-4 text-primary" /></div>
                   <E section="contact-whatsapp" fallback="שלחו הודעה בוואטסאפ" />
                 </a>
@@ -304,7 +396,7 @@ const Index = () => {
               <motion.div variants={fadeUp}><Input type="tel" placeholder="טלפון" className="bg-accent/30 border-0 rounded-xl h-12" /></motion.div>
               <motion.div variants={fadeUp}><Textarea placeholder="הודעה" rows={4} className="bg-accent/30 border-0 rounded-xl" /></motion.div>
               <motion.div variants={fadeUp}>
-                <Button type="submit" className="w-full gap-2 rounded-full h-12 text-base shadow-lg shadow-primary/20">
+                <Button type="submit" className="w-full gap-2 rounded-full h-12 text-base shadow-lg shadow-primary/20" disabled={isEditMode}>
                   <Send className="h-4 w-4" /><E section="contact-send-btn" fallback="שלחו הודעה" />
                 </Button>
               </motion.div>
