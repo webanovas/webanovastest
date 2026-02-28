@@ -162,14 +162,14 @@ const Index = () => {
                 className="text-base md:text-xl text-primary-foreground/80 leading-relaxed mb-8 md:mb-10 max-w-lg" multiline />
             </motion.div>
             <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
-              <Button size="lg" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base shadow-xl shadow-primary/30" asChild={!isEditMode} disabled={isEditMode}>
+              <Button size="lg" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base shadow-xl shadow-primary/30" asChild={!isEditMode}>
                 {isEditMode ? (
                   <span><E section="hero-btn-schedule" fallback="לוח שיעורים" /></span>
                 ) : (
                   <Link to="/schedule"><E section="hero-btn-schedule" fallback="לוח שיעורים" /></Link>
                 )}
               </Button>
-              <Button size="lg" variant="outline" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base border-primary-foreground/50 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:text-primary-foreground backdrop-blur-md" asChild={!isEditMode} disabled={isEditMode}>
+              <Button size="lg" variant="outline" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base border-primary-foreground/50 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:text-primary-foreground backdrop-blur-md" asChild={!isEditMode}>
                 {isEditMode ? (
                   <span><E section="hero-btn-about" fallback="הכירו אותנו" /></span>
                 ) : (
@@ -195,7 +195,7 @@ const Index = () => {
               <E section="welcome-text-2" fallback="שירה פלג, מורה ומטפלת ביוגה מנוסה, מובילה את הסטודיו מתוך אהבה אמיתית לתרגול ומחויבות לכל מתרגל ומתרגלת." as="p"
                 className="text-muted-foreground leading-relaxed mb-8" multiline />
               <div className="pt-6 border-t border-border"></div>
-              <Button variant="outline" className="rounded-full gap-2 px-8 h-12" asChild={!isEditMode} disabled={isEditMode}>
+              <Button variant="outline" className="rounded-full gap-2 px-8 h-12" asChild={!isEditMode}>
                 {isEditMode ? (
                   <span><E section="welcome-btn" fallback="קראו עוד עלינו" /><ArrowLeft className="h-4 w-4" /></span>
                 ) : (
@@ -243,7 +243,7 @@ const Index = () => {
               className="font-heading text-3xl md:text-6xl font-bold text-primary-foreground mb-4" />
             <E section="cta-subtitle" fallback="הצטרפו למשפחת יוגה במושבה ותגלו מרחב חדש של שקט ורוגע" as="p"
               className="text-primary-foreground/70 text-lg mb-8 max-w-md mx-auto" />
-            <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild={!isEditMode} disabled={isEditMode}>
+            <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild={!isEditMode}>
               {isEditMode ? (
                 <span><E section="cta-btn" fallback="בואו נתחיל" /></span>
               ) : (
@@ -349,7 +349,7 @@ const Index = () => {
           )}
 
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-center mt-12">
-            <Button variant="outline" className="rounded-full gap-2 h-12 px-8" asChild={!isEditMode} disabled={isEditMode}>
+            <Button variant="outline" className="rounded-full gap-2 h-12 px-8" asChild={!isEditMode}>
               {isEditMode ? (
                 <span><E section="testimonials-btn" fallback="לכל המילים החמות" /><ArrowLeft className="h-4 w-4" /></span>
               ) : (
@@ -396,7 +396,7 @@ const Index = () => {
               <motion.div variants={fadeUp}><Input type="tel" placeholder="טלפון" className="bg-accent/30 border-0 rounded-xl h-12" /></motion.div>
               <motion.div variants={fadeUp}><Textarea placeholder="הודעה" rows={4} className="bg-accent/30 border-0 rounded-xl" /></motion.div>
               <motion.div variants={fadeUp}>
-                <Button type="submit" className="w-full gap-2 rounded-full h-12 text-base shadow-lg shadow-primary/20" disabled={isEditMode}>
+                <Button type={isEditMode ? "button" : "submit"} className="w-full gap-2 rounded-full h-12 text-base shadow-lg shadow-primary/20">
                   <Send className="h-4 w-4" /><E section="contact-send-btn" fallback="שלחו הודעה" />
                 </Button>
               </motion.div>
