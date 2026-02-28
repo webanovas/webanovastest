@@ -8,7 +8,7 @@ import {
   Heart,
   Leaf, Brain, Sunrise, Wind,
   Phone, Mail, MessageCircle, Send,
-  ArrowLeft, Quote, MapPin,
+  ArrowLeft, Quote, MapPin, Images, X, Camera, Loader2,
 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { useQuery } from "@tanstack/react-query";
@@ -19,7 +19,8 @@ import EditableText from "@/components/admin/EditableText";
 import EditableImage from "@/components/admin/EditableImage";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
+import { toast } from "sonner";
 
 import heroYoga from "@/assets/hero-yoga.jpg";
 import teacherShira from "@/assets/teacher-shira.jpg";
