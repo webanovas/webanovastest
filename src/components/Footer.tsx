@@ -36,7 +36,7 @@ const Footer = () => {
               <img src={logo} alt="יוגה במושבה" className="w-10 h-10 rounded-full object-contain" />
               <E section="brand-name" fallback="יוגה במושבה" as="h3" className="font-heading text-xl font-bold" />
             </div>
-            <E section="brand-desc" fallback="סטודיו יוגה בכיכר המושבה, הוד השרון. מקום של שקט, נשימה וחיבור." as="p" className="text-primary-foreground/60 text-sm font-body leading-relaxed max-w-xs" multiline />
+            <E section="brand-desc" fallback="סטודיו יוגה בכיכר המושבה, הוד השרון. מקום של שקט, נשימה וחיבור." as="p" className="text-black/60 text-sm font-body leading-relaxed max-w-xs" multiline />
           </div>
 
           {/* Quick Links */}
