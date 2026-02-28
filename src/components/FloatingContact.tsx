@@ -12,6 +12,7 @@ const FloatingContact = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", message: "" });
   const [sending, setSending] = useState(false);
+  const { isAdmin } = useAdminMode();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
