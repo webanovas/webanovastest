@@ -396,7 +396,7 @@ const Index = () => {
               <motion.div variants={fadeUp}><Input type="tel" placeholder="טלפון" className="bg-accent/30 border-0 rounded-xl h-12" /></motion.div>
               <motion.div variants={fadeUp}><Textarea placeholder="הודעה" rows={4} className="bg-accent/30 border-0 rounded-xl" /></motion.div>
               <motion.div variants={fadeUp}>
-                <Button type="submit" className="w-full gap-2 rounded-full h-12 text-base shadow-lg shadow-primary/20" asChild={!isEditMode}>
+                <Button type={isEditMode ? "button" : "submit"} className="w-full gap-2 rounded-full h-12 text-base shadow-lg shadow-primary/20">
                   <Send className="h-4 w-4" /><E section="contact-send-btn" fallback="שלחו הודעה" />
                 </Button>
               </motion.div>
