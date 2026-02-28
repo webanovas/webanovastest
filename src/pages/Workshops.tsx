@@ -318,8 +318,12 @@ function WorkshopCard({ workshop: w, isEditMode, onEdit, imgSrc }: { workshop: W
           )}
         </div>
 
-        <Button asChild className="w-full rounded-full h-11 shadow-lg shadow-primary/20">
-          <Link to="/contact">הרשמה / פרטים</Link>
+        <Button className="w-full rounded-full h-11 shadow-lg shadow-primary/20" asChild={!isEditMode}>
+          {isEditMode ? (
+            <span>הרשמה / פרטים</span>
+          ) : (
+            <Link to="/contact">הרשמה / פרטים</Link>
+          )}
         </Button>
       </CardContent>
     </Card>
