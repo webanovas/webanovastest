@@ -162,7 +162,7 @@ const Index = () => {
                 className="text-base md:text-xl text-primary-foreground/80 leading-relaxed mb-8 md:mb-10 max-w-lg" multiline />
             </motion.div>
             <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
-              <Button size="lg" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base shadow-xl shadow-primary/30" asChild={!isEditMode} disabled={isEditMode}>
+              <Button size="lg" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base shadow-xl shadow-primary/30" asChild={!isEditMode}>
                 {isEditMode ? (
                   <span><E section="hero-btn-schedule" fallback="לוח שיעורים" /></span>
                 ) : (
