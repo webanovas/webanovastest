@@ -75,19 +75,19 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between border-t border-primary-foreground/10 pt-6">
+        <div className="flex items-center justify-between border-t border-black/10 pt-6">
           <div className="flex items-center gap-3">
-            <E section="copyright" fallback={`© ${new Date().getFullYear()} יוגה במושבה – כל הזכויות שמורות`} as="p" className="text-xs text-primary-foreground/40" />
-            <Link to="/admin-login" className="text-primary-foreground/20 hover:text-primary-foreground/40 transition-colors" aria-label="כניסת מנהל">
+            <E section="copyright" fallback={`© ${new Date().getFullYear()} יוגה במושבה – כל הזכויות שמורות`} as="p" className="text-xs text-black/40" />
+            <Link to="/admin-login" className="text-black/20 hover:text-black/40 transition-colors" aria-label="כניסת מנהל">
               <Settings className="h-3 w-3" />
             </Link>
           </div>
           <button
             onClick={scrollToTop}
-            className="w-9 h-9 rounded-xl bg-primary-foreground/10 flex items-center justify-center hover:bg-primary-foreground/20 transition-colors"
+            className="w-9 h-9 rounded-xl bg-black/10 flex items-center justify-center hover:bg-black/20 transition-colors"
             aria-label="חזרה למעלה"
           >
-            <ArrowUp className="h-4 w-4 text-primary-foreground/60" />
+            <ArrowUp className="h-4 w-4 text-black/60" />
           </button>
         </div>
       </div>
