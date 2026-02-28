@@ -66,11 +66,41 @@ const Index = () => {
     [Autoplay({ delay: 2000, stopOnInteraction: false })]
   );
 
+  // Hero image editor state
+  const [showHeroEditor, setShowHeroEditor] = useState(false);
+  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+  const fileRefs = useRef<(HTMLInputElement | null)[]>([]);
+
   // Get hero images from page_content or use defaults
   const heroImages = defaultHeroImages.map((defaultSrc, i) => {
     const saved = getText(`hero-image-${i}`, "");
     return saved || defaultSrc;
   });
+
+  const handleHeroImageUpload = async (index: number, file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("יש לבחור קובץ תמונה");
+      return;
+    }
+    setUploadingIndex(index);
+    try {
+      const ext = file.name.split(".").pop();
+      const fileName = `hero/${Date.now()}-${index}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from("site-images")
+        .upload(fileName, file, { upsert: true });
+      if (uploadError) throw uploadError;
+      const { data: { publicUrl } } = supabase.storage
+        .from("site-images")
+        .getPublicUrl(fileName);
+      await saveText(`hero-image-${index}`, publicUrl);
+      toast.success(`תמונה ${index + 1} הוחלפה`);
+    } catch (err: any) {
+      toast.error("שגיאה בהעלאה: " + err.message);
+    } finally {
+      setUploadingIndex(null);
+    }
+  };
 
   // Testimonials carousel
   const [emblaRef, emblaApi] = useEmblaCarousel(
