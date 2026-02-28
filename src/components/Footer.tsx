@@ -41,7 +41,7 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <E section="nav-title" fallback="ניווט" as="h4" className="font-heading font-semibold mb-4 text-primary-foreground/90" />
+            <E section="nav-title" fallback="ניווט" as="h4" className="font-heading font-semibold mb-4 text-black/90" />
             <nav className="flex flex-col gap-2.5 text-sm">
               <Link to="/about" className="text-primary-foreground/50 hover:text-primary-foreground transition-colors">על הסטודיו</Link>
               <Link to="/schedule" className="text-primary-foreground/50 hover:text-primary-foreground transition-colors">מערכת שעות</Link>
