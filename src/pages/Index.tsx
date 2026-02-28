@@ -169,7 +169,7 @@ const Index = () => {
                   <Link to="/schedule"><E section="hero-btn-schedule" fallback="לוח שיעורים" /></Link>
                 )}
               </Button>
-              <Button size="lg" variant="outline" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base border-primary-foreground/50 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:text-primary-foreground backdrop-blur-md" asChild={!isEditMode} disabled={isEditMode}>
+              <Button size="lg" variant="outline" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base border-primary-foreground/50 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:text-primary-foreground backdrop-blur-md" asChild={!isEditMode}>
                 {isEditMode ? (
                   <span><E section="hero-btn-about" fallback="הכירו אותנו" /></span>
                 ) : (
