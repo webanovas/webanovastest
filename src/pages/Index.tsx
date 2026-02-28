@@ -349,7 +349,7 @@ const Index = () => {
           )}
 
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-center mt-12">
-            <Button variant="outline" className="rounded-full gap-2 h-12 px-8" asChild={!isEditMode} disabled={isEditMode}>
+            <Button variant="outline" className="rounded-full gap-2 h-12 px-8" asChild={!isEditMode}>
               {isEditMode ? (
                 <span><E section="testimonials-btn" fallback="לכל המילים החמות" /><ArrowLeft className="h-4 w-4" /></span>
               ) : (
