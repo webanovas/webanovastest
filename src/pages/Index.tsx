@@ -195,7 +195,7 @@ const Index = () => {
               <E section="welcome-text-2" fallback="שירה פלג, מורה ומטפלת ביוגה מנוסה, מובילה את הסטודיו מתוך אהבה אמיתית לתרגול ומחויבות לכל מתרגל ומתרגלת." as="p"
                 className="text-muted-foreground leading-relaxed mb-8" multiline />
               <div className="pt-6 border-t border-border"></div>
-              <Button variant="outline" className="rounded-full gap-2 px-8 h-12" asChild={!isEditMode} disabled={isEditMode}>
+              <Button variant="outline" className="rounded-full gap-2 px-8 h-12" asChild={!isEditMode}>
                 {isEditMode ? (
                   <span><E section="welcome-btn" fallback="קראו עוד עלינו" /><ArrowLeft className="h-4 w-4" /></span>
                 ) : (
