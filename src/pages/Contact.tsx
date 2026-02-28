@@ -85,19 +85,19 @@ const Contact = () => {
               </motion.div>
 
               <motion.div variants={fadeUp} className="flex flex-col gap-5 mb-10">
-                <a href="tel:0542131254" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
+                <a href="tel:0542131254" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => isEditMode && e.preventDefault()}>
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Phone className="h-5 w-5 text-primary" /></div>
                   <E section="phone" fallback="054-213-1254" />
                 </a>
-                <a href="https://wa.me/972542131254" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
+                <a href="https://wa.me/972542131254" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => isEditMode && e.preventDefault()}>
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><MessageCircle className="h-5 w-5 text-primary" /></div>
                   <E section="whatsapp" fallback="וואטסאפ" />
                 </a>
-                <a href="mailto:shira.pelleg@gmail.com" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
+                <a href="mailto:shira.pelleg@gmail.com" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => isEditMode && e.preventDefault()}>
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Mail className="h-5 w-5 text-primary" /></div>
                   <E section="email" fallback="shira.pelleg@gmail.com" />
                 </a>
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors">
+                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => isEditMode && e.preventDefault()}>
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Instagram className="h-5 w-5 text-primary" /></div>
                   <E section="instagram" fallback="@yogabamoshava" />
                 </a>
@@ -108,7 +108,13 @@ const Contact = () => {
               </motion.div>
 
               <motion.div variants={fadeUp} className="rounded-2xl overflow-hidden shadow-md border border-border/30 aspect-video">
-                <img src={studioInterior} alt="הסטודיו שלנו" className="w-full h-full object-cover" />
+                <EditableImage
+                  src={(() => { const s = getText("studio-image", ""); return s || studioInterior; })()}
+                  alt="הסטודיו שלנו"
+                  className="w-full h-full object-cover"
+                  folder="contact"
+                  onUpload={isEditMode ? (url) => saveText("studio-image", url) : undefined}
+                />
               </motion.div>
             </motion.div>
 
