@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { useAdminMode } from "@/hooks/useAdminMode";
 import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
+import EditableImage from "@/components/admin/EditableImage";
 
 import teacherShira from "@/assets/teacher-shira.jpg";
 import studioInterior from "@/assets/studio-interior.jpg";
@@ -25,7 +26,7 @@ const stagger = {
   visible: { transition: { staggerChildren: 0.15 } },
 };
 
-const galleryImages = [
+const galleryDefaults = [
   { src: studioInterior, alt: "הסטודיו" },
   { src: yogaGroup, alt: "שיעור קבוצתי" },
   { src: meditationHands, alt: "מדיטציה" },
@@ -54,6 +55,11 @@ const About = () => {
     return <EditableText value={val} onSave={(v) => saveText(section, v)} as={as} className={className} multiline={multiline} />;
   };
 
+  const getImage = (section: string, fallback: string) => {
+    const saved = getText(section, "");
+    return saved || fallback;
+  };
+
   return (
     <Layout>
       <PageHero
@@ -72,7 +78,13 @@ const About = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative">
               <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[3/4]">
-                <img src={teacherShira} alt="שירה פלג" className="w-full h-full object-cover" />
+                <EditableImage
+                  src={getImage("shira-image", teacherShira)}
+                  alt="שירה פלג"
+                  className="w-full h-full object-cover"
+                  folder="about"
+                  onUpload={isEditMode ? (url) => saveText("shira-image", url) : undefined}
+                />
               </div>
             </motion.div>
 
@@ -90,8 +102,12 @@ const About = () => {
                 <E section="shira-bio-2" fallback="הסטודיו מציע מרחב חם ומזמין, עם קבוצות קטנות שמאפשרות תשומת לב אישית לכל מתרגל ומתרגלת." as="p" className="text-muted-foreground leading-relaxed mb-8" multiline />
               </motion.div>
               <motion.div variants={fadeUp}>
-                <Button variant="outline" className="rounded-full gap-2 px-8 h-12" asChild>
-                  <Link to="/schedule"><E section="shira-btn" fallback="לוח שיעורים" /><ArrowLeft className="h-4 w-4" /></Link>
+                <Button variant="outline" className="rounded-full gap-2 px-8 h-12" asChild={!isEditMode}>
+                  {isEditMode ? (
+                    <span><E section="shira-btn" fallback="לוח שיעורים" /><ArrowLeft className="h-4 w-4" /></span>
+                  ) : (
+                    <Link to="/schedule"><E section="shira-btn" fallback="לוח שיעורים" /><ArrowLeft className="h-4 w-4" /></Link>
+                  )}
                 </Button>
               </motion.div>
             </motion.div>
@@ -102,7 +118,7 @@ const About = () => {
       {/* Gallery */}
       <section className="py-4 px-4">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-6xl mx-auto">
-          {galleryImages.map((img, i) => (
+          {galleryDefaults.map((img, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 20 }}
@@ -111,7 +127,13 @@ const About = () => {
               transition={{ delay: i * 0.1 }}
               className="rounded-2xl overflow-hidden shadow-md aspect-square"
             >
-              <img src={img.src} alt={img.alt} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+              <EditableImage
+                src={getImage(`gallery-${i}`, img.src)}
+                alt={img.alt}
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                folder="gallery"
+                onUpload={isEditMode ? (url) => saveText(`gallery-${i}`, url) : undefined}
+              />
             </motion.div>
           ))}
         </div>
@@ -148,13 +170,23 @@ const About = () => {
 
       {/* CTA Banner */}
       <section className="relative h-[40vh] md:h-[50vh] overflow-hidden">
-        <img src={yogaSunset} alt="יוגה בשקיעה" className="absolute inset-0 w-full h-full object-cover" />
+        <EditableImage
+          src={getImage("cta-bg", yogaSunset)}
+          alt="יוגה בשקיעה"
+          className="absolute inset-0 w-full h-full object-cover"
+          folder="about-cta"
+          onUpload={isEditMode ? (url) => saveText("cta-bg", url) : undefined}
+        />
         <div className="absolute inset-0 bg-yoga-dark/50 flex items-center justify-center">
           <div className="text-center px-4">
             <E section="cta-title" fallback="בואו לתרגל" as="h2"
               className="font-heading text-3xl md:text-5xl font-bold text-primary-foreground mb-4" />
-            <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild>
-              <Link to="/contact"><E section="cta-btn" fallback="צרו קשר" /></Link>
+            <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild={!isEditMode}>
+              {isEditMode ? (
+                <span><E section="cta-btn" fallback="צרו קשר" /></span>
+              ) : (
+                <Link to="/contact"><E section="cta-btn" fallback="צרו קשר" /></Link>
+              )}
             </Button>
           </div>
         </div>

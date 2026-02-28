@@ -10,6 +10,7 @@ import studioInterior from "@/assets/studio-interior.jpg";
 import { useAdminMode } from "@/hooks/useAdminMode";
 import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
+import EditableImage from "@/components/admin/EditableImage";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
