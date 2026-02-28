@@ -60,7 +60,7 @@ const FloatingContact = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.97 }}
             transition={{ type: "spring", damping: 28, stiffness: 350 }}
-            className="fixed bottom-24 left-4 sm:left-6 z-[70] w-[calc(100%-2rem)] sm:w-[340px] rounded-2xl shadow-2xl overflow-hidden"
+            className={`fixed ${isAdmin ? "bottom-36" : "bottom-24"} left-4 sm:left-6 z-[70] w-[calc(100%-2rem)] sm:w-[340px] rounded-2xl shadow-2xl overflow-hidden`}
             style={{
               background: "linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)",
               border: "1px solid hsl(var(--border) / 0.3)",
