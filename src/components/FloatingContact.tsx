@@ -6,11 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAdminMode } from "@/hooks/useAdminMode";
 
 const FloatingContact = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", message: "" });
   const [sending, setSending] = useState(false);
+  const { isAdmin } = useAdminMode();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,7 +60,7 @@ const FloatingContact = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.97 }}
             transition={{ type: "spring", damping: 28, stiffness: 350 }}
-            className="fixed bottom-24 left-4 sm:left-6 z-[70] w-[calc(100%-2rem)] sm:w-[340px] rounded-2xl shadow-2xl overflow-hidden"
+            className={`fixed ${isAdmin ? "bottom-36" : "bottom-24"} left-4 sm:left-6 z-[70] w-[calc(100%-2rem)] sm:w-[340px] rounded-2xl shadow-2xl overflow-hidden`}
             style={{
               background: "linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)",
               border: "1px solid hsl(var(--border) / 0.3)",
@@ -149,7 +151,7 @@ const FloatingContact = () => {
       {/* FAB as pill button with persistent label */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 left-4 sm:left-6 z-[70] flex items-center gap-2 text-yoga-dark shadow-lg hover:shadow-xl transition-shadow rounded-full px-5 h-12 border border-[hsl(170,25%,70%)]/30"
+        className={`fixed left-4 sm:left-6 z-[70] flex items-center gap-2 text-yoga-dark shadow-lg hover:shadow-xl transition-shadow rounded-full px-5 h-12 border border-[hsl(170,25%,70%)]/30 ${isAdmin ? "bottom-20" : "bottom-6"}`}
         style={{ backgroundColor: "hsl(170, 25%, 78%)" }}
         whileHover={{ scale: 1.04 }}
         whileTap={{ scale: 0.96 }}

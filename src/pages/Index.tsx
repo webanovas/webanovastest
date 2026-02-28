@@ -8,7 +8,7 @@ import {
   Heart,
   Leaf, Brain, Sunrise, Wind,
   Phone, Mail, MessageCircle, Send,
-  ArrowLeft, Quote, MapPin,
+  ArrowLeft, Quote, MapPin, Images, X, Camera, Loader2,
 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { useQuery } from "@tanstack/react-query";
@@ -19,7 +19,8 @@ import EditableText from "@/components/admin/EditableText";
 import EditableImage from "@/components/admin/EditableImage";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
+import { toast } from "sonner";
 
 import heroYoga from "@/assets/hero-yoga.jpg";
 import teacherShira from "@/assets/teacher-shira.jpg";
@@ -65,11 +66,41 @@ const Index = () => {
     [Autoplay({ delay: 2000, stopOnInteraction: false })]
   );
 
+  // Hero image editor state
+  const [showHeroEditor, setShowHeroEditor] = useState(false);
+  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+  const fileRefs = useRef<(HTMLInputElement | null)[]>([]);
+
   // Get hero images from page_content or use defaults
   const heroImages = defaultHeroImages.map((defaultSrc, i) => {
     const saved = getText(`hero-image-${i}`, "");
     return saved || defaultSrc;
   });
+
+  const handleHeroImageUpload = async (index: number, file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("יש לבחור קובץ תמונה");
+      return;
+    }
+    setUploadingIndex(index);
+    try {
+      const ext = file.name.split(".").pop();
+      const fileName = `hero/${Date.now()}-${index}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from("site-images")
+        .upload(fileName, file, { upsert: true });
+      if (uploadError) throw uploadError;
+      const { data: { publicUrl } } = supabase.storage
+        .from("site-images")
+        .getPublicUrl(fileName);
+      await saveText(`hero-image-${index}`, publicUrl);
+      toast.success(`תמונה ${index + 1} הוחלפה`);
+    } catch (err: any) {
+      toast.error("שגיאה בהעלאה: " + err.message);
+    } finally {
+      setUploadingIndex(null);
+    }
+  };
 
   // Testimonials carousel
   const [emblaRef, emblaApi] = useEmblaCarousel(
@@ -122,22 +153,73 @@ const Index = () => {
           <div className="flex h-full">
             {heroImages.map((src, i) => (
               <div key={i} className="flex-none w-full h-full min-w-0 relative">
-                {isEditMode ? (
-                  <EditableImage
-                    src={src}
-                    alt={`יוגה במושבה ${i + 1}`}
-                    className="w-full h-full object-cover"
-                    folder="hero"
-                    onUpload={(url) => saveText(`hero-image-${i}`, url)}
-                  />
-                ) : (
-                  <img src={src} alt={`יוגה במושבה ${i + 1}`} className="w-full h-full object-cover" />
-                )}
+                <img src={src} alt={`יוגה במושבה ${i + 1}`} className="w-full h-full object-cover" />
               </div>
             ))}
           </div>
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-yoga-dark/90 via-yoga-dark/30 to-transparent" />
+
+        {/* Admin: edit carousel images button */}
+        {isEditMode && (
+          <button
+            onClick={() => setShowHeroEditor(true)}
+            className="absolute top-24 right-4 z-30 flex items-center gap-2 bg-card/90 backdrop-blur-md text-foreground rounded-full px-4 py-2.5 shadow-lg border border-border hover:bg-card transition-colors"
+          >
+            <Images className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium">ערוך תמונות קרוסלה</span>
+          </button>
+        )}
+
+        {/* Admin: hero image editor panel */}
+        <AnimatePresence>
+          {isEditMode && showHeroEditor && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="absolute top-24 right-4 z-40 bg-card/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-border p-4 w-[calc(100%-2rem)] max-w-sm"
+              dir="rtl"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-heading font-semibold text-sm">תמונות קרוסלה</h3>
+                <button onClick={() => setShowHeroEditor(false)} className="w-7 h-7 rounded-full bg-muted/60 flex items-center justify-center hover:bg-muted transition-colors">
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {heroImages.map((src, i) => (
+                  <div key={i} className="relative group">
+                    <input
+                      ref={(el) => { fileRefs.current[i] = el; }}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleHeroImageUpload(i, file);
+                      }}
+                    />
+                    <div
+                      className="aspect-video rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-primary transition-colors"
+                      onClick={() => fileRefs.current[i]?.click()}
+                    >
+                      <img src={src} alt={`תמונה ${i + 1}`} className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                        {uploadingIndex === i ? (
+                          <Loader2 className="h-5 w-5 text-white animate-spin" />
+                        ) : (
+                          <Camera className="h-5 w-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        )}
+                      </div>
+                    </div>
+                    <span className="text-[10px] text-muted-foreground text-center block mt-1">{i + 1}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <div className="container mx-auto px-4 relative z-10 pb-12 md:pb-28 pt-28 md:pt-40">
           <motion.div initial="hidden" animate="visible" variants={stagger} className="max-w-2xl">
