@@ -243,7 +243,7 @@ const Index = () => {
               className="font-heading text-3xl md:text-6xl font-bold text-primary-foreground mb-4" />
             <E section="cta-subtitle" fallback="הצטרפו למשפחת יוגה במושבה ותגלו מרחב חדש של שקט ורוגע" as="p"
               className="text-primary-foreground/70 text-lg mb-8 max-w-md mx-auto" />
-            <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild={!isEditMode} disabled={isEditMode}>
+            <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild={!isEditMode}>
               {isEditMode ? (
                 <span><E section="cta-btn" fallback="בואו נתחיל" /></span>
               ) : (
