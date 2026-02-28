@@ -144,64 +144,93 @@ const Workshops = () => {
     <Layout>
       <PageHero label="אירועים" title="סדנאות" subtitle="סדנאות מיוחדות להעמקת התרגול והחוויה" page="workshops" labelSection="hero-label" titleSection="hero-title" subtitleSection="hero-subtitle" />
 
-      {/* Active */}
+      {/* Workshop Tabs */}
       <section className="py-12 md:py-36">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <WE section="active-label" fallback="קרוב" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
-            <WE section="active-title" fallback="סדנאות קרובות" as="h2" className="font-heading text-3xl md:text-4xl font-bold" />
-            {isEditMode && (
-              <Button size="sm" onClick={() => setIsAdding(true)} className="mt-4 rounded-full gap-2">
+          {/* Tab buttons */}
+          <div className="flex justify-center mb-10">
+            <div className="inline-flex items-center bg-muted/50 rounded-2xl p-1.5 gap-1">
+              <button
+                onClick={() => setActiveTab("upcoming")}
+                className={cn(
+                  "relative px-6 py-2.5 rounded-xl text-sm font-heading font-medium transition-all duration-300",
+                  activeTab === "upcoming" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {activeTab === "upcoming" && (
+                  <motion.div layoutId="workshopTab" className="absolute inset-0 bg-primary rounded-xl shadow-lg shadow-primary/20" transition={{ type: "spring", bounce: 0.2, duration: 0.5 }} />
+                )}
+                <span className="relative z-10">סדנאות קרובות</span>
+              </button>
+              <button
+                onClick={() => setActiveTab("past")}
+                className={cn(
+                  "relative px-6 py-2.5 rounded-xl text-sm font-heading font-medium transition-all duration-300",
+                  activeTab === "past" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {activeTab === "past" && (
+                  <motion.div layoutId="workshopTab" className="absolute inset-0 bg-primary rounded-xl shadow-lg shadow-primary/20" transition={{ type: "spring", bounce: 0.2, duration: 0.5 }} />
+                )}
+                <span className="relative z-10">סדנאות עבר</span>
+              </button>
+            </div>
+          </div>
+
+          {isEditMode && (
+            <div className="text-center mb-8">
+              <Button size="sm" onClick={() => setIsAdding(true)} className="rounded-full gap-2">
                 <Plus className="h-4 w-4" />הוסף סדנה
               </Button>
-            )}
-          </div>
-
-          {activeWorkshops.length === 0 && !isEditMode ? (
-            <p className="text-center text-muted-foreground">אין סדנאות קרובות כרגע – עקבו אחרינו לעדכונים</p>
-          ) : (
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-              {activeWorkshops.map((w, i) => (
-                <motion.div key={w.id} variants={fadeUp}>
-                  <WorkshopCard workshop={w} isEditMode={isEditMode} onEdit={() => setEditing({ ...w })} imgSrc={w.image_url || workshopImages[i % workshopImages.length]} />
-                </motion.div>
-              ))}
-            </motion.div>
+            </div>
           )}
+
+          <AnimatePresence mode="wait">
+            {activeTab === "upcoming" ? (
+              <motion.div key="upcoming" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                {activeWorkshops.length === 0 && !isEditMode ? (
+                  <p className="text-center text-muted-foreground py-12">אין סדנאות קרובות כרגע – עקבו אחרינו לעדכונים</p>
+                ) : (
+                  <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                    {activeWorkshops.map((w, i) => (
+                      <motion.div key={w.id} variants={fadeUp}>
+                        <WorkshopCard workshop={w} isEditMode={isEditMode} onEdit={() => setEditing({ ...w })} imgSrc={w.image_url || workshopImages[i % workshopImages.length]} />
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                )}
+              </motion.div>
+            ) : (
+              <motion.div key="past" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                {pastWorkshops.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-12">אין סדנאות עבר</p>
+                ) : (
+                  <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {pastWorkshops.map((w, i) => (
+                      <Card
+                        key={w.id}
+                        className={cn(
+                          "rounded-3xl border-0 overflow-hidden shadow-md",
+                          isEditMode && "cursor-pointer hover:ring-2 hover:ring-primary/30"
+                        )}
+                        onClick={() => isEditMode && setEditing({ ...w })}
+                      >
+                        <div className="aspect-video overflow-hidden">
+                          <img src={w.image_url || workshopImages[i % workshopImages.length]} alt={w.title} className="w-full h-full object-cover" />
+                        </div>
+                        <CardContent className="p-5">
+                          <span className="font-heading font-medium text-sm">{w.title}</span>
+                          <span className="text-xs text-muted-foreground block mt-1">{w.date}</span>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </section>
-
-      {/* Archive */}
-      {pastWorkshops.length > 0 && (
-        <section className="py-14 md:py-36 bg-yoga-cream relative">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <WE section="archive-label" fallback="ארכיון" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
-              <WE section="archive-title" fallback="סדנאות שהיו" as="h2" className="font-heading text-3xl md:text-4xl font-bold" />
-            </div>
-            <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-              {pastWorkshops.map((w, i) => (
-                <Card
-                  key={w.id}
-                  className={cn(
-                    "rounded-3xl border-0 overflow-hidden shadow-md",
-                    isEditMode && "cursor-pointer hover:ring-2 hover:ring-primary/30"
-                  )}
-                  onClick={() => isEditMode && setEditing({ ...w })}
-                >
-                  <div className="aspect-video overflow-hidden">
-                    <img src={w.image_url || workshopImages[i % workshopImages.length]} alt={w.title} className="w-full h-full object-cover" />
-                  </div>
-                  <CardContent className="p-5">
-                    <span className="font-heading font-medium text-sm">{w.title}</span>
-                    <span className="text-xs text-muted-foreground block mt-1">{w.date}</span>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Edit Dialog */}
       <Dialog open={!!editing} onOpenChange={(open) => !open && setEditing(null)}>
