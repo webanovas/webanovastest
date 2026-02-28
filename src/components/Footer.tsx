@@ -52,7 +52,7 @@ const Footer = () => {
 
           {/* Contact */}
           <div>
-            <E section="contact-title" fallback="צרו קשר" as="h4" className="font-heading font-semibold mb-4 text-primary-foreground/90" />
+            <E section="contact-title" fallback="צרו קשר" as="h4" className="font-heading font-semibold mb-4 text-black/90" />
             <div className="flex flex-col gap-3 text-sm">
               <a href="tel:0542131254" className="flex items-center gap-3 text-primary-foreground/50 hover:text-primary-foreground transition-colors">
                 <Phone className="h-4 w-4" />
