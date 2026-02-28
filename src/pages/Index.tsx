@@ -63,7 +63,7 @@ const Index = () => {
   // Hero carousel
   const [heroEmblaRef] = useEmblaCarousel(
     { loop: true, direction: "rtl" },
-    [Autoplay({ delay: 2000, stopOnInteraction: false })]
+    [Autoplay({ delay: 3500, stopOnInteraction: false })]
   );
 
   // Hero image editor state
