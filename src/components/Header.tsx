@@ -87,13 +87,13 @@ const Header = () => {
             variant="ghost"
             size="icon"
             className={cn(
-              "md:hidden rounded-xl z-50 h-10 w-10",
+              "md:hidden rounded-xl z-50 h-12 w-12",
               !scrolled && isHome && !mobileOpen && "text-primary-foreground hover:bg-primary-foreground/10"
             )}
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="תפריט"
           >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
         </div>
       </header>
@@ -127,9 +127,9 @@ const Header = () => {
                     to={item.path}
                     onClick={() => setMobileOpen(false)}
                     className={cn(
-                      "block px-6 py-4 rounded-2xl text-lg font-heading font-medium transition-colors text-center min-w-[200px]",
-                      "hover:bg-accent text-foreground/80 hover:text-foreground active:scale-95 transition-transform",
-                      location.pathname === item.path && "bg-primary/10 text-primary font-semibold"
+                      "block px-8 py-5 rounded-2xl text-xl font-heading font-semibold transition-colors text-center min-w-[220px]",
+                      "hover:bg-accent text-foreground/90 hover:text-foreground active:scale-95 transition-transform",
+                      location.pathname === item.path && "bg-primary/15 text-primary font-bold"
                     )}
                   >
                     {item.label}
