@@ -320,7 +320,7 @@ const Index = () => {
           onUpload={isEditMode ? (url) => saveText("cta-bg-image", url) : undefined}
         />
         <div className="absolute inset-0 bg-yoga-dark/50 flex items-center justify-center pointer-events-none">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center px-4">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center px-4 pointer-events-auto">
             <E section="cta-title" fallback="התחילו לנשום" as="h2"
               className="font-heading text-3xl md:text-6xl font-bold text-primary-foreground mb-4" />
             <E section="cta-subtitle" fallback="הצטרפו למשפחת יוגה במושבה ותגלו מרחב חדש של שקט ורוגע" as="p"
