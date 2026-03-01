@@ -12,8 +12,8 @@ interface ClockPickerProps {
 }
 
 const MINUTES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
-const HOURS_OUTER = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]; // Day
-const HOURS_INNER = [18, 19, 20, 21, 22, 23, 0, 1, 2, 3, 4, 5];   // Night
+const HOURS_OUTER = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+const HOURS_INNER = [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
 
 export function ClockPicker({ value, onChange, onDone }: ClockPickerProps) {
   const [step, setStep] = useState<"hour" | "minute">("hour");
@@ -43,7 +43,7 @@ export function ClockPicker({ value, onChange, onDone }: ClockPickerProps) {
 
   // Calculate hand for hours
   const hourIndex = selectedHour !== null ? activeRing.indexOf(selectedHour) : -1;
-  const hourAngle = hourIndex >= 0 ? (hourIndex / 12) * 360 : null;
+  const hourAngle = hourIndex >= 0 ? (hourIndex / activeRing.length) * 360 : null;
 
   // Calculate hand for minutes
   const minuteIndex = selectedMinute !== null ? MINUTES.indexOf(selectedMinute) : -1;
@@ -84,8 +84,8 @@ export function ClockPicker({ value, onChange, onDone }: ClockPickerProps) {
       {/* Legend for hours */}
       {step === "hour" && (
         <div className="flex items-center gap-4 text-[10px] text-muted-foreground">
-          <span className="flex items-center gap-1"><Sun className="h-3 w-3 text-amber-500" /> 6–17</span>
-          <span className="flex items-center gap-1"><Moon className="h-3 w-3 text-indigo-400" /> 18–5</span>
+          <span className="flex items-center gap-1"><Sun className="h-3 w-3 text-amber-500" /> 0–12</span>
+          <span className="flex items-center gap-1"><Moon className="h-3 w-3 text-indigo-400" /> 13–23</span>
         </div>
       )}
 
@@ -138,7 +138,7 @@ export function ClockPicker({ value, onChange, onDone }: ClockPickerProps) {
               <>
                 {/* Outer ring - day hours */}
                 {HOURS_OUTER.map((item, i) => {
-                  const angle = (i / 12) * 360 - 90;
+                  const angle = (i / HOURS_OUTER.length) * 360 - 90;
                   const rad = (angle * Math.PI) / 180;
                   const x = CENTER + RADIUS_OUTER * Math.cos(rad);
                   const y = CENTER + RADIUS_OUTER * Math.sin(rad);
@@ -162,7 +162,7 @@ export function ClockPicker({ value, onChange, onDone }: ClockPickerProps) {
                 })}
                 {/* Inner ring - night hours */}
                 {HOURS_INNER.map((item, i) => {
-                  const angle = (i / 12) * 360 - 90;
+                  const angle = (i / HOURS_INNER.length) * 360 - 90;
                   const rad = (angle * Math.PI) / 180;
                   const x = CENTER + RADIUS_INNER * Math.cos(rad);
                   const y = CENTER + RADIUS_INNER * Math.sin(rad);
