@@ -517,7 +517,9 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
           <div className="flex items-stretch" dir="rtl">
             <div className="flex flex-col items-center justify-center px-4 py-3 bg-primary/8 border-l border-primary/10 min-w-[80px]">
               <Clock className="h-3 w-3 text-primary mb-1" />
-              <span className="font-heading font-bold text-sm text-primary">{value.time || "--:--"}</span>
+              <span className="font-heading font-bold text-sm text-primary">
+                {value.time || "--:--"}{value.end_time ? ` - ${value.end_time}` : ""}
+              </span>
             </div>
             <div className="flex-1 p-3">
               <div className="flex items-center gap-1.5">
