@@ -147,7 +147,7 @@ const Schedule = () => {
       <PageHero
         label="לוח שיעורים"
         title="מערכת שעות ומורים"
-        subtitle="הצטרפו לשיעור שמתאים לכם – בסטודיו או בזום"
+        subtitle=""
         page="schedule"
         labelSection="hero-label"
         titleSection="hero-title"
