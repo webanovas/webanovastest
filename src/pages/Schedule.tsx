@@ -81,9 +81,9 @@ const Schedule = () => {
 
   const dayClasses = classes.filter((c) => c.day === selectedDay).sort((a, b) => a.time.localeCompare(b.time));
 
-  const saveClass = async (cls: ClassRow) => {
+  const saveClass = async (cls: any) => {
     const { error } = await supabase.from("classes").update({
-      day: cls.day, time: cls.time, name: cls.name, teacher: cls.teacher, description: cls.description,
+      day: cls.day, time: cls.time, end_time: cls.end_time || null, name: cls.name, teacher: cls.teacher, description: cls.description,
       is_recurring: cls.is_recurring, specific_date: cls.specific_date,
     }).eq("id", cls.id);
     if (error) { console.error("Save error:", error); toast.error("שגיאה בשמירה: " + error.message); }
