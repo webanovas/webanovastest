@@ -541,11 +541,23 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
         <RecurringToggle value={value} onChange={onChange} />
 
         {/* Time */}
-        <FormSection icon={Clock} title="שעה">
-          <TimePickerField
-            value={value.time}
-            onChange={(t) => onChange({ ...value, time: t })}
-          />
+        <FormSection icon={Clock} title="שעות">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <p className="text-[11px] text-muted-foreground mb-1.5">משעה</p>
+              <TimePickerField
+                value={value.time}
+                onChange={(t) => onChange({ ...value, time: t })}
+              />
+            </div>
+            <div>
+              <p className="text-[11px] text-muted-foreground mb-1.5">עד שעה</p>
+              <TimePickerField
+                value={value.end_time || ""}
+                onChange={(t) => onChange({ ...value, end_time: t })}
+              />
+            </div>
+          </div>
         </FormSection>
 
         {/* Details */}
