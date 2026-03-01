@@ -84,8 +84,8 @@ export function ClockPicker({ value, onChange, onDone }: ClockPickerProps) {
       {/* Legend for hours */}
       {step === "hour" && (
         <div className="flex items-center gap-4 text-[10px] text-muted-foreground">
-          <span className="flex items-center gap-1"><Sun className="h-3 w-3 text-amber-500" /> 6–17</span>
-          <span className="flex items-center gap-1"><Moon className="h-3 w-3 text-indigo-400" /> 18–5</span>
+          <span className="flex items-center gap-1"><Sun className="h-3 w-3 text-amber-500" /> 0–12</span>
+          <span className="flex items-center gap-1"><Moon className="h-3 w-3 text-indigo-400" /> 13–23</span>
         </div>
       )}
 
