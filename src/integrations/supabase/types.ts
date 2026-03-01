@@ -19,6 +19,7 @@ export type Database = {
           created_at: string
           day: string
           description: string
+          end_time: string | null
           id: string
           is_recurring: boolean
           name: string
@@ -31,6 +32,7 @@ export type Database = {
           created_at?: string
           day: string
           description?: string
+          end_time?: string | null
           id?: string
           is_recurring?: boolean
           name: string
@@ -43,6 +45,7 @@ export type Database = {
           created_at?: string
           day?: string
           description?: string
+          end_time?: string | null
           id?: string
           is_recurring?: boolean
           name?: string

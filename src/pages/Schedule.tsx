@@ -39,7 +39,7 @@ const stagger = {
   visible: { transition: { staggerChildren: 0.08 } },
 };
 
-const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי"];
+const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
 
 const Schedule = () => {
   const { isEditMode } = useAdminMode();
@@ -57,7 +57,7 @@ const Schedule = () => {
   const [selectedDay, setSelectedDay] = useState(days[0]);
   const [editingClass, setEditingClass] = useState<ClassRow | null>(null);
   const [isAddingClass, setIsAddingClass] = useState(false);
-  const [newClass, setNewClass] = useState({ day: "ראשון", time: "", name: "", teacher: "", description: "", is_recurring: true, specific_date: null as string | null });
+  const [newClass, setNewClass] = useState({ day: "ראשון", time: "", end_time: "" as string | null, name: "", teacher: "", description: "", is_recurring: true, specific_date: null as string | null });
 
   const { data: classes = [] } = useQuery({
     queryKey: ["classes"],
@@ -81,9 +81,9 @@ const Schedule = () => {
 
   const dayClasses = classes.filter((c) => c.day === selectedDay).sort((a, b) => a.time.localeCompare(b.time));
 
-  const saveClass = async (cls: ClassRow) => {
+  const saveClass = async (cls: any) => {
     const { error } = await supabase.from("classes").update({
-      day: cls.day, time: cls.time, name: cls.name, teacher: cls.teacher, description: cls.description,
+      day: cls.day, time: cls.time, end_time: cls.end_time || null, name: cls.name, teacher: cls.teacher, description: cls.description,
       is_recurring: cls.is_recurring, specific_date: cls.specific_date,
     }).eq("id", cls.id);
     if (error) { console.error("Save error:", error); toast.error("שגיאה בשמירה: " + error.message); }
@@ -94,15 +94,15 @@ const Schedule = () => {
   const addClass = async () => {
     if (!newClass.name || !newClass.time) { toast.error("שם ושעה חובה"); return; }
     const { error } = await supabase.from("classes").insert({
-      day: newClass.day, time: newClass.time, name: newClass.name,
+      day: newClass.day, time: newClass.time, end_time: newClass.end_time || null, name: newClass.name,
       teacher: newClass.teacher, description: newClass.description,
       is_recurring: newClass.is_recurring, specific_date: newClass.specific_date,
-    });
+    } as any);
     if (error) { console.error("Add error:", error); toast.error("שגיאה: " + error.message); }
     else {
       toast.success("נוסף");
       queryClient.invalidateQueries({ queryKey: ["classes"] });
-      setNewClass({ day: "ראשון", time: "", name: "", teacher: "", description: "", is_recurring: true, specific_date: null });
+      setNewClass({ day: "ראשון", time: "", end_time: "", name: "", teacher: "", description: "", is_recurring: true, specific_date: null });
       setIsAddingClass(false);
     }
   };
@@ -235,7 +235,9 @@ const Schedule = () => {
                         <div className="flex items-stretch" dir="rtl">
                           <div className="flex flex-col items-center justify-center px-4 md:px-6 py-4 md:py-5 bg-primary/8 border-l border-primary/10 min-w-[80px] md:min-w-[100px]">
                             <Clock className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary mb-1" />
-                            <span className="font-heading font-bold text-base md:text-lg text-primary">{cls.time}</span>
+                            <span className="font-heading font-bold text-base md:text-lg text-primary">
+                              {cls.time}{(cls as any).end_time ? ` - ${(cls as any).end_time}` : ""}
+                            </span>
                           </div>
                           <div className="flex-1 p-3.5 md:p-5 flex items-center justify-between gap-3 md:gap-4">
                             <div className="flex-1">
@@ -514,7 +516,9 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
           <div className="flex items-stretch" dir="rtl">
             <div className="flex flex-col items-center justify-center px-4 py-3 bg-primary/8 border-l border-primary/10 min-w-[80px]">
               <Clock className="h-3 w-3 text-primary mb-1" />
-              <span className="font-heading font-bold text-sm text-primary">{value.time || "--:--"}</span>
+              <span className="font-heading font-bold text-sm text-primary">
+                {value.time || "--:--"}{value.end_time ? ` - ${value.end_time}` : ""}
+              </span>
             </div>
             <div className="flex-1 p-3">
               <div className="flex items-center gap-1.5">
@@ -536,11 +540,23 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
         <RecurringToggle value={value} onChange={onChange} />
 
         {/* Time */}
-        <FormSection icon={Clock} title="שעה">
-          <TimePickerField
-            value={value.time}
-            onChange={(t) => onChange({ ...value, time: t })}
-          />
+        <FormSection icon={Clock} title="שעות">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <p className="text-[11px] text-muted-foreground mb-1.5">משעה</p>
+              <TimePickerField
+                value={value.time}
+                onChange={(t) => onChange({ ...value, time: t })}
+              />
+            </div>
+            <div>
+              <p className="text-[11px] text-muted-foreground mb-1.5">עד שעה</p>
+              <TimePickerField
+                value={value.end_time || ""}
+                onChange={(t) => onChange({ ...value, end_time: t })}
+              />
+            </div>
+          </div>
         </FormSection>
 
         {/* Details */}

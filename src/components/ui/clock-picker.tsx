@@ -13,7 +13,7 @@ interface ClockPickerProps {
 
 const MINUTES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
 
-export function ClockPicker({ value, onChange, onDone, hourMin = 6, hourMax = 20 }: ClockPickerProps) {
+export function ClockPicker({ value, onChange, onDone, hourMin = 0, hourMax = 23 }: ClockPickerProps) {
   const [step, setStep] = useState<"hour" | "minute">("hour");
   const parsed = parseTime(value);
   const [selectedHour, setSelectedHour] = useState<number | null>(parsed.hour);
