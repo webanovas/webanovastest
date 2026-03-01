@@ -162,7 +162,7 @@ export function ClockPicker({ value, onChange, onDone }: ClockPickerProps) {
                 })}
                 {/* Inner ring - night hours */}
                 {HOURS_INNER.map((item, i) => {
-                  const angle = (i / 12) * 360 - 90;
+                  const angle = (i / HOURS_INNER.length) * 360 - 90;
                   const rad = (angle * Math.PI) / 180;
                   const x = CENTER + RADIUS_INNER * Math.cos(rad);
                   const y = CENTER + RADIUS_INNER * Math.sin(rad);
