@@ -239,7 +239,6 @@ const Schedule = () => {
                               {cls.time}{(cls as any).end_time ? ` - ${(cls as any).end_time}` : ""}
                             </span>
                           </div>
-                          </div>
                           <div className="flex-1 p-3.5 md:p-5 flex items-center justify-between gap-3 md:gap-4">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
