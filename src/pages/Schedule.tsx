@@ -94,10 +94,10 @@ const Schedule = () => {
   const addClass = async () => {
     if (!newClass.name || !newClass.time) { toast.error("שם ושעה חובה"); return; }
     const { error } = await supabase.from("classes").insert({
-      day: newClass.day, time: newClass.time, name: newClass.name,
+      day: newClass.day, time: newClass.time, end_time: newClass.end_time || null, name: newClass.name,
       teacher: newClass.teacher, description: newClass.description,
       is_recurring: newClass.is_recurring, specific_date: newClass.specific_date,
-    });
+    } as any);
     if (error) { console.error("Add error:", error); toast.error("שגיאה: " + error.message); }
     else {
       toast.success("נוסף");
