@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Sun, Moon } from "lucide-react";
 
 interface ClockPickerProps {
   value: string;
@@ -12,14 +12,14 @@ interface ClockPickerProps {
 }
 
 const MINUTES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+const HOURS_OUTER = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]; // Day
+const HOURS_INNER = [18, 19, 20, 21, 22, 23, 0, 1, 2, 3, 4, 5];   // Night
 
-export function ClockPicker({ value, onChange, onDone, hourMin = 0, hourMax = 23 }: ClockPickerProps) {
+export function ClockPicker({ value, onChange, onDone }: ClockPickerProps) {
   const [step, setStep] = useState<"hour" | "minute">("hour");
   const parsed = parseTime(value);
   const [selectedHour, setSelectedHour] = useState<number | null>(parsed.hour);
   const [selectedMinute, setSelectedMinute] = useState<number | null>(parsed.minute);
-
-  const hours = Array.from({ length: hourMax - hourMin + 1 }, (_, i) => i + hourMin);
 
   function handleHourClick(h: number) {
     setSelectedHour(h);
@@ -33,16 +33,24 @@ export function ClockPicker({ value, onChange, onDone, hourMin = 0, hourMax = 23
     onDone?.();
   }
 
-  const activeValue = step === "hour" ? selectedHour : selectedMinute;
-  const items = step === "hour" ? hours : MINUTES;
-  const count = items.length;
-
-  // Calculate angle for the clock hand
-  const activeIndex = activeValue !== null ? items.indexOf(activeValue) : -1;
-  const handAngle = activeIndex >= 0 ? (activeIndex / count) * 360 : null;
-
-  const RADIUS = 90;
+  const RADIUS_OUTER = 92;
+  const RADIUS_INNER = 60;
   const CENTER = 120;
+
+  const isInner = selectedHour !== null && HOURS_INNER.includes(selectedHour);
+  const activeRing = isInner ? HOURS_INNER : HOURS_OUTER;
+  const activeRadius = isInner ? RADIUS_INNER : RADIUS_OUTER;
+
+  // Calculate hand for hours
+  const hourIndex = selectedHour !== null ? activeRing.indexOf(selectedHour) : -1;
+  const hourAngle = hourIndex >= 0 ? (hourIndex / 12) * 360 : null;
+
+  // Calculate hand for minutes
+  const minuteIndex = selectedMinute !== null ? MINUTES.indexOf(selectedMinute) : -1;
+  const minuteAngle = minuteIndex >= 0 ? (minuteIndex / 12) * 360 : null;
+
+  const handAngle = step === "hour" ? hourAngle : minuteAngle;
+  const handRadius = step === "hour" ? activeRadius : RADIUS_OUTER;
 
   return (
     <div className="flex flex-col items-center gap-2 select-none">
@@ -73,36 +81,47 @@ export function ClockPicker({ value, onChange, onDone, hourMin = 0, hourMax = 23
         </span>
       </div>
 
+      {/* Legend for hours */}
+      {step === "hour" && (
+        <div className="flex items-center gap-4 text-[10px] text-muted-foreground">
+          <span className="flex items-center gap-1"><Sun className="h-3 w-3 text-amber-500" /> 6–17</span>
+          <span className="flex items-center gap-1"><Moon className="h-3 w-3 text-indigo-400" /> 18–5</span>
+        </div>
+      )}
+
       {/* Clock face */}
       <div className="relative" style={{ width: CENTER * 2, height: CENTER * 2 }}>
         {/* Background circle */}
         <div className="absolute inset-2 rounded-full bg-muted/50 border border-border" />
+        {step === "hour" && (
+          <div className="absolute rounded-full bg-muted/30 border border-border/50" style={{
+            left: CENTER - RADIUS_INNER - 16,
+            top: CENTER - RADIUS_INNER - 16,
+            width: (RADIUS_INNER + 16) * 2,
+            height: (RADIUS_INNER + 16) * 2,
+          }} />
+        )}
 
         {/* Hand */}
         {handAngle !== null && (
-          <motion.div
-            className="absolute top-0 left-0 right-0 bottom-0 pointer-events-none"
-            style={{ width: CENTER * 2, height: CENTER * 2 }}
-          >
-            <svg width={CENTER * 2} height={CENTER * 2} className="absolute inset-0">
-              <motion.line
-                x1={CENTER}
-                y1={CENTER}
-                x2={CENTER + RADIUS * 0.75 * Math.sin((handAngle * Math.PI) / 180)}
-                y2={CENTER - RADIUS * 0.75 * Math.cos((handAngle * Math.PI) / 180)}
-                stroke="hsl(var(--primary))"
-                strokeWidth={2}
-                strokeLinecap="round"
-                initial={false}
-                animate={{
-                  x2: CENTER + RADIUS * 0.75 * Math.sin((handAngle * Math.PI) / 180),
-                  y2: CENTER - RADIUS * 0.75 * Math.cos((handAngle * Math.PI) / 180),
-                }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              />
-              <circle cx={CENTER} cy={CENTER} r={4} fill="hsl(var(--primary))" />
-            </svg>
-          </motion.div>
+          <svg width={CENTER * 2} height={CENTER * 2} className="absolute inset-0 pointer-events-none">
+            <motion.line
+              x1={CENTER}
+              y1={CENTER}
+              x2={CENTER + (handRadius * 0.75) * Math.sin((handAngle * Math.PI) / 180)}
+              y2={CENTER - (handRadius * 0.75) * Math.cos((handAngle * Math.PI) / 180)}
+              stroke="hsl(var(--primary))"
+              strokeWidth={2}
+              strokeLinecap="round"
+              initial={false}
+              animate={{
+                x2: CENTER + (handRadius * 0.75) * Math.sin((handAngle * Math.PI) / 180),
+                y2: CENTER - (handRadius * 0.75) * Math.cos((handAngle * Math.PI) / 180),
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            />
+            <circle cx={CENTER} cy={CENTER} r={4} fill="hsl(var(--primary))" />
+          </svg>
         )}
 
         {/* Numbers */}
@@ -115,31 +134,83 @@ export function ClockPicker({ value, onChange, onDone, hourMin = 0, hourMax = 23
             transition={{ duration: 0.2 }}
             className="absolute inset-0"
           >
-            {items.map((item, i) => {
-              const angle = (i / count) * 360 - 90;
-              const rad = (angle * Math.PI) / 180;
-              const x = CENTER + RADIUS * Math.cos(rad);
-              const y = CENTER + RADIUS * Math.sin(rad);
-              const isActive = item === activeValue;
-              const label = step === "hour" ? String(item) : String(item).padStart(2, "0");
-
-              return (
-                <button
-                  key={item}
-                  onClick={() => step === "hour" ? handleHourClick(item) : handleMinuteClick(item)}
-                  className={cn(
-                    "absolute flex items-center justify-center rounded-full transition-all duration-150 text-sm font-medium",
-                    "w-9 h-9 -translate-x-1/2 -translate-y-1/2",
-                    isActive
-                      ? "bg-primary text-primary-foreground shadow-lg scale-110"
-                      : "hover:bg-accent text-foreground hover:scale-105"
-                  )}
-                  style={{ left: x, top: y }}
-                >
-                  {label}
-                </button>
-              );
-            })}
+            {step === "hour" ? (
+              <>
+                {/* Outer ring - day hours */}
+                {HOURS_OUTER.map((item, i) => {
+                  const angle = (i / 12) * 360 - 90;
+                  const rad = (angle * Math.PI) / 180;
+                  const x = CENTER + RADIUS_OUTER * Math.cos(rad);
+                  const y = CENTER + RADIUS_OUTER * Math.sin(rad);
+                  const isActive = item === selectedHour;
+                  return (
+                    <button
+                      key={item}
+                      onClick={() => handleHourClick(item)}
+                      className={cn(
+                        "absolute flex items-center justify-center rounded-full transition-all duration-150 text-sm font-medium",
+                        "w-8 h-8 -translate-x-1/2 -translate-y-1/2",
+                        isActive
+                          ? "bg-primary text-primary-foreground shadow-lg scale-110"
+                          : "hover:bg-accent text-foreground hover:scale-105"
+                      )}
+                      style={{ left: x, top: y }}
+                    >
+                      {item}
+                    </button>
+                  );
+                })}
+                {/* Inner ring - night hours */}
+                {HOURS_INNER.map((item, i) => {
+                  const angle = (i / 12) * 360 - 90;
+                  const rad = (angle * Math.PI) / 180;
+                  const x = CENTER + RADIUS_INNER * Math.cos(rad);
+                  const y = CENTER + RADIUS_INNER * Math.sin(rad);
+                  const isActive = item === selectedHour;
+                  return (
+                    <button
+                      key={`inner-${item}`}
+                      onClick={() => handleHourClick(item)}
+                      className={cn(
+                        "absolute flex items-center justify-center rounded-full transition-all duration-150 font-medium",
+                        "w-7 h-7 -translate-x-1/2 -translate-y-1/2 text-xs",
+                        isActive
+                          ? "bg-primary text-primary-foreground shadow-lg scale-110"
+                          : "hover:bg-accent text-muted-foreground hover:scale-105"
+                      )}
+                      style={{ left: x, top: y }}
+                    >
+                      {item}
+                    </button>
+                  );
+                })}
+              </>
+            ) : (
+              /* Minutes - single ring */
+              MINUTES.map((item, i) => {
+                const angle = (i / 12) * 360 - 90;
+                const rad = (angle * Math.PI) / 180;
+                const x = CENTER + RADIUS_OUTER * Math.cos(rad);
+                const y = CENTER + RADIUS_OUTER * Math.sin(rad);
+                const isActive = item === selectedMinute;
+                return (
+                  <button
+                    key={item}
+                    onClick={() => handleMinuteClick(item)}
+                    className={cn(
+                      "absolute flex items-center justify-center rounded-full transition-all duration-150 text-sm font-medium",
+                      "w-9 h-9 -translate-x-1/2 -translate-y-1/2",
+                      isActive
+                        ? "bg-primary text-primary-foreground shadow-lg scale-110"
+                        : "hover:bg-accent text-foreground hover:scale-105"
+                    )}
+                    style={{ left: x, top: y }}
+                  >
+                    {String(item).padStart(2, "0")}
+                  </button>
+                );
+              })
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
