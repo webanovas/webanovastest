@@ -235,7 +235,10 @@ const Schedule = () => {
                         <div className="flex items-stretch" dir="rtl">
                           <div className="flex flex-col items-center justify-center px-4 md:px-6 py-4 md:py-5 bg-primary/8 border-l border-primary/10 min-w-[80px] md:min-w-[100px]">
                             <Clock className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary mb-1" />
-                            <span className="font-heading font-bold text-base md:text-lg text-primary">{cls.time}</span>
+                            <span className="font-heading font-bold text-base md:text-lg text-primary">
+                              {cls.time}{(cls as any).end_time ? ` - ${(cls as any).end_time}` : ""}
+                            </span>
+                          </div>
                           </div>
                           <div className="flex-1 p-3.5 md:p-5 flex items-center justify-between gap-3 md:gap-4">
                             <div className="flex-1">
