@@ -43,7 +43,7 @@ export function ClockPicker({ value, onChange, onDone }: ClockPickerProps) {
 
   // Calculate hand for hours
   const hourIndex = selectedHour !== null ? activeRing.indexOf(selectedHour) : -1;
-  const hourAngle = hourIndex >= 0 ? (hourIndex / 12) * 360 : null;
+  const hourAngle = hourIndex >= 0 ? (hourIndex / activeRing.length) * 360 : null;
 
   // Calculate hand for minutes
   const minuteIndex = selectedMinute !== null ? MINUTES.indexOf(selectedMinute) : -1;
