@@ -16,9 +16,19 @@ const EditableImage = ({ src, alt, className, folder = "images", onUpload }: Edi
     return <img src={src} alt={alt} className={className} />;
   }
 
+  // Check if the image uses absolute positioning — if so, apply it to the wrapper
+  const isAbsolute = className?.includes("absolute");
+  const wrapperClass = isAbsolute
+    ? "absolute inset-0 group"
+    : "relative group";
+  // Remove absolute/inset from image class since wrapper handles it
+  const imgClass = isAbsolute
+    ? className?.replace(/absolute/, "").replace(/inset-0/, "").trim() + " w-full h-full"
+    : className;
+
   return (
-    <div className="relative group">
-      <img src={src} alt={alt} className={className} />
+    <div className={wrapperClass}>
+      <img src={src} alt={alt} className={imgClass} />
       <ImageUpload
         currentUrl={src}
         onUpload={onUpload}
