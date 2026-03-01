@@ -138,7 +138,7 @@ export function ClockPicker({ value, onChange, onDone }: ClockPickerProps) {
               <>
                 {/* Outer ring - day hours */}
                 {HOURS_OUTER.map((item, i) => {
-                  const angle = (i / 12) * 360 - 90;
+                  const angle = (i / HOURS_OUTER.length) * 360 - 90;
                   const rad = (angle * Math.PI) / 180;
                   const x = CENTER + RADIUS_OUTER * Math.cos(rad);
                   const y = CENTER + RADIUS_OUTER * Math.sin(rad);
