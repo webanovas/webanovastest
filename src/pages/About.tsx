@@ -177,8 +177,8 @@ const About = () => {
           folder="about-cta"
           onUpload={isEditMode ? (url) => saveText("cta-bg", url) : undefined}
         />
-        <div className="absolute inset-0 bg-yoga-dark/50 flex items-center justify-center">
-          <div className="text-center px-4">
+        <div className="absolute inset-0 bg-yoga-dark/50 flex items-center justify-center pointer-events-none">
+          <div className="text-center px-4 pointer-events-auto">
             <E section="cta-title" fallback="בואו לתרגל" as="h2"
               className="font-heading text-3xl md:text-5xl font-bold text-primary-foreground mb-4" />
             <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild={!isEditMode}>

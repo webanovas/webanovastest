@@ -23,7 +23,7 @@ const EditableImage = ({ src, alt, className, folder = "images", onUpload }: Edi
         currentUrl={src}
         onUpload={onUpload}
         folder={folder}
-        className="top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity"
+        className="top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-50"
       />
     </div>
   );
