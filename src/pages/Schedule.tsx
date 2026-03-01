@@ -57,7 +57,7 @@ const Schedule = () => {
   const [selectedDay, setSelectedDay] = useState(days[0]);
   const [editingClass, setEditingClass] = useState<ClassRow | null>(null);
   const [isAddingClass, setIsAddingClass] = useState(false);
-  const [newClass, setNewClass] = useState({ day: "ראשון", time: "", name: "", teacher: "", description: "", is_recurring: true, specific_date: null as string | null });
+  const [newClass, setNewClass] = useState({ day: "ראשון", time: "", end_time: "" as string | null, name: "", teacher: "", description: "", is_recurring: true, specific_date: null as string | null });
 
   const { data: classes = [] } = useQuery({
     queryKey: ["classes"],
