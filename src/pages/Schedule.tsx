@@ -39,7 +39,7 @@ const stagger = {
   visible: { transition: { staggerChildren: 0.08 } },
 };
 
-const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי"];
+const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
 
 const Schedule = () => {
   const { isEditMode } = useAdminMode();
