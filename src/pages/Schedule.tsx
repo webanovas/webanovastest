@@ -155,7 +155,7 @@ const Schedule = () => {
       />
 
 
-      {/* Timetable Grid */}
+      {/* Weekly Schedule */}
       <section className="py-12 md:py-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
@@ -175,86 +175,70 @@ const Schedule = () => {
             </div>
           )}
 
-          {/* Timetable */}
-          <div className="max-w-7xl mx-auto overflow-x-auto" dir="rtl">
-            {(() => {
-              const parseTime = (t: string) => {
-                const [h, m] = t.split(":").map(Number);
-                return h * 60 + (m || 0);
-              };
-              const allSlots = new Set<string>();
-              classes.forEach(cls => allSlots.add(cls.time));
-              const sortedSlots = Array.from(allSlots).sort((a, b) => parseTime(a) - parseTime(b));
+          <div className="max-w-7xl mx-auto overflow-x-auto pb-4" dir="rtl">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={stagger}
+              className="grid grid-cols-7 gap-3 min-w-[900px]"
+            >
+              {days.map((day) => {
+                const dayItems = classes.filter((c) => c.day === day).sort((a, b) => a.time.localeCompare(b.time));
+                return (
+                  <motion.div key={day} variants={fadeUp} className="flex flex-col">
+                    {/* Day Header */}
+                    <div className="text-center mb-3 pb-3 border-b-2 border-primary/20">
+                      <h3 className="font-heading font-bold text-sm text-primary">יום {day}</h3>
+                      <span className="text-[10px] text-muted-foreground">{dayItems.length} שיעורים</span>
+                    </div>
 
-              if (sortedSlots.length === 0) {
-                return <p className="text-center text-muted-foreground py-12">אין שיעורים במערכת</p>;
-              }
-
-              return (
-                <table className="w-full border-collapse min-w-[700px]">
-                  <thead>
-                    <tr>
-                      <th className="p-3 text-sm font-heading font-semibold text-muted-foreground border-b-2 border-primary/20 w-[80px] text-center">
-                        <Clock className="h-4 w-4 mx-auto" />
-                      </th>
-                      {days.map(day => (
-                        <th key={day} className="p-3 text-center font-heading font-bold text-sm border-b-2 border-primary/20 text-primary">
-                          יום {day}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sortedSlots.map((slot, idx) => (
-                      <tr key={slot} className={cn(idx % 2 === 0 ? "bg-muted/20" : "")}>
-                        <td className="p-2 text-center font-heading font-bold text-sm text-primary border-l border-border/30 whitespace-nowrap">
-                          {slot}
-                        </td>
-                        {days.map(day => {
-                          const dayClasses = classes.filter(c => c.day === day && c.time === slot);
-                          return (
-                            <td key={day} className="p-1.5 border-l border-border/15 align-top">
-                              {dayClasses.length > 0 ? (
-                                <div className="space-y-1">
-                                  {dayClasses.map(cls => (
-                                    <div
-                                      key={cls.id}
-                                      className={cn(
-                                        "rounded-xl bg-primary/8 border border-primary/15 p-2.5 transition-all duration-200 hover:bg-primary/12 hover:shadow-sm",
-                                        isEditMode && "cursor-pointer hover:ring-2 hover:ring-primary/30 group relative"
-                                      )}
-                                      onClick={() => isEditMode && setEditingClass({ ...cls })}
-                                    >
-                                      {isEditMode && (
-                                        <div className="absolute top-1.5 left-1.5 bg-card/90 backdrop-blur-sm rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                          <Pencil className="h-2.5 w-2.5 text-primary" />
-                                        </div>
-                                      )}
-                                      <p className="font-heading font-semibold text-xs leading-tight mb-1">{cls.name}</p>
-                                      {cls.end_time && (
-                                        <p className="text-[10px] text-primary font-medium mb-0.5">{cls.time} - {cls.end_time}</p>
-                                      )}
-                                      <p className="text-[10px] text-muted-foreground flex items-center gap-1">
-                                        <User className="h-2.5 w-2.5" />{cls.teacher}
-                                      </p>
-                                      {!cls.is_recurring && (
-                                        <span className="text-[8px] px-1 py-0.5 rounded-full bg-accent text-accent-foreground font-medium mt-1 inline-block">חד פעמי</span>
-                                      )}
-                                    </div>
-                                  ))}
+                    {/* Classes */}
+                    <div className="space-y-2 flex-1">
+                      {dayItems.length === 0 ? (
+                        <p className="text-[11px] text-muted-foreground/50 text-center py-6">—</p>
+                      ) : (
+                        dayItems.map((cls) => (
+                          <Card
+                            key={cls.id}
+                            className={cn(
+                              "rounded-xl border-0 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-0.5",
+                              isEditMode && "cursor-pointer ring-2 ring-transparent hover:ring-primary/30 group relative"
+                            )}
+                            onClick={() => isEditMode && setEditingClass({ ...cls })}
+                          >
+                            {isEditMode && (
+                              <div className="absolute top-1.5 left-1.5 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Pencil className="h-2.5 w-2.5 text-primary" />
+                              </div>
+                            )}
+                            <CardContent className="p-0">
+                              <div className="bg-primary/8 px-3 py-1.5 border-b border-primary/10 flex items-center justify-center gap-1.5">
+                                <Clock className="h-3 w-3 text-primary" />
+                                <span className="font-heading font-bold text-xs text-primary">
+                                  {cls.time}{cls.end_time ? ` - ${cls.end_time}` : ""}
+                                </span>
+                              </div>
+                              <div className="p-2.5">
+                                <div className="flex items-center gap-1 mb-1">
+                                  <h4 className="font-heading font-semibold text-xs leading-tight">{cls.name}</h4>
+                                  {!cls.is_recurring && (
+                                    <span className="text-[8px] px-1 py-0.5 rounded-full bg-accent text-accent-foreground font-medium">חד פעמי</span>
+                                  )}
                                 </div>
-                              ) : (
-                                <div className="min-h-[40px]" />
-                              )}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              );
-            })()}
+                                <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                  <User className="h-2.5 w-2.5" />{cls.teacher}
+                                </p>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
           </div>
         </div>
       </section>
