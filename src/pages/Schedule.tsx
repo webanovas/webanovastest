@@ -190,7 +190,6 @@ const Schedule = () => {
                     {/* Day Header */}
                     <div className="text-center mb-3 pb-3 border-b-2 border-primary/20">
                       <h3 className="font-heading font-bold text-base text-primary">יום {day}</h3>
-                      </div>
                     </div>
 
                     {/* Classes */}
