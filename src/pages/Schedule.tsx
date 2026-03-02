@@ -189,14 +189,14 @@ const Schedule = () => {
                   <motion.div key={day} variants={fadeUp} className="flex flex-col">
                     {/* Day Header */}
                     <div className="text-center mb-3 pb-3 border-b-2 border-primary/20">
-                      <h3 className="font-heading font-bold text-sm text-primary">יום {day}</h3>
-                      <span className="text-[10px] text-muted-foreground">{dayItems.length} שיעורים</span>
+                      <h3 className="font-heading font-bold text-base text-primary">יום {day}</h3>
+                      <span className="text-xs text-muted-foreground">{dayItems.length} שיעורים</span>
                     </div>
 
                     {/* Classes */}
-                    <div className="space-y-2 flex-1">
+                    <div className="space-y-2.5 flex-1">
                       {dayItems.length === 0 ? (
-                        <p className="text-[11px] text-muted-foreground/50 text-center py-6">—</p>
+                        <p className="text-sm text-muted-foreground/50 text-center py-6">—</p>
                       ) : (
                         dayItems.map((cls) => (
                           <Card
@@ -209,25 +209,25 @@ const Schedule = () => {
                           >
                             {isEditMode && (
                               <div className="absolute top-1.5 left-1.5 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Pencil className="h-2.5 w-2.5 text-primary" />
+                                <Pencil className="h-3 w-3 text-primary" />
                               </div>
                             )}
                             <CardContent className="p-0">
-                              <div className="bg-primary/8 px-3 py-1.5 border-b border-primary/10 flex items-center justify-center gap-1.5">
-                                <Clock className="h-3 w-3 text-primary" />
-                                <span className="font-heading font-bold text-xs text-primary">
+                              <div className="bg-primary/8 px-3 py-2 border-b border-primary/10 flex items-center justify-center gap-1.5">
+                                <Clock className="h-3.5 w-3.5 text-primary" />
+                                <span className="font-heading font-bold text-sm text-primary">
                                   {cls.time}{cls.end_time ? ` - ${cls.end_time}` : ""}
                                 </span>
                               </div>
-                              <div className="p-2.5">
-                                <div className="flex items-center gap-1 mb-1">
-                                  <h4 className="font-heading font-semibold text-xs leading-tight">{cls.name}</h4>
+                              <div className="p-3">
+                                <div className="flex items-center gap-1.5 mb-1">
+                                  <h4 className="font-heading font-semibold text-sm leading-tight">{cls.name}</h4>
                                   {!cls.is_recurring && (
-                                    <span className="text-[8px] px-1 py-0.5 rounded-full bg-accent text-accent-foreground font-medium">חד פעמי</span>
+                                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent text-accent-foreground font-medium">חד פעמי</span>
                                   )}
                                 </div>
-                                <p className="text-[10px] text-muted-foreground flex items-center gap-1">
-                                  <User className="h-2.5 w-2.5" />{cls.teacher}
+                                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                  <User className="h-3 w-3" />{cls.teacher}
                                 </p>
                               </div>
                             </CardContent>
