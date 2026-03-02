@@ -155,82 +155,107 @@ const Schedule = () => {
       />
 
 
-      {/* Schedule with Day Tabs */}
-      <section className="py-12 md:py-36">
+      {/* Timetable Grid */}
+      <section className="py-12 md:py-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
             <ScheduleE section="schedule-label" fallback="שבועי" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
             <ScheduleE section="schedule-title" fallback="לוח שיעורים" as="h2" className="font-heading text-3xl md:text-4xl font-bold" />
           </div>
 
-          {/* All Days */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={stagger}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto"
-          >
-            {days.map((day) => {
-              const dayItems = classes.filter((c) => c.day === day).sort((a, b) => a.time.localeCompare(b.time));
+          {isEditMode && (
+            <div className="text-center mb-6">
+              <Button
+                size="sm"
+                onClick={() => setIsAddingClass(true)}
+                className="rounded-full gap-2"
+              >
+                <Plus className="h-4 w-4" />הוסף שיעור
+              </Button>
+            </div>
+          )}
+
+          {/* Timetable */}
+          <div className="max-w-7xl mx-auto overflow-x-auto" dir="rtl">
+            {(() => {
+              const parseTime = (t: string) => {
+                const [h, m] = t.split(":").map(Number);
+                return h * 60 + (m || 0);
+              };
+              const allSlots = new Set<string>();
+              classes.forEach(cls => allSlots.add(cls.time));
+              const sortedSlots = Array.from(allSlots).sort((a, b) => parseTime(a) - parseTime(b));
+
+              if (sortedSlots.length === 0) {
+                return <p className="text-center text-muted-foreground py-12">אין שיעורים במערכת</p>;
+              }
+
               return (
-                <motion.div key={day} variants={fadeUp} className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-heading font-bold text-lg text-primary">יום {day}</h3>
-                    {isEditMode && (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => { setNewClass({ ...newClass, day }); setIsAddingClass(true); }}
-                        className="rounded-full h-7 w-7 p-0"
-                      >
-                        <Plus className="h-3.5 w-3.5" />
-                      </Button>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    {dayItems.length === 0 ? (
-                      <p className="text-sm text-muted-foreground py-4 text-center">אין שיעורים</p>
-                    ) : (
-                      dayItems.map((cls) => (
-                        <Card
-                          key={cls.id}
-                          className={cn(
-                            "rounded-xl border-0 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md",
-                            isEditMode && "cursor-pointer ring-2 ring-transparent hover:ring-primary/30 group relative"
-                          )}
-                          onClick={() => isEditMode && setEditingClass({ ...cls })}
-                        >
-                          {isEditMode && (
-                            <div className="absolute top-2 left-2 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Pencil className="h-3 w-3 text-primary" />
-                            </div>
-                          )}
-                          <CardContent className="p-3" dir="rtl">
-                            <div className="flex items-center gap-2 mb-1">
-                              <Clock className="h-3 w-3 text-primary flex-shrink-0" />
-                              <span className="font-heading font-bold text-sm text-primary">
-                                {cls.time}{cls.end_time ? ` - ${cls.end_time}` : ""}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2 mb-0.5">
-                              <h4 className="font-heading font-semibold text-sm">{cls.name}</h4>
-                              {!cls.is_recurring && (
-                                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent text-accent-foreground font-medium">חד פעמי</span>
+                <table className="w-full border-collapse min-w-[700px]">
+                  <thead>
+                    <tr>
+                      <th className="p-3 text-sm font-heading font-semibold text-muted-foreground border-b-2 border-primary/20 w-[80px] text-center">
+                        <Clock className="h-4 w-4 mx-auto" />
+                      </th>
+                      {days.map(day => (
+                        <th key={day} className="p-3 text-center font-heading font-bold text-sm border-b-2 border-primary/20 text-primary">
+                          יום {day}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sortedSlots.map((slot, idx) => (
+                      <tr key={slot} className={cn(idx % 2 === 0 ? "bg-muted/20" : "")}>
+                        <td className="p-2 text-center font-heading font-bold text-sm text-primary border-l border-border/30 whitespace-nowrap">
+                          {slot}
+                        </td>
+                        {days.map(day => {
+                          const dayClasses = classes.filter(c => c.day === day && c.time === slot);
+                          return (
+                            <td key={day} className="p-1.5 border-l border-border/15 align-top">
+                              {dayClasses.length > 0 ? (
+                                <div className="space-y-1">
+                                  {dayClasses.map(cls => (
+                                    <div
+                                      key={cls.id}
+                                      className={cn(
+                                        "rounded-xl bg-primary/8 border border-primary/15 p-2.5 transition-all duration-200 hover:bg-primary/12 hover:shadow-sm",
+                                        isEditMode && "cursor-pointer hover:ring-2 hover:ring-primary/30 group relative"
+                                      )}
+                                      onClick={() => isEditMode && setEditingClass({ ...cls })}
+                                    >
+                                      {isEditMode && (
+                                        <div className="absolute top-1.5 left-1.5 bg-card/90 backdrop-blur-sm rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                          <Pencil className="h-2.5 w-2.5 text-primary" />
+                                        </div>
+                                      )}
+                                      <p className="font-heading font-semibold text-xs leading-tight mb-1">{cls.name}</p>
+                                      {cls.end_time && (
+                                        <p className="text-[10px] text-primary font-medium mb-0.5">{cls.time} - {cls.end_time}</p>
+                                      )}
+                                      <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                        <User className="h-2.5 w-2.5" />{cls.teacher}
+                                      </p>
+                                      {!cls.is_recurring && (
+                                        <span className="text-[8px] px-1 py-0.5 rounded-full bg-accent text-accent-foreground font-medium mt-1 inline-block">חד פעמי</span>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <div className="min-h-[40px]" />
                               )}
-                            </div>
-                            <p className="text-xs text-muted-foreground flex items-center gap-1">
-                              <User className="h-3 w-3" />{cls.teacher}
-                            </p>
-                          </CardContent>
-                        </Card>
-                      ))
-                    )}
-                  </div>
-                </motion.div>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               );
-            })}
-          </motion.div>
+            })()}
+          </div>
         </div>
       </section>
 
