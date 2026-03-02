@@ -163,106 +163,74 @@ const Schedule = () => {
             <ScheduleE section="schedule-title" fallback="לוח שיעורים" as="h2" className="font-heading text-3xl md:text-4xl font-bold" />
           </div>
 
-          {/* Day Tabs */}
-          <div className="flex justify-center mb-8 md:mb-12 overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0">
-            <div className="inline-flex items-center bg-muted/50 rounded-2xl p-1.5 gap-1 min-w-max">
-              {days.map((day) => (
-                <button
-                  key={day}
-                  onClick={() => setSelectedDay(day)}
-                  className={cn(
-                    "relative px-4 md:px-6 py-2.5 rounded-xl text-sm font-heading font-medium transition-all duration-300",
-                    selectedDay === day
-                      ? "text-primary-foreground"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {selectedDay === day && (
-                    <motion.div
-                      layoutId="activeDay"
-                      className="absolute inset-0 bg-primary rounded-xl shadow-lg shadow-primary/20"
-                      transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
-                    />
-                  )}
-                  <span className="relative z-10">יום {day}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {isEditMode && (
-            <div className="text-center mb-8">
-              <Button
-                size="sm"
-                onClick={() => { setNewClass({ ...newClass, day: selectedDay }); setIsAddingClass(true); }}
-                className="rounded-full gap-2"
-              >
-                <Plus className="h-4 w-4" />הוסף שיעור
-              </Button>
-            </div>
-          )}
-
-          {/* Class Cards */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={selectedDay}
-              initial="hidden"
-              animate="visible"
-              exit={{ opacity: 0, y: -10 }}
-              variants={stagger}
-              className="max-w-3xl mx-auto space-y-4"
-            >
-              {dayClasses.length === 0 ? (
-                <motion.p variants={fadeUp} className="text-center text-muted-foreground py-12">
-                  אין שיעורים ביום {selectedDay}
-                </motion.p>
-              ) : (
-                dayClasses.map((cls) => (
-                  <motion.div key={cls.id} variants={fadeUp}>
-                    <Card
-                      className={cn(
-                        "rounded-2xl border-0 shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5",
-                        isEditMode && "cursor-pointer ring-2 ring-transparent hover:ring-primary/30 group relative"
-                      )}
-                      onClick={() => isEditMode && setEditingClass({ ...cls })}
-                    >
-                      {isEditMode && (
-                        <div className="absolute top-4 left-4 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Pencil className="h-3.5 w-3.5 text-primary" />
-                        </div>
-                      )}
-                      <CardContent className="p-0">
-                        <div className="flex items-stretch" dir="rtl">
-                          <div className="flex flex-col items-center justify-center px-4 md:px-6 py-4 md:py-5 bg-primary/8 border-l border-primary/10 min-w-[80px] md:min-w-[100px]">
-                            <Clock className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary mb-1" />
-                            <span className="font-heading font-bold text-base md:text-lg text-primary">
-                              {cls.time}{(cls as any).end_time ? ` - ${(cls as any).end_time}` : ""}
-                            </span>
-                          </div>
-                          <div className="flex-1 p-3.5 md:p-5 flex items-center justify-between gap-3 md:gap-4">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <h3 className="font-heading font-semibold text-base">{cls.name}</h3>
-                                {!cls.is_recurring && (
-                                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-accent text-accent-foreground font-medium">חד פעמי</span>
-                                )}
-                              </div>
-                              <p className="text-sm text-muted-foreground flex items-center gap-1.5">
-                                <User className="h-3.5 w-3.5" />{cls.teacher}
-                              </p>
-                              {cls.description && (
-                                <p className="text-xs text-muted-foreground/70 mt-1.5 line-clamp-1">{cls.description}</p>
+          {/* All Days */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={stagger}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto"
+          >
+            {days.map((day) => {
+              const dayItems = classes.filter((c) => c.day === day).sort((a, b) => a.time.localeCompare(b.time));
+              return (
+                <motion.div key={day} variants={fadeUp} className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-heading font-bold text-lg text-primary">יום {day}</h3>
+                    {isEditMode && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => { setNewClass({ ...newClass, day }); setIsAddingClass(true); }}
+                        className="rounded-full h-7 w-7 p-0"
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    {dayItems.length === 0 ? (
+                      <p className="text-sm text-muted-foreground py-4 text-center">אין שיעורים</p>
+                    ) : (
+                      dayItems.map((cls) => (
+                        <Card
+                          key={cls.id}
+                          className={cn(
+                            "rounded-xl border-0 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md",
+                            isEditMode && "cursor-pointer ring-2 ring-transparent hover:ring-primary/30 group relative"
+                          )}
+                          onClick={() => isEditMode && setEditingClass({ ...cls })}
+                        >
+                          {isEditMode && (
+                            <div className="absolute top-2 left-2 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Pencil className="h-3 w-3 text-primary" />
+                            </div>
+                          )}
+                          <CardContent className="p-3" dir="rtl">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Clock className="h-3 w-3 text-primary flex-shrink-0" />
+                              <span className="font-heading font-bold text-sm text-primary">
+                                {cls.time}{cls.end_time ? ` - ${cls.end_time}` : ""}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <h4 className="font-heading font-semibold text-sm">{cls.name}</h4>
+                              {!cls.is_recurring && (
+                                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent text-accent-foreground font-medium">חד פעמי</span>
                               )}
                             </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))
-              )}
-            </motion.div>
-          </AnimatePresence>
+                            <p className="text-xs text-muted-foreground flex items-center gap-1">
+                              <User className="h-3 w-3" />{cls.teacher}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      ))
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
         </div>
       </section>
 
