@@ -195,11 +195,12 @@ const Team = () => {
           ) : (
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
               {teachers.map((t) => (
-                <motion.div key={t.id} variants={fadeUp}>
+                <motion.div key={t.id} variants={fadeUp} ref={(el) => { teacherRefs.current[t.name] = el; }}>
                   <Card
                     className={cn(
-                      "text-center h-full rounded-3xl border-0 overflow-hidden hover-lift shadow-lg",
-                      isEditMode && "cursor-pointer ring-2 ring-transparent hover:ring-primary/30"
+                      "text-center h-full rounded-3xl border-0 overflow-hidden hover-lift shadow-lg transition-all duration-500",
+                      isEditMode && "cursor-pointer ring-2 ring-transparent hover:ring-primary/30",
+                      highlightTeacher === t.name && "ring-2 ring-primary shadow-xl shadow-primary/20"
                     )}
                     onClick={() => isEditMode && setEditingTeacher({ ...t })}
                   >
