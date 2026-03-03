@@ -25,7 +25,7 @@ const queryClient = new QueryClient();
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(() => !sessionStorage.getItem("splashShown"));
-  const handleSplashComplete = useCallback(() => setShowSplash(false), []);
+  const handleSplashComplete = useCallback(() => { sessionStorage.setItem("splashShown", "1"); setShowSplash(false); }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
