@@ -44,6 +44,7 @@ const stagger = {
 const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
 
 const Schedule = () => {
+  const isMobile = useIsMobile();
   const { isEditMode } = useAdminMode();
   const queryClient = useQueryClient();
   const { getText, saveText } = usePageContent("schedule");
