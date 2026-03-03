@@ -399,7 +399,7 @@ const Schedule = () => {
                         "rounded-2xl border-0 overflow-hidden shadow-md cursor-pointer group h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
                         isEditMode && "ring-2 ring-transparent hover:ring-primary/30 relative"
                       )}
-                      onClick={() => isEditMode ? setEditingClassInfo({ ...cls }) : setViewingClass(cls)}
+                      onClick={() => { if (isEditMode) { setEditingClassInfo({ ...cls }); setEditingClassInfoOriginalName(cls.name); } else { setViewingClass(cls); } }}
                     >
                       {isEditMode && (
                         <div className="absolute top-3 left-3 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
