@@ -424,23 +424,7 @@ function ClassViewContent({ cls, onClose }: { cls: ClassRow; onClose: () => void
         </div>
       )}
       <div className="p-6 space-y-4">
-        <div>
-          <h2 className="font-heading text-2xl font-bold mb-3">{cls.name}</h2>
-          <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            {cls.specific_date && (
-              <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
-                <CalendarDays className="h-4 w-4 text-primary" />{cls.specific_date}
-              </span>
-            )}
-            <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
-              <Clock className="h-4 w-4 text-primary" />
-              {cls.time}{cls.end_time ? ` - ${cls.end_time}` : ""}
-            </span>
-            <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
-              <User className="h-4 w-4 text-primary" />{cls.teacher}
-            </span>
-          </div>
-        </div>
+        <h2 className="font-heading text-2xl font-bold">{cls.name}</h2>
         {cls.description && (
           <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{cls.description}</p>
         )}
