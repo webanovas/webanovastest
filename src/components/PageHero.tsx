@@ -17,6 +17,7 @@ interface PageHeroProps {
   subtitle?: string;
   label?: string;
   image?: string;
+  imagePosition?: string;
   page?: string;
   titleSection?: string;
   subtitleSection?: string;
