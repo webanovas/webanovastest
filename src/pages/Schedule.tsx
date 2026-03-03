@@ -64,6 +64,7 @@ const Schedule = () => {
   const [isAddingClass, setIsAddingClass] = useState(false);
   const [viewingClass, setViewingClass] = useState<ClassRow | null>(null);
   const [editingClassInfo, setEditingClassInfo] = useState<ClassRow | null>(null);
+  const [editingClassInfoOriginalName, setEditingClassInfoOriginalName] = useState<string>("");
   const [newClass, setNewClass] = useState({ day: "ראשון", time: "", end_time: "" as string | null, name: "", teacher: "", description: "", image_url: null as string | null, is_recurring: true, specific_date: null as string | null });
 
   // Undo/Redo history
@@ -398,7 +399,7 @@ const Schedule = () => {
                         "rounded-2xl border-0 overflow-hidden shadow-md cursor-pointer group h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
                         isEditMode && "ring-2 ring-transparent hover:ring-primary/30 relative"
                       )}
-                      onClick={() => isEditMode ? setEditingClassInfo({ ...cls }) : setViewingClass(cls)}
+                      onClick={() => { if (isEditMode) { setEditingClassInfo({ ...cls }); setEditingClassInfoOriginalName(cls.name); } else { setViewingClass(cls); } }}
                     >
                       {isEditMode && (
                         <div className="absolute top-3 left-3 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -460,7 +461,15 @@ const Schedule = () => {
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto" dir="rtl">
           {editingClassInfo && (
             <div className="space-y-5 pt-2">
-              <h3 className="font-heading text-xl font-bold">{editingClassInfo.name}</h3>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground/70">שם השיעור</label>
+                <Input
+                  value={editingClassInfo.name}
+                  onChange={(e) => setEditingClassInfo({ ...editingClassInfo, name: e.target.value })}
+                  className="rounded-xl font-heading text-lg font-bold"
+                  placeholder="שם השיעור..."
+                />
+              </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground/70">תמונה</label>
                 <ImageUpload
@@ -485,8 +494,8 @@ const Schedule = () => {
                   // Update all classes with same name
                   const { error } = await supabase
                     .from("classes")
-                    .update({ description: editingClassInfo.description, image_url: editingClassInfo.image_url || null })
-                    .eq("name", editingClassInfo.name);
+                    .update({ name: editingClassInfo.name, description: editingClassInfo.description, image_url: editingClassInfo.image_url || null })
+                    .eq("name", editingClassInfoOriginalName);
                   if (error) { toast.error("שגיאה: " + error.message); }
                   else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["classes"] }); }
                   setEditingClassInfo(null);
