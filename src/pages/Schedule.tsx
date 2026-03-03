@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Layout from "@/components/Layout";
 import PageHero from "@/components/PageHero";
@@ -57,6 +58,7 @@ const Schedule = () => {
     }
     return <EditableText value={val} onSave={(v) => saveText(section, v)} as={as} className={className} multiline={multiline} />;
   };
+  const navigate = useNavigate();
   const [selectedDay, setSelectedDay] = useState(days[0]);
   const [editingClass, setEditingClass] = useState<ClassRow | null>(null);
   const [isAddingClass, setIsAddingClass] = useState(false);
@@ -227,10 +229,10 @@ const Schedule = () => {
                           <Card
                             key={cls.id}
                             className={cn(
-                              "rounded-xl border-0 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-pointer",
-                              isEditMode && "ring-2 ring-transparent hover:ring-primary/30 group relative"
+                              "rounded-xl border-0 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-0.5",
+                              isEditMode && "ring-2 ring-transparent hover:ring-primary/30 group relative cursor-pointer"
                             )}
-                            onClick={() => isEditMode ? setEditingClass({ ...cls }) : setViewingClass(cls)}
+                            onClick={() => isEditMode && setEditingClass({ ...cls })}
                           >
                             {isEditMode && (
                               <div className="absolute top-1.5 left-1.5 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -246,14 +248,22 @@ const Schedule = () => {
                               </div>
                               <div className="p-3">
                                 <div className="flex items-center gap-1.5 mb-1">
-                                  <h4 className="font-heading font-semibold text-sm leading-tight">{cls.name}</h4>
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); if (!isEditMode) setViewingClass(cls); }}
+                                    className="font-heading font-semibold text-sm leading-tight text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary transition-colors text-right"
+                                  >
+                                    {cls.name}
+                                  </button>
                                   {!cls.is_recurring && (
                                     <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent text-accent-foreground font-medium">חד פעמי</span>
                                   )}
                                 </div>
-                                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                  <User className="h-3 w-3" />{cls.teacher}
-                                </p>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); if (!isEditMode) navigate(`/team?teacher=${encodeURIComponent(cls.teacher)}`); }}
+                                  className="text-xs text-muted-foreground flex items-center gap-1 hover:text-primary transition-colors"
+                                >
+                                  <User className="h-3 w-3" /><span className="underline decoration-muted-foreground/30 underline-offset-2 hover:decoration-primary">{cls.teacher}</span>
+                                </button>
                               </div>
                             </CardContent>
                           </Card>
@@ -403,7 +413,7 @@ const Schedule = () => {
         </Drawer>
       ) : (
         <Dialog open={!!viewingClass} onOpenChange={(open) => !open && setViewingClass(null)}>
-          <DialogContent className="max-w-lg p-0 overflow-hidden" dir="rtl">
+          <DialogContent className="max-w-lg p-0 overflow-hidden [&>button]:hidden" dir="rtl">
             {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} />}
           </DialogContent>
         </Dialog>
@@ -422,23 +432,7 @@ function ClassViewContent({ cls, onClose }: { cls: ClassRow; onClose: () => void
         </div>
       )}
       <div className="p-6 space-y-4">
-        <div>
-          <h2 className="font-heading text-2xl font-bold mb-3">{cls.name}</h2>
-          <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            {cls.specific_date && (
-              <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
-                <CalendarDays className="h-4 w-4 text-primary" />{cls.specific_date}
-              </span>
-            )}
-            <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
-              <Clock className="h-4 w-4 text-primary" />
-              {cls.time}{cls.end_time ? ` - ${cls.end_time}` : ""}
-            </span>
-            <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
-              <User className="h-4 w-4 text-primary" />{cls.teacher}
-            </span>
-          </div>
-        </div>
+        <h2 className="font-heading text-2xl font-bold">{cls.name}</h2>
         {cls.description && (
           <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{cls.description}</p>
         )}
