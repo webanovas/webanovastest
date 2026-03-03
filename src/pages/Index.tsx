@@ -49,6 +49,57 @@ const benefitDefaults = [
 
 const defaultHeroImages = [heroYoga, studioInterior, yogaGroup, yogaSunset, meditationHands];
 
+const HeroFocalEditor = ({ src, index, objectPosition, onSave }: { src: string; index: number; objectPosition: string; onSave: (pos: string) => void }) => {
+  const imgRef = useRef<HTMLDivElement>(null);
+  const parts = objectPosition.split(" ");
+  const [pos, setPos] = useState({ x: parseFloat(parts[0]) || 50, y: parseFloat(parts[1]) || 50 });
+  const [dragging, setDragging] = useState(false);
+
+  const update = useCallback((e: React.MouseEvent) => {
+    if (!imgRef.current) return;
+    const rect = imgRef.current.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+    const newPos = { x: Math.round(x), y: Math.round(y) };
+    setPos(newPos);
+    onSave(`${newPos.x}% ${newPos.y}%`);
+  }, [onSave]);
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-[1fr_200px] gap-4 p-4">
+      <div
+        ref={imgRef}
+        className="relative cursor-crosshair rounded-lg overflow-hidden select-none border border-border"
+        onMouseDown={(e) => { e.preventDefault(); setDragging(true); update(e); }}
+        onMouseMove={(e) => { if (dragging) update(e); }}
+        onMouseUp={() => setDragging(false)}
+        onMouseLeave={() => setDragging(false)}
+      >
+        <img src={src} alt={`תמונה ${index + 1}`} className="w-full h-auto block" draggable={false} />
+        <div
+          className="absolute w-7 h-7 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10"
+          style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
+        >
+          <div className="absolute inset-0 rounded-full border-2 border-white shadow-lg" />
+          <div className="absolute inset-[5px] rounded-full bg-primary/80" />
+        </div>
+        <div className="absolute top-0 bottom-0 w-px bg-white/30 pointer-events-none" style={{ left: `${pos.x}%` }} />
+        <div className="absolute left-0 right-0 h-px bg-white/30 pointer-events-none" style={{ top: `${pos.y}%` }} />
+      </div>
+      <div className="flex flex-col gap-2">
+        <p className="text-xs text-muted-foreground">תצוגה מקדימה</p>
+        <div className="aspect-[16/7] rounded-md overflow-hidden border border-border">
+          <img src={src} alt="preview" className="w-full h-full object-cover" style={{ objectPosition: `${pos.x}% ${pos.y}%` }} />
+        </div>
+        <p className="text-[10px] text-muted-foreground text-center">מוקד: {pos.x}% / {pos.y}%</p>
+        <Button variant="ghost" size="sm" className="text-xs" onClick={() => { setPos({ x: 50, y: 50 }); onSave("50% 50%"); }}>
+          איפוס למרכז
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 const Index = () => {
   const { isEditMode } = useAdminMode();
   const { getText, saveText } = usePageContent("home");
