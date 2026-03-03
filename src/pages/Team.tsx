@@ -125,7 +125,15 @@ const Team = () => {
     },
   });
 
-  const [editingTeacher, setEditingTeacher] = useState<TeacherRow | null>(null);
+  useEffect(() => {
+    if (highlightTeacher && teachers.length > 0) {
+      setTimeout(() => {
+        teacherRefs.current[highlightTeacher]?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 300);
+    }
+  }, [highlightTeacher, teachers]);
+
+
   const [isAddingTeacher, setIsAddingTeacher] = useState(false);
   const [newTeacher, setNewTeacher] = useState({ name: "", role: "", description: "" });
 
