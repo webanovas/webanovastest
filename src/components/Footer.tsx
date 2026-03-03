@@ -44,6 +44,7 @@ const Footer = () => {
             <E section="nav-title" fallback="ניווט" as="h4" className="font-heading font-semibold mb-4 text-white" />
             <nav className="flex flex-col gap-2.5 text-sm">
               <Link to="/about" className="text-white/60 hover:text-white transition-colors">על הסטודיו</Link>
+              <Link to="/team" className="text-white/60 hover:text-white transition-colors">הצוות שלנו</Link>
               <Link to="/schedule" className="text-white/60 hover:text-white transition-colors">מערכת שעות</Link>
               <Link to="/workshops" className="text-white/60 hover:text-white transition-colors">סדנאות</Link>
               <Link to="/contact" className="text-white/60 hover:text-white transition-colors">צור קשר</Link>
