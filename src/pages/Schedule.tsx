@@ -85,7 +85,7 @@ const Schedule = () => {
   const saveClass = async (cls: any) => {
     const { error } = await supabase.from("classes").update({
       day: cls.day, time: cls.time, end_time: cls.end_time || null, name: cls.name, teacher: cls.teacher, description: cls.description,
-      is_recurring: cls.is_recurring, specific_date: cls.specific_date,
+      is_recurring: cls.is_recurring, specific_date: cls.specific_date, image_url: cls.image_url || null,
     }).eq("id", cls.id);
     if (error) { console.error("Save error:", error); toast.error("שגיאה בשמירה: " + error.message); }
     else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["classes"] }); }
