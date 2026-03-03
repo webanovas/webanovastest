@@ -230,6 +230,16 @@ const Index = () => {
             </motion.div>
           )}
         </AnimatePresence>
+        {heroFocalIndex !== null && (
+          <FocalPointPicker
+            src={heroImages[heroFocalIndex]}
+            alt={`תמונה ${heroFocalIndex + 1}`}
+            objectPosition={getText(`hero-image-${heroFocalIndex}-pos`, "50% 50%")}
+            onSave={(pos) => saveText(`hero-image-${heroFocalIndex}-pos`, pos)}
+            open={true}
+            onOpenChange={(open) => { if (!open) setHeroFocalIndex(null); }}
+          />
+        )
 
         <div className="container mx-auto px-4 relative z-10 pb-12 md:pb-28 pt-28 md:pt-40">
           <motion.div initial="hidden" animate="visible" variants={stagger} className="max-w-2xl">
