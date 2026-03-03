@@ -227,6 +227,9 @@ const Index = () => {
                   </div>
                 ))}
               </div>
+              <Button size="sm" className="w-full mt-3 rounded-full" onClick={() => setShowHeroEditor(false)}>
+                שמירה וסגירה
+              </Button>
             </motion.div>
           )}
         </AnimatePresence>
