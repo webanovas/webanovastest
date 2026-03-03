@@ -360,7 +360,7 @@ const Schedule = () => {
                 <ImageUpload
                   currentUrl={editingClassInfo.image_url}
                   onUpload={(url) => setEditingClassInfo({ ...editingClassInfo, image_url: url })}
-                  bucket="class-images"
+                  folder="classes"
                   className="aspect-[16/9] rounded-xl"
                 />
               </div>
