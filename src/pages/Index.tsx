@@ -305,6 +305,8 @@ const Index = () => {
                   className="w-full h-full object-cover"
                   folder="welcome"
                   onUpload={isEditMode ? (url) => saveText("welcome-img-secondary", url) : undefined}
+                  objectPosition={getText("welcome-img-secondary-pos", "50% 50%")}
+                  onPositionChange={isEditMode ? (pos) => saveText("welcome-img-secondary-pos", pos) : undefined}
                 />
               </div>
             </motion.div>
