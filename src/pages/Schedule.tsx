@@ -348,50 +348,63 @@ const Schedule = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Class View Dialog */}
-      <Dialog open={!!viewingClass} onOpenChange={(open) => !open && setViewingClass(null)}>
-        <DialogContent className="max-w-lg p-0 overflow-hidden" dir="rtl">
-          {viewingClass && (
-            <div className="bg-card">
-              {viewingClass.image_url && (
-                <div className="aspect-[16/9] overflow-hidden">
-                  <img src={viewingClass.image_url} alt={viewingClass.name} className="w-full h-full object-cover" />
-                </div>
-              )}
-              <div className="p-6 space-y-4">
-                <div>
-                  <h2 className="font-heading text-2xl font-bold mb-2">{viewingClass.name}</h2>
-                  {viewingClass.specific_date && (
-                    <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground mb-1">
-                      <span className="flex items-center gap-1.5">
-                        <CalendarDays className="h-4 w-4 text-primary" />{viewingClass.specific_date}
-                      </span>
-                      <span className="flex items-center gap-1.5">
-                        <Clock className="h-4 w-4 text-primary" />
-                        {viewingClass.time}{viewingClass.end_time ? ` - ${viewingClass.end_time}` : ""}
-                      </span>
-                      <span className="flex items-center gap-1.5">
-                        <User className="h-4 w-4 text-primary" />{viewingClass.teacher}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                {viewingClass.description && (
-                  <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{viewingClass.description}</p>
-                )}
-                <div className="pt-2">
-                  <Button variant="outline" size="sm" className="rounded-full" onClick={() => setViewingClass(null)}>
-                    סגירה
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* Class View - Drawer on mobile, Dialog on desktop */}
+      {isMobile ? (
+        <Drawer open={!!viewingClass} onOpenChange={(open) => !open && setViewingClass(null)}>
+          <DrawerContent className="max-h-[85vh]" dir="rtl">
+            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} />}
+          </DrawerContent>
+        </Drawer>
+      ) : (
+        <Dialog open={!!viewingClass} onOpenChange={(open) => !open && setViewingClass(null)}>
+          <DialogContent className="max-w-lg p-0 overflow-hidden" dir="rtl">
+            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} />}
+          </DialogContent>
+        </Dialog>
+      )}
     </Layout>
   );
 };
+
+/* ──── Class View Content (shared between Drawer & Dialog) ──── */
+function ClassViewContent({ cls, onClose }: { cls: ClassRow; onClose: () => void }) {
+  return (
+    <div className="bg-card">
+      {cls.image_url && (
+        <div className="aspect-[16/9] overflow-hidden">
+          <img src={cls.image_url} alt={cls.name} className="w-full h-full object-cover" />
+        </div>
+      )}
+      <div className="p-6 space-y-4">
+        <div>
+          <h2 className="font-heading text-2xl font-bold mb-3">{cls.name}</h2>
+          <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+            {cls.specific_date && (
+              <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
+                <CalendarDays className="h-4 w-4 text-primary" />{cls.specific_date}
+              </span>
+            )}
+            <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
+              <Clock className="h-4 w-4 text-primary" />
+              {cls.time}{cls.end_time ? ` - ${cls.end_time}` : ""}
+            </span>
+            <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
+              <User className="h-4 w-4 text-primary" />{cls.teacher}
+            </span>
+          </div>
+        </div>
+        {cls.description && (
+          <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{cls.description}</p>
+        )}
+        <div className="pt-2">
+          <Button variant="outline" size="sm" className="rounded-full w-full md:w-auto" onClick={onClose}>
+            סגירה
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /* ──── Section Group for forms ──── */
 function FormSection({ icon: Icon, title, children }: { icon: any; title: string; children: React.ReactNode }) {
