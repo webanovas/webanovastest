@@ -1,0 +1,1 @@
+ALTER TABLE public.classes ADD COLUMN image_url text;
