@@ -114,6 +114,8 @@ const Contact = () => {
                   className="w-full h-full object-cover"
                   folder="contact"
                   onUpload={isEditMode ? (url) => saveText("studio-image", url) : undefined}
+                  objectPosition={getText("studio-image-pos", "50% 50%")}
+                  onPositionChange={isEditMode ? (pos) => saveText("studio-image-pos", pos) : undefined}
                 />
               </motion.div>
             </motion.div>

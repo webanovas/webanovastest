@@ -353,6 +353,8 @@ const Index = () => {
                 className="w-full h-full object-cover"
                 folder="benefits"
                 onUpload={isEditMode ? (url) => saveText("benefits-image", url) : undefined}
+                objectPosition={getText("benefits-image-pos", "50% 50%")}
+                onPositionChange={isEditMode ? (pos) => saveText("benefits-image-pos", pos) : undefined}
               />
             </motion.div>
 
