@@ -132,7 +132,7 @@ const Team = () => {
       }, 300);
     }
   }, [highlightTeacher, teachers]);
-
+  const [editingTeacher, setEditingTeacher] = useState<TeacherRow | null>(null);
 
   const [isAddingTeacher, setIsAddingTeacher] = useState(false);
   const [newTeacher, setNewTeacher] = useState({ name: "", role: "", description: "" });
