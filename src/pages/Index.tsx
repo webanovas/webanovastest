@@ -204,7 +204,7 @@ const Index = () => {
                       className="aspect-video rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-primary transition-colors"
                       onClick={() => fileRefs.current[i]?.click()}
                     >
-                      <img src={src} alt={`תמונה ${i + 1}`} className="w-full h-full object-cover" />
+                      <img src={src} alt={`תמונה ${i + 1}`} className="w-full h-full object-cover" style={{ objectPosition: getText(`hero-image-${i}-pos`, "50% 50%") }} />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
                         {uploadingIndex === i ? (
                           <Loader2 className="h-5 w-5 text-white animate-spin" />
