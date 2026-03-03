@@ -84,6 +84,8 @@ const About = () => {
                   className="w-full h-full object-cover"
                   folder="about"
                   onUpload={isEditMode ? (url) => saveText("shira-image", url) : undefined}
+                  objectPosition={getText("shira-image-pos", "50% 50%")}
+                  onPositionChange={isEditMode ? (pos) => saveText("shira-image-pos", pos) : undefined}
                 />
               </div>
             </motion.div>
