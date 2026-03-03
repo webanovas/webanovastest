@@ -239,7 +239,7 @@ const Index = () => {
             open={true}
             onOpenChange={(open) => { if (!open) setHeroFocalIndex(null); }}
           />
-        )
+        )}
 
         <div className="container mx-auto px-4 relative z-10 pb-12 md:pb-28 pt-28 md:pt-40">
           <motion.div initial="hidden" animate="visible" variants={stagger} className="max-w-2xl">
