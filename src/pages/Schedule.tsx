@@ -57,7 +57,8 @@ const Schedule = () => {
   const [selectedDay, setSelectedDay] = useState(days[0]);
   const [editingClass, setEditingClass] = useState<ClassRow | null>(null);
   const [isAddingClass, setIsAddingClass] = useState(false);
-  const [newClass, setNewClass] = useState({ day: "ראשון", time: "", end_time: "" as string | null, name: "", teacher: "", description: "", is_recurring: true, specific_date: null as string | null });
+  const [viewingClass, setViewingClass] = useState<ClassRow | null>(null);
+  const [newClass, setNewClass] = useState({ day: "ראשון", time: "", end_time: "" as string | null, name: "", teacher: "", description: "", image_url: null as string | null, is_recurring: true, specific_date: null as string | null });
 
   const { data: classes = [] } = useQuery({
     queryKey: ["classes"],
@@ -84,7 +85,7 @@ const Schedule = () => {
   const saveClass = async (cls: any) => {
     const { error } = await supabase.from("classes").update({
       day: cls.day, time: cls.time, end_time: cls.end_time || null, name: cls.name, teacher: cls.teacher, description: cls.description,
-      is_recurring: cls.is_recurring, specific_date: cls.specific_date,
+      is_recurring: cls.is_recurring, specific_date: cls.specific_date, image_url: cls.image_url || null,
     }).eq("id", cls.id);
     if (error) { console.error("Save error:", error); toast.error("שגיאה בשמירה: " + error.message); }
     else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["classes"] }); }
@@ -95,14 +96,14 @@ const Schedule = () => {
     if (!newClass.name || !newClass.time) { toast.error("שם ושעה חובה"); return; }
     const { error } = await supabase.from("classes").insert({
       day: newClass.day, time: newClass.time, end_time: newClass.end_time || null, name: newClass.name,
-      teacher: newClass.teacher, description: newClass.description,
+      teacher: newClass.teacher, description: newClass.description, image_url: newClass.image_url || null,
       is_recurring: newClass.is_recurring, specific_date: newClass.specific_date,
     } as any);
     if (error) { console.error("Add error:", error); toast.error("שגיאה: " + error.message); }
     else {
       toast.success("נוסף");
       queryClient.invalidateQueries({ queryKey: ["classes"] });
-      setNewClass({ day: "ראשון", time: "", end_time: "", name: "", teacher: "", description: "", is_recurring: true, specific_date: null });
+      setNewClass({ day: "ראשון", time: "", end_time: "", name: "", teacher: "", description: "", image_url: null, is_recurring: true, specific_date: null });
       setIsAddingClass(false);
     }
   };
@@ -201,10 +202,10 @@ const Schedule = () => {
                           <Card
                             key={cls.id}
                             className={cn(
-                              "rounded-xl border-0 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-0.5",
-                              isEditMode && "cursor-pointer ring-2 ring-transparent hover:ring-primary/30 group relative"
+                              "rounded-xl border-0 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-pointer",
+                              isEditMode && "ring-2 ring-transparent hover:ring-primary/30 group relative"
                             )}
-                            onClick={() => isEditMode && setEditingClass({ ...cls })}
+                            onClick={() => isEditMode ? setEditingClass({ ...cls }) : setViewingClass(cls)}
                           >
                             {isEditMode && (
                               <div className="absolute top-1.5 left-1.5 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -239,6 +240,56 @@ const Schedule = () => {
               })}
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* Class Details Section */}
+      <section className="py-14 md:py-24 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <ScheduleE section="classes-label" fallback="השיעורים" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
+            <ScheduleE section="classes-title" fallback="הכירו את השיעורים שלנו" as="h2" className="font-heading text-3xl md:text-4xl font-bold" />
+          </div>
+
+          {(() => {
+            const uniqueClasses = classes.reduce<ClassRow[]>((acc, cls) => {
+              if (!acc.find(c => c.name === cls.name)) acc.push(cls);
+              return acc;
+            }, []);
+            return uniqueClasses.length === 0 && !isEditMode ? (
+              <p className="text-center text-muted-foreground">השיעורים יעודכנו בקרוב</p>
+            ) : (
+              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                {uniqueClasses.map((cls) => (
+                  <motion.div key={cls.id} variants={fadeUp}>
+                    <Card
+                      className="rounded-2xl border-0 overflow-hidden hover-lift shadow-md cursor-pointer group h-full"
+                      onClick={() => setViewingClass(cls)}
+                    >
+                      <div className="flex gap-4 p-5 items-start" dir="rtl">
+                        {cls.image_url ? (
+                          <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 shadow-sm">
+                            <img src={cls.image_url} alt={cls.name} className="w-full h-full object-cover" />
+                          </div>
+                        ) : (
+                          <div className="w-20 h-20 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <BookOpen className="h-8 w-8 text-primary/40" />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-heading font-semibold text-base mb-1 group-hover:text-primary transition-colors">{cls.name}</h3>
+                          <p className="text-xs text-primary font-medium flex items-center gap-1 mb-2">
+                            <User className="h-3 w-3" />{cls.teacher}
+                          </p>
+                          <p className="text-sm text-muted-foreground line-clamp-2">{cls.description || "לחצו לפרטים נוספים"}</p>
+                        </div>
+                      </div>
+                    </Card>
+                  </motion.div>
+                ))}
+              </motion.div>
+            );
+          })()}
         </div>
       </section>
 
@@ -342,6 +393,43 @@ const Schedule = () => {
             onCancel={() => setIsAddingTeacher(false)}
             isNew
           />
+        </DialogContent>
+      </Dialog>
+
+      {/* Class View Dialog */}
+      <Dialog open={!!viewingClass} onOpenChange={(open) => !open && setViewingClass(null)}>
+        <DialogContent className="max-w-lg p-0 overflow-hidden" dir="rtl">
+          {viewingClass && (
+            <div className="bg-card">
+              {viewingClass.image_url && (
+                <div className="aspect-[16/9] overflow-hidden">
+                  <img src={viewingClass.image_url} alt={viewingClass.name} className="w-full h-full object-cover" />
+                </div>
+              )}
+              <div className="p-6 space-y-4">
+                <div>
+                  <h2 className="font-heading text-2xl font-bold mb-1">{viewingClass.name}</h2>
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1.5">
+                      <User className="h-4 w-4 text-primary" />{viewingClass.teacher}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Clock className="h-4 w-4 text-primary" />
+                      {viewingClass.time}{viewingClass.end_time ? ` - ${viewingClass.end_time}` : ""}
+                    </span>
+                  </div>
+                </div>
+                {viewingClass.description && (
+                  <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{viewingClass.description}</p>
+                )}
+                <div className="pt-2">
+                  <Button variant="outline" size="sm" className="rounded-full" onClick={() => setViewingClass(null)}>
+                    סגירה
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </Layout>
@@ -535,6 +623,27 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
           </div>
         </FormSection>
 
+        {/* Image */}
+        <FormSection icon={ImageIcon} title="תמונת השיעור">
+          <div className="flex items-center gap-3">
+            {value.image_url ? (
+              <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+                <img src={value.image_url} alt="" className="w-full h-full object-cover" />
+              </div>
+            ) : (
+              <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <BookOpen className="h-6 w-6 text-primary/40" />
+              </div>
+            )}
+            <ImageUpload
+              currentUrl={value.image_url}
+              onUpload={(url) => onChange({ ...value, image_url: url })}
+              folder="classes"
+              className="relative static"
+            />
+          </div>
+        </FormSection>
+
         {/* Details */}
         <FormSection icon={BookOpen} title="פרטי השיעור">
           <Input
@@ -554,7 +663,7 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
             onChange={(e) => onChange({ ...value, description: e.target.value })}
             placeholder="תיאור (אופציונלי)"
             className="rounded-xl border-0 bg-card resize-none shadow-sm"
-            rows={2}
+            rows={3}
           />
         </FormSection>
 

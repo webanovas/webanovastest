@@ -21,6 +21,7 @@ export type Database = {
           description: string
           end_time: string | null
           id: string
+          image_url: string | null
           is_recurring: boolean
           name: string
           sort_order: number
@@ -34,6 +35,7 @@ export type Database = {
           description?: string
           end_time?: string | null
           id?: string
+          image_url?: string | null
           is_recurring?: boolean
           name: string
           sort_order?: number
@@ -47,6 +49,7 @@ export type Database = {
           description?: string
           end_time?: string | null
           id?: string
+          image_url?: string | null
           is_recurring?: boolean
           name?: string
           sort_order?: number
