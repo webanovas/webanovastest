@@ -135,6 +135,8 @@ const About = () => {
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                 folder="gallery"
                 onUpload={isEditMode ? (url) => saveText(`gallery-${i}`, url) : undefined}
+                objectPosition={getText(`gallery-${i}-pos`, "50% 50%")}
+                onPositionChange={isEditMode ? (pos) => saveText(`gallery-${i}-pos`, pos) : undefined}
               />
             </motion.div>
           ))}
