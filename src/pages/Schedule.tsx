@@ -229,10 +229,10 @@ const Schedule = () => {
                           <Card
                             key={cls.id}
                             className={cn(
-                              "rounded-xl border-0 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-pointer",
-                              isEditMode && "ring-2 ring-transparent hover:ring-primary/30 group relative"
+                              "rounded-xl border-0 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-0.5",
+                              isEditMode && "ring-2 ring-transparent hover:ring-primary/30 group relative cursor-pointer"
                             )}
-                            onClick={() => isEditMode ? setEditingClass({ ...cls }) : setViewingClass(cls)}
+                            onClick={() => isEditMode && setEditingClass({ ...cls })}
                           >
                             {isEditMode && (
                               <div className="absolute top-1.5 left-1.5 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -248,14 +248,22 @@ const Schedule = () => {
                               </div>
                               <div className="p-3">
                                 <div className="flex items-center gap-1.5 mb-1">
-                                  <h4 className="font-heading font-semibold text-sm leading-tight">{cls.name}</h4>
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); if (!isEditMode) setViewingClass(cls); }}
+                                    className="font-heading font-semibold text-sm leading-tight text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary transition-colors text-right"
+                                  >
+                                    {cls.name}
+                                  </button>
                                   {!cls.is_recurring && (
                                     <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent text-accent-foreground font-medium">חד פעמי</span>
                                   )}
                                 </div>
-                                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                  <User className="h-3 w-3" />{cls.teacher}
-                                </p>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); if (!isEditMode) navigate(`/team?teacher=${encodeURIComponent(cls.teacher)}`); }}
+                                  className="text-xs text-muted-foreground flex items-center gap-1 hover:text-primary transition-colors"
+                                >
+                                  <User className="h-3 w-3" /><span className="underline decoration-muted-foreground/30 underline-offset-2 hover:decoration-primary">{cls.teacher}</span>
+                                </button>
                               </div>
                             </CardContent>
                           </Card>
