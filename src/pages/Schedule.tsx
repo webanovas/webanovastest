@@ -202,10 +202,10 @@ const Schedule = () => {
                           <Card
                             key={cls.id}
                             className={cn(
-                              "rounded-xl border-0 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-0.5",
-                              isEditMode && "cursor-pointer ring-2 ring-transparent hover:ring-primary/30 group relative"
+                              "rounded-xl border-0 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-pointer",
+                              isEditMode && "ring-2 ring-transparent hover:ring-primary/30 group relative"
                             )}
-                            onClick={() => isEditMode && setEditingClass({ ...cls })}
+                            onClick={() => isEditMode ? setEditingClass({ ...cls }) : setViewingClass(cls)}
                           >
                             {isEditMode && (
                               <div className="absolute top-1.5 left-1.5 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
