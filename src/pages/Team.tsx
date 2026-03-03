@@ -111,6 +111,9 @@ function TeacherEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew
 
 const Team = () => {
   const { isEditMode } = useAdminMode();
+  const [searchParams] = useSearchParams();
+  const highlightTeacher = searchParams.get("teacher");
+  const teacherRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const { getText, saveText } = usePageContent("team");
   const queryClient = useQueryClient();
 
