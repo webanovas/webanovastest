@@ -212,9 +212,15 @@ const Schedule = () => {
           </div>
 
           {isEditMode && (
-            <div className="text-center mb-6">
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <Button size="sm" variant="outline" onClick={handleUndo} disabled={undoStack.length === 0} className="rounded-full gap-1.5">
+                <Undo2 className="h-4 w-4" />ביטול
+              </Button>
               <Button size="sm" onClick={() => setIsAddingClass(true)} className="rounded-full gap-2">
                 <Plus className="h-4 w-4" />הוסף שיעור
+              </Button>
+              <Button size="sm" variant="outline" onClick={handleRedo} disabled={redoStack.length === 0} className="rounded-full gap-1.5">
+                <Redo2 className="h-4 w-4" />שחזור
               </Button>
             </div>
           )}
