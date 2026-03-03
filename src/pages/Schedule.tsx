@@ -243,6 +243,56 @@ const Schedule = () => {
         </div>
       </section>
 
+      {/* Class Details Section */}
+      <section className="py-14 md:py-24 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <ScheduleE section="classes-label" fallback="השיעורים" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
+            <ScheduleE section="classes-title" fallback="הכירו את השיעורים שלנו" as="h2" className="font-heading text-3xl md:text-4xl font-bold" />
+          </div>
+
+          {(() => {
+            const uniqueClasses = classes.reduce<ClassRow[]>((acc, cls) => {
+              if (!acc.find(c => c.name === cls.name)) acc.push(cls);
+              return acc;
+            }, []);
+            return uniqueClasses.length === 0 && !isEditMode ? (
+              <p className="text-center text-muted-foreground">השיעורים יעודכנו בקרוב</p>
+            ) : (
+              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                {uniqueClasses.map((cls) => (
+                  <motion.div key={cls.id} variants={fadeUp}>
+                    <Card
+                      className="rounded-2xl border-0 overflow-hidden hover-lift shadow-md cursor-pointer group h-full"
+                      onClick={() => setViewingClass(cls)}
+                    >
+                      <div className="flex gap-4 p-5 items-start" dir="rtl">
+                        {cls.image_url ? (
+                          <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 shadow-sm">
+                            <img src={cls.image_url} alt={cls.name} className="w-full h-full object-cover" />
+                          </div>
+                        ) : (
+                          <div className="w-20 h-20 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <BookOpen className="h-8 w-8 text-primary/40" />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-heading font-semibold text-base mb-1 group-hover:text-primary transition-colors">{cls.name}</h3>
+                          <p className="text-xs text-primary font-medium flex items-center gap-1 mb-2">
+                            <User className="h-3 w-3" />{cls.teacher}
+                          </p>
+                          <p className="text-sm text-muted-foreground line-clamp-2">{cls.description || "לחצו לפרטים נוספים"}</p>
+                        </div>
+                      </div>
+                    </Card>
+                  </motion.div>
+                ))}
+              </motion.div>
+            );
+          })()}
+        </div>
+      </section>
+
       {/* Teachers */}
       <section className="py-14 md:py-36 bg-yoga-cream relative">
         <div className="container mx-auto px-4">
