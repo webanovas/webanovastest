@@ -294,6 +294,8 @@ const Index = () => {
                   className="w-full h-full object-cover"
                   folder="welcome"
                   onUpload={isEditMode ? (url) => saveText("welcome-img-main", url) : undefined}
+                  objectPosition={getText("welcome-img-main-pos", "50% 50%")}
+                  onPositionChange={isEditMode ? (pos) => saveText("welcome-img-main-pos", pos) : undefined}
                 />
               </div>
               <div className="absolute -bottom-8 -right-8 md:-right-12 w-40 h-40 md:w-52 md:h-52 rounded-2xl overflow-hidden shadow-xl border-4 border-background">
