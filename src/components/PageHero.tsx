@@ -24,7 +24,7 @@ interface PageHeroProps {
   labelSection?: string;
 }
 
-const PageHero = ({ title, subtitle, label, image, page, titleSection, subtitleSection, labelSection }: PageHeroProps) => {
+const PageHero = ({ title, subtitle, label, image, imagePosition, page, titleSection, subtitleSection, labelSection }: PageHeroProps) => {
   const { isEditMode } = useAdminMode();
   const { getText, saveText } = usePageContent(page || "");
 
