@@ -460,7 +460,15 @@ const Schedule = () => {
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto" dir="rtl">
           {editingClassInfo && (
             <div className="space-y-5 pt-2">
-              <h3 className="font-heading text-xl font-bold">{editingClassInfo.name}</h3>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground/70">שם השיעור</label>
+                <Input
+                  value={editingClassInfo.name}
+                  onChange={(e) => setEditingClassInfo({ ...editingClassInfo, name: e.target.value })}
+                  className="rounded-xl font-heading text-lg font-bold"
+                  placeholder="שם השיעור..."
+                />
+              </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground/70">תמונה</label>
                 <ImageUpload
