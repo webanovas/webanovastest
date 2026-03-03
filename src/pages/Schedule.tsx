@@ -61,6 +61,7 @@ const Schedule = () => {
   const [editingClass, setEditingClass] = useState<ClassRow | null>(null);
   const [isAddingClass, setIsAddingClass] = useState(false);
   const [viewingClass, setViewingClass] = useState<ClassRow | null>(null);
+  const [editingClassInfo, setEditingClassInfo] = useState<ClassRow | null>(null);
   const [newClass, setNewClass] = useState({ day: "ראשון", time: "", end_time: "" as string | null, name: "", teacher: "", description: "", image_url: null as string | null, is_recurring: true, specific_date: null as string | null });
 
   const { data: classes = [] } = useQuery({
@@ -291,7 +292,7 @@ const Schedule = () => {
                         "rounded-2xl border-0 overflow-hidden shadow-md cursor-pointer group h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
                         isEditMode && "ring-2 ring-transparent hover:ring-primary/30 relative"
                       )}
-                      onClick={() => isEditMode ? setEditingClass({ ...cls }) : setViewingClass(cls)}
+                      onClick={() => isEditMode ? setEditingClassInfo({ ...cls }) : setViewingClass(cls)}
                     >
                       {isEditMode && (
                         <div className="absolute top-3 left-3 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -345,6 +346,51 @@ const Schedule = () => {
             onCancel={() => setIsAddingClass(false)}
             isNew
           />
+        </DialogContent>
+      </Dialog>
+
+      {/* Class Info Edit (image + description only) */}
+      <Dialog open={!!editingClassInfo} onOpenChange={(open) => !open && setEditingClassInfo(null)}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto" dir="rtl">
+          {editingClassInfo && (
+            <div className="space-y-5 pt-2">
+              <h3 className="font-heading text-xl font-bold">{editingClassInfo.name}</h3>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground/70">תמונה</label>
+                <ImageUpload
+                  currentUrl={editingClassInfo.image_url}
+                  onUpload={(url) => setEditingClassInfo({ ...editingClassInfo, image_url: url })}
+                  folder="classes"
+                  className="aspect-[16/9] rounded-xl"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground/70">תיאור השיעור</label>
+                <Textarea
+                  value={editingClassInfo.description}
+                  onChange={(e) => setEditingClassInfo({ ...editingClassInfo, description: e.target.value })}
+                  rows={4}
+                  className="rounded-xl resize-none"
+                  placeholder="תיאור השיעור..."
+                />
+              </div>
+              <div className="flex gap-2 pt-2">
+                <Button onClick={async () => {
+                  // Update all classes with same name
+                  const { error } = await supabase
+                    .from("classes")
+                    .update({ description: editingClassInfo.description, image_url: editingClassInfo.image_url || null })
+                    .eq("name", editingClassInfo.name);
+                  if (error) { toast.error("שגיאה: " + error.message); }
+                  else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["classes"] }); }
+                  setEditingClassInfo(null);
+                }} className="rounded-full flex-1 gap-2">
+                  <Check className="h-4 w-4" />שמירה
+                </Button>
+                <Button variant="outline" onClick={() => setEditingClassInfo(null)} className="rounded-full">ביטול</Button>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
