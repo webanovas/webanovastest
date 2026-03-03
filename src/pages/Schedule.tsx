@@ -66,6 +66,14 @@ const Schedule = () => {
   const [editingClassInfo, setEditingClassInfo] = useState<ClassRow | null>(null);
   const [newClass, setNewClass] = useState({ day: "ראשון", time: "", end_time: "" as string | null, name: "", teacher: "", description: "", image_url: null as string | null, is_recurring: true, specific_date: null as string | null });
 
+  // Undo/Redo history
+  type UndoAction = 
+    | { type: "add"; classData: ClassRow }
+    | { type: "delete"; classData: ClassRow }
+    | { type: "update"; oldData: ClassRow; newData: ClassRow };
+  const [undoStack, setUndoStack] = useState<UndoAction[]>([]);
+  const [redoStack, setRedoStack] = useState<UndoAction[]>([]);
+
   const { data: classes = [] } = useQuery({
     queryKey: ["classes"],
     queryFn: async () => {
