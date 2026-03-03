@@ -322,6 +322,8 @@ const Index = () => {
           className="absolute inset-0 w-full h-full object-cover"
           folder="cta"
           onUpload={isEditMode ? (url) => saveText("cta-bg-image", url) : undefined}
+          objectPosition={getText("cta-bg-image-pos", "50% 50%")}
+          onPositionChange={isEditMode ? (pos) => saveText("cta-bg-image-pos", pos) : undefined}
         />
         <div className="absolute inset-0 bg-yoga-dark/50 flex items-center justify-center pointer-events-none">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center px-4 pointer-events-auto">
