@@ -263,24 +263,30 @@ const Schedule = () => {
                 {uniqueClasses.map((cls) => (
                   <motion.div key={cls.id} variants={fadeUp}>
                     <Card
-                      className="rounded-2xl border-0 overflow-hidden hover-lift shadow-md cursor-pointer group h-full"
-                      onClick={() => setViewingClass(cls)}
+                      className={cn(
+                        "rounded-2xl border-0 overflow-hidden shadow-md cursor-pointer group h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
+                        isEditMode && "ring-2 ring-transparent hover:ring-primary/30 relative"
+                      )}
+                      onClick={() => isEditMode ? setEditingClass({ ...cls }) : setViewingClass(cls)}
                     >
-                      <div className="flex gap-4 p-5 items-start" dir="rtl">
-                        {cls.image_url ? (
-                          <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 shadow-sm">
-                            <img src={cls.image_url} alt={cls.name} className="w-full h-full object-cover" />
-                          </div>
-                        ) : (
-                          <div className="w-20 h-20 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <BookOpen className="h-8 w-8 text-primary/40" />
-                          </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-heading font-semibold text-base mb-1.5 group-hover:text-primary transition-colors">{cls.name}</h3>
-                          <p className="text-sm text-muted-foreground line-clamp-3">{cls.description || "לחצו לפרטים נוספים"}</p>
+                      {isEditMode && (
+                        <div className="absolute top-3 left-3 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Pencil className="h-3.5 w-3.5 text-primary" />
                         </div>
-                      </div>
+                      )}
+                      {cls.image_url ? (
+                        <div className="aspect-[16/9] overflow-hidden">
+                          <img src={cls.image_url} alt={cls.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        </div>
+                      ) : (
+                        <div className="aspect-[16/9] bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 flex items-center justify-center">
+                          <BookOpen className="h-12 w-12 text-primary/25" />
+                        </div>
+                      )}
+                      <CardContent className="p-5" dir="rtl">
+                        <h3 className="font-heading font-bold text-lg mb-2 group-hover:text-primary transition-colors">{cls.name}</h3>
+                        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">{cls.description || "לחצו לפרטים נוספים"}</p>
+                      </CardContent>
                     </Card>
                   </motion.div>
                 ))}
