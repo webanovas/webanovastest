@@ -215,7 +215,15 @@ const Index = () => {
                         )}
                       </div>
                     </div>
-                    <span className="text-[10px] text-muted-foreground text-center block mt-1">{i + 1}</span>
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-[10px] text-muted-foreground">{i + 1}</span>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setHeroFocalIndex(i); }}
+                        className="text-[10px] text-primary hover:underline flex items-center gap-0.5"
+                      >
+                        <Move className="h-2.5 w-2.5" /> מיקוד
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
