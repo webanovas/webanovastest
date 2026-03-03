@@ -11,6 +11,7 @@ import AdminToolbar from "./components/admin/AdminToolbar";
 import SplashScreen from "./components/SplashScreen";
 import Index from "./pages/Index";
 import About from "./pages/About";
+import Team from "./pages/Team";
 import Schedule from "./pages/Schedule";
 import Workshops from "./pages/Workshops";
 import Testimonials from "./pages/Testimonials";
@@ -39,6 +40,7 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/about" element={<About />} />
+                <Route path="/team" element={<Team />} />
                 <Route path="/schedule" element={<Schedule />} />
                 <Route path="/workshops" element={<Workshops />} />
                 <Route path="/testimonials" element={<Testimonials />} />
