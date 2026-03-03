@@ -258,7 +258,7 @@ const Schedule = () => {
                                 <div className="flex items-center gap-1.5 mb-1">
                                   <button
                                     onClick={(e) => { e.stopPropagation(); if (!isEditMode) setViewingClass(cls); }}
-                                    className="font-heading font-semibold text-sm leading-tight text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary transition-colors text-right"
+                                    className="font-heading font-semibold text-sm leading-tight text-foreground underline decoration-foreground/20 underline-offset-2 hover:decoration-primary hover:text-primary transition-colors text-right"
                                   >
                                     {cls.name}
                                   </button>
