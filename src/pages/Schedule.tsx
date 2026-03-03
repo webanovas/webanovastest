@@ -236,7 +236,7 @@ const Schedule = () => {
                       </CardContent>
                     </Card>
                   </motion.div>
-                )))}
+                ))}
               </motion.div>
             );
           })()}
