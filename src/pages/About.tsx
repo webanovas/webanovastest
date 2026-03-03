@@ -84,6 +84,8 @@ const About = () => {
                   className="w-full h-full object-cover"
                   folder="about"
                   onUpload={isEditMode ? (url) => saveText("shira-image", url) : undefined}
+                  objectPosition={getText("shira-image-pos", "50% 50%")}
+                  onPositionChange={isEditMode ? (pos) => saveText("shira-image-pos", pos) : undefined}
                 />
               </div>
             </motion.div>
@@ -133,6 +135,8 @@ const About = () => {
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                 folder="gallery"
                 onUpload={isEditMode ? (url) => saveText(`gallery-${i}`, url) : undefined}
+                objectPosition={getText(`gallery-${i}-pos`, "50% 50%")}
+                onPositionChange={isEditMode ? (pos) => saveText(`gallery-${i}-pos`, pos) : undefined}
               />
             </motion.div>
           ))}
@@ -176,6 +180,8 @@ const About = () => {
           className="absolute inset-0 w-full h-full object-cover"
           folder="about-cta"
           onUpload={isEditMode ? (url) => saveText("cta-bg", url) : undefined}
+          objectPosition={getText("cta-bg-pos", "50% 50%")}
+          onPositionChange={isEditMode ? (pos) => saveText("cta-bg-pos", pos) : undefined}
         />
         <div className="absolute inset-0 bg-yoga-dark/50 flex items-center justify-center pointer-events-none">
           <div className="text-center px-4 pointer-events-auto">

@@ -17,13 +17,14 @@ interface PageHeroProps {
   subtitle?: string;
   label?: string;
   image?: string;
+  imagePosition?: string;
   page?: string;
   titleSection?: string;
   subtitleSection?: string;
   labelSection?: string;
 }
 
-const PageHero = ({ title, subtitle, label, image, page, titleSection, subtitleSection, labelSection }: PageHeroProps) => {
+const PageHero = ({ title, subtitle, label, image, imagePosition, page, titleSection, subtitleSection, labelSection }: PageHeroProps) => {
   const { isEditMode } = useAdminMode();
   const { getText, saveText } = usePageContent(page || "");
 
@@ -36,7 +37,7 @@ const PageHero = ({ title, subtitle, label, image, page, titleSection, subtitleS
       {image ? (
         <>
           <div className="absolute inset-0">
-            <img src={image} alt={resolvedTitle} className="w-full h-full object-cover" />
+            <img src={image} alt={resolvedTitle} className="w-full h-full object-cover" style={imagePosition ? { objectPosition: imagePosition } : undefined} />
           </div>
           <div className="absolute inset-0 bg-gradient-to-t from-yoga-dark/90 via-yoga-dark/40 to-yoga-dark/20" />
         </>

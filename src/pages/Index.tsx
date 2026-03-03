@@ -8,7 +8,7 @@ import {
   Heart,
   Leaf, Brain, Sunrise, Wind,
   Phone, Mail, MessageCircle, Send,
-  ArrowLeft, Quote, MapPin, Images, X, Camera, Loader2,
+  ArrowLeft, Quote, MapPin, Images, X, Camera, Loader2, Move,
 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { useQuery } from "@tanstack/react-query";
@@ -17,6 +17,7 @@ import { useAdminMode } from "@/hooks/useAdminMode";
 import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
 import EditableImage from "@/components/admin/EditableImage";
+import FocalPointPicker from "@/components/admin/FocalPointPicker";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useCallback, useEffect, useState, useRef } from "react";
@@ -69,6 +70,7 @@ const Index = () => {
   // Hero image editor state
   const [showHeroEditor, setShowHeroEditor] = useState(false);
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+  const [heroFocalIndex, setHeroFocalIndex] = useState<number | null>(null);
   const fileRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   // Get hero images from page_content or use defaults
@@ -153,7 +155,7 @@ const Index = () => {
           <div className="flex h-full">
             {heroImages.map((src, i) => (
               <div key={i} className="flex-none w-full h-full min-w-0 relative">
-                <img src={src} alt={`יוגה במושבה ${i + 1}`} className="w-full h-full object-cover" />
+                <img src={src} alt={`יוגה במושבה ${i + 1}`} className="w-full h-full object-cover" style={{ objectPosition: getText(`hero-image-${i}-pos`, "50% 50%") }} />
               </div>
             ))}
           </div>
@@ -204,7 +206,7 @@ const Index = () => {
                       className="aspect-video rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-primary transition-colors"
                       onClick={() => fileRefs.current[i]?.click()}
                     >
-                      <img src={src} alt={`תמונה ${i + 1}`} className="w-full h-full object-cover" />
+                      <img src={src} alt={`תמונה ${i + 1}`} className="w-full h-full object-cover" style={{ objectPosition: getText(`hero-image-${i}-pos`, "50% 50%") }} />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
                         {uploadingIndex === i ? (
                           <Loader2 className="h-5 w-5 text-white animate-spin" />
@@ -213,13 +215,31 @@ const Index = () => {
                         )}
                       </div>
                     </div>
-                    <span className="text-[10px] text-muted-foreground text-center block mt-1">{i + 1}</span>
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-[10px] text-muted-foreground">{i + 1}</span>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setHeroFocalIndex(i); }}
+                        className="text-[10px] text-primary hover:underline flex items-center gap-0.5"
+                      >
+                        <Move className="h-2.5 w-2.5" /> מיקוד
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
             </motion.div>
           )}
         </AnimatePresence>
+        {heroFocalIndex !== null && (
+          <FocalPointPicker
+            src={heroImages[heroFocalIndex]}
+            alt={`תמונה ${heroFocalIndex + 1}`}
+            objectPosition={getText(`hero-image-${heroFocalIndex}-pos`, "50% 50%")}
+            onSave={(pos) => saveText(`hero-image-${heroFocalIndex}-pos`, pos)}
+            open={true}
+            onOpenChange={(open) => { if (!open) setHeroFocalIndex(null); }}
+          />
+        )}
 
         <div className="container mx-auto px-4 relative z-10 pb-12 md:pb-28 pt-28 md:pt-40">
           <motion.div initial="hidden" animate="visible" variants={stagger} className="max-w-2xl">
@@ -294,6 +314,8 @@ const Index = () => {
                   className="w-full h-full object-cover"
                   folder="welcome"
                   onUpload={isEditMode ? (url) => saveText("welcome-img-main", url) : undefined}
+                  objectPosition={getText("welcome-img-main-pos", "50% 50%")}
+                  onPositionChange={isEditMode ? (pos) => saveText("welcome-img-main-pos", pos) : undefined}
                 />
               </div>
               <div className="absolute -bottom-8 -right-8 md:-right-12 w-40 h-40 md:w-52 md:h-52 rounded-2xl overflow-hidden shadow-xl border-4 border-background">
@@ -303,6 +325,8 @@ const Index = () => {
                   className="w-full h-full object-cover"
                   folder="welcome"
                   onUpload={isEditMode ? (url) => saveText("welcome-img-secondary", url) : undefined}
+                  objectPosition={getText("welcome-img-secondary-pos", "50% 50%")}
+                  onPositionChange={isEditMode ? (pos) => saveText("welcome-img-secondary-pos", pos) : undefined}
                 />
               </div>
             </motion.div>
@@ -318,6 +342,8 @@ const Index = () => {
           className="absolute inset-0 w-full h-full object-cover"
           folder="cta"
           onUpload={isEditMode ? (url) => saveText("cta-bg-image", url) : undefined}
+          objectPosition={getText("cta-bg-image-pos", "50% 50%")}
+          onPositionChange={isEditMode ? (pos) => saveText("cta-bg-image-pos", pos) : undefined}
         />
         <div className="absolute inset-0 bg-yoga-dark/50 flex items-center justify-center pointer-events-none">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center px-4 pointer-events-auto">
@@ -347,6 +373,8 @@ const Index = () => {
                 className="w-full h-full object-cover"
                 folder="benefits"
                 onUpload={isEditMode ? (url) => saveText("benefits-image", url) : undefined}
+                objectPosition={getText("benefits-image-pos", "50% 50%")}
+                onPositionChange={isEditMode ? (pos) => saveText("benefits-image-pos", pos) : undefined}
               />
             </motion.div>
 
