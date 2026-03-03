@@ -405,16 +405,21 @@ const Schedule = () => {
               )}
               <div className="p-6 space-y-4">
                 <div>
-                  <h2 className="font-heading text-2xl font-bold mb-1">{viewingClass.name}</h2>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1.5">
-                      <User className="h-4 w-4 text-primary" />{viewingClass.teacher}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Clock className="h-4 w-4 text-primary" />
-                      {viewingClass.time}{viewingClass.end_time ? ` - ${viewingClass.end_time}` : ""}
-                    </span>
-                  </div>
+                  <h2 className="font-heading text-2xl font-bold mb-2">{viewingClass.name}</h2>
+                  {viewingClass.specific_date && (
+                    <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground mb-1">
+                      <span className="flex items-center gap-1.5">
+                        <CalendarDays className="h-4 w-4 text-primary" />{viewingClass.specific_date}
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <Clock className="h-4 w-4 text-primary" />
+                        {viewingClass.time}{viewingClass.end_time ? ` - ${viewingClass.end_time}` : ""}
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <User className="h-4 w-4 text-primary" />{viewingClass.teacher}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 {viewingClass.description && (
                   <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{viewingClass.description}</p>
