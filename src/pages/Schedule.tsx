@@ -277,11 +277,8 @@ const Schedule = () => {
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-heading font-semibold text-base mb-1 group-hover:text-primary transition-colors">{cls.name}</h3>
-                          <p className="text-xs text-primary font-medium flex items-center gap-1 mb-2">
-                            <User className="h-3 w-3" />{cls.teacher}
-                          </p>
-                          <p className="text-sm text-muted-foreground line-clamp-2">{cls.description || "לחצו לפרטים נוספים"}</p>
+                          <h3 className="font-heading font-semibold text-base mb-1.5 group-hover:text-primary transition-colors">{cls.name}</h3>
+                          <p className="text-sm text-muted-foreground line-clamp-3">{cls.description || "לחצו לפרטים נוספים"}</p>
                         </div>
                       </div>
                     </Card>
