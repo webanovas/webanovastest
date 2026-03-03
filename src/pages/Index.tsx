@@ -17,6 +17,7 @@ import { useAdminMode } from "@/hooks/useAdminMode";
 import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
 import EditableImage from "@/components/admin/EditableImage";
+import FocalPointPicker from "@/components/admin/FocalPointPicker";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useCallback, useEffect, useState, useRef } from "react";
