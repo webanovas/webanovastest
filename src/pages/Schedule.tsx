@@ -13,7 +13,6 @@ import { useAdminMode } from "@/hooks/useAdminMode";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { Tables } from "@/integrations/supabase/types";
-import { Link } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
@@ -21,14 +20,12 @@ import {
   Dialog,
   DialogContent,
 } from "@/components/ui/dialog";
-import teacherImg from "@/assets/teacher-placeholder.jpg";
 import { ClockPicker } from "@/components/ui/clock-picker";
 import ImageUpload from "@/components/admin/ImageUpload";
 import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
 
 type ClassRow = Tables<"classes">;
-type TeacherRow = Tables<"teachers">;
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -68,20 +65,6 @@ const Schedule = () => {
     },
   });
 
-  const { data: teachers = [] } = useQuery({
-    queryKey: ["teachers"],
-    queryFn: async () => {
-      const { data } = await supabase.from("teachers").select("*").order("sort_order");
-      return data ?? [];
-    },
-  });
-
-  const [editingTeacher, setEditingTeacher] = useState<TeacherRow | null>(null);
-  const [isAddingTeacher, setIsAddingTeacher] = useState(false);
-  const [newTeacher, setNewTeacher] = useState({ name: "", role: "", description: "" });
-
-  const dayClasses = classes.filter((c) => c.day === selectedDay).sort((a, b) => a.time.localeCompare(b.time));
-
   const saveClass = async (cls: any) => {
     const { error } = await supabase.from("classes").update({
       day: cls.day, time: cls.time, end_time: cls.end_time || null, name: cls.name, teacher: cls.teacher, description: cls.description,
@@ -115,46 +98,17 @@ const Schedule = () => {
     setEditingClass(null);
   };
 
-  const saveTeacher = async (t: TeacherRow) => {
-    const { error } = await supabase.from("teachers").update({
-      name: t.name, role: t.role, description: t.description, image_url: t.image_url,
-    }).eq("id", t.id);
-    if (error) { console.error("Save error:", error); toast.error("שגיאה: " + error.message); }
-    else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["teachers"] }); }
-    setEditingTeacher(null);
-  };
-
-  const addTeacher = async () => {
-    if (!newTeacher.name) { toast.error("שם חובה"); return; }
-    const { error } = await supabase.from("teachers").insert(newTeacher);
-    if (error) { console.error("Add error:", error); toast.error("שגיאה: " + error.message); }
-    else {
-      toast.success("נוסף");
-      queryClient.invalidateQueries({ queryKey: ["teachers"] });
-      setNewTeacher({ name: "", role: "", description: "" });
-      setIsAddingTeacher(false);
-    }
-  };
-
-  const deleteTeacher = async (id: string) => {
-    const { error } = await supabase.from("teachers").delete().eq("id", id);
-    if (error) toast.error("שגיאה: " + error.message);
-    else { toast.success("נמחק"); queryClient.invalidateQueries({ queryKey: ["teachers"] }); }
-    setEditingTeacher(null);
-  };
-
   return (
     <Layout>
       <PageHero
         label="לוח שיעורים"
-        title="מערכת שעות ומורים"
+        title="מערכת שעות"
         subtitle=""
         page="schedule"
         labelSection="hero-label"
         titleSection="hero-title"
         subtitleSection="hero-subtitle"
       />
-
 
       {/* Weekly Schedule */}
       <section className="py-12 md:py-24">
@@ -166,11 +120,7 @@ const Schedule = () => {
 
           {isEditMode && (
             <div className="text-center mb-6">
-              <Button
-                size="sm"
-                onClick={() => setIsAddingClass(true)}
-                className="rounded-full gap-2"
-              >
+              <Button size="sm" onClick={() => setIsAddingClass(true)} className="rounded-full gap-2">
                 <Plus className="h-4 w-4" />הוסף שיעור
               </Button>
             </div>
@@ -188,12 +138,9 @@ const Schedule = () => {
                 const dayItems = classes.filter((c) => c.day === day).sort((a, b) => a.time.localeCompare(b.time));
                 return (
                   <motion.div key={day} variants={fadeUp} className="flex flex-col">
-                    {/* Day Header */}
                     <div className="text-center mb-3 pb-3 border-b-2 border-primary/20">
                       <h3 className="font-heading font-bold text-base text-primary">יום {day}</h3>
                     </div>
-
-                    {/* Classes */}
                     <div className="space-y-2.5 flex-1">
                       {dayItems.length === 0 ? (
                         <p className="text-sm text-muted-foreground/50 text-center py-6">—</p>
@@ -296,53 +243,6 @@ const Schedule = () => {
         </div>
       </section>
 
-      {/* Teachers */}
-      <section className="py-14 md:py-36 bg-yoga-cream relative">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <ScheduleE section="teachers-label" fallback="הצוות" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
-            <ScheduleE section="teachers-title" fallback="המורים שלנו" as="h2" className="font-heading text-3xl md:text-4xl font-bold" />
-            {isEditMode && (
-              <Button size="sm" onClick={() => setIsAddingTeacher(true)} className="mt-4 rounded-full gap-2">
-                <Plus className="h-4 w-4" />הוסף מורה
-              </Button>
-            )}
-          </div>
-
-          {teachers.length === 0 && !isEditMode ? (
-            <p className="text-center text-muted-foreground">המורים יעודכנו בקרוב</p>
-          ) : (
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              {teachers.map((t) => (
-                <motion.div key={t.id} variants={fadeUp}>
-                  <Card
-                    className={cn(
-                      "text-center h-full rounded-3xl border-0 overflow-hidden hover-lift shadow-lg",
-                      isEditMode && "cursor-pointer ring-2 ring-transparent hover:ring-primary/30"
-                    )}
-                    onClick={() => isEditMode && setEditingTeacher({ ...t })}
-                  >
-                    <div className="aspect-[3/4] overflow-hidden relative">
-                      <img src={t.image_url || teacherImg} alt={t.name} className="w-full h-full object-cover" />
-                      {isEditMode && (
-                        <div className="absolute top-3 left-3 bg-card/90 backdrop-blur-sm rounded-full p-1.5">
-                          <Pencil className="h-3.5 w-3.5 text-primary" />
-                        </div>
-                      )}
-                    </div>
-                    <CardContent className="pt-6 pb-8 flex flex-col items-center gap-2">
-                      <h3 className="font-heading font-semibold text-lg">{t.name}</h3>
-                      <p className="text-primary text-sm font-medium">{t.role}</p>
-                      <p className="text-muted-foreground text-sm">{t.description}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-        </div>
-      </section>
-
       {/* Class Edit */}
       <Dialog open={!!editingClass} onOpenChange={(open) => !open && setEditingClass(null)}>
         <DialogContent className="max-w-md p-0 overflow-hidden" dir="rtl">
@@ -366,34 +266,6 @@ const Schedule = () => {
             onChange={setNewClass as any}
             onSave={addClass}
             onCancel={() => setIsAddingClass(false)}
-            isNew
-          />
-        </DialogContent>
-      </Dialog>
-
-      {/* Teacher Edit */}
-      <Dialog open={!!editingTeacher} onOpenChange={(open) => !open && setEditingTeacher(null)}>
-        <DialogContent className="max-w-md p-0 overflow-hidden" dir="rtl">
-          {editingTeacher && (
-            <TeacherEditPreview
-              value={editingTeacher}
-              onChange={setEditingTeacher}
-              onSave={() => saveTeacher(editingTeacher)}
-              onDelete={() => deleteTeacher(editingTeacher.id)}
-              onCancel={() => setEditingTeacher(null)}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Teacher Add */}
-      <Dialog open={isAddingTeacher} onOpenChange={setIsAddingTeacher}>
-        <DialogContent className="max-w-md p-0 overflow-hidden" dir="rtl">
-          <TeacherEditPreview
-            value={newTeacher as any}
-            onChange={setNewTeacher as any}
-            onSave={addTeacher}
-            onCancel={() => setIsAddingTeacher(false)}
             isNew
           />
         </DialogContent>
@@ -469,7 +341,6 @@ function RecurringToggle({ value, onChange }: { value: any; onChange: (v: any) =
 
   return (
     <FormSection icon={Repeat} title="תדירות">
-      {/* Toggle pills */}
       <div className="flex gap-2">
         <button
           onClick={() => onChange({ ...value, is_recurring: true, specific_date: null })}
@@ -497,7 +368,6 @@ function RecurringToggle({ value, onChange }: { value: any; onChange: (v: any) =
         </button>
       </div>
 
-      {/* Day selector - always shown */}
       <div>
         <p className="text-[11px] text-muted-foreground mb-2">{isRecurring ? "חוזר בכל שבוע ביום:" : "יום בשבוע:"}</p>
         <div className="flex gap-1.5">
@@ -518,7 +388,6 @@ function RecurringToggle({ value, onChange }: { value: any; onChange: (v: any) =
         </div>
       </div>
 
-      {/* Date picker - only for one-time */}
       <AnimatePresence mode="wait">
         {!isRecurring && (
           <motion.div
@@ -581,7 +450,6 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
 }) {
   return (
      <div className="bg-card max-h-[85vh] overflow-y-auto">
-       {/* Live preview header */}
        <div className="bg-gradient-to-b from-primary/8 to-primary/3 px-5 py-4 border-b border-border/30">
         <p className="text-[11px] text-primary font-medium mb-2.5 tracking-wider uppercase">תצוגה מקדימה</p>
         <div className="bg-card rounded-xl shadow-md overflow-hidden border border-border/20">
@@ -608,30 +476,21 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
       </div>
 
       <div className="p-5 space-y-5">
-        {/* Recurring toggle */}
         <RecurringToggle value={value} onChange={onChange} />
 
-        {/* Time */}
         <FormSection icon={Clock} title="שעות">
           <div className="grid grid-cols-2 gap-3">
             <div>
               <p className="text-[11px] text-muted-foreground mb-1.5">משעה</p>
-              <TimePickerField
-                value={value.time}
-                onChange={(t) => onChange({ ...value, time: t })}
-              />
+              <TimePickerField value={value.time} onChange={(t) => onChange({ ...value, time: t })} />
             </div>
             <div>
               <p className="text-[11px] text-muted-foreground mb-1.5">עד שעה</p>
-              <TimePickerField
-                value={value.end_time || ""}
-                onChange={(t) => onChange({ ...value, end_time: t })}
-              />
+              <TimePickerField value={value.end_time || ""} onChange={(t) => onChange({ ...value, end_time: t })} />
             </div>
           </div>
         </FormSection>
 
-        {/* Image */}
         <FormSection icon={ImageIcon} title="תמונת השיעור">
           <div className="flex items-center gap-3">
             {value.image_url ? (
@@ -652,7 +511,6 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
           </div>
         </FormSection>
 
-        {/* Details */}
         <FormSection icon={BookOpen} title="פרטי השיעור">
           <Input
             value={value.name}
@@ -675,7 +533,6 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
           />
         </FormSection>
 
-        {/* Actions */}
         <div className="flex gap-2 justify-between pt-3 border-t border-border/30">
           {onDelete && (
             <Button variant="ghost" size="sm" onClick={onDelete} className="text-destructive gap-1.5 rounded-full hover:bg-destructive/10">
@@ -716,68 +573,6 @@ function TimePickerField({ value, onChange }: { value: string; onChange: (t: str
         <ClockPicker value={value} onChange={onChange} onDone={() => setOpen(false)} />
       </PopoverContent>
     </Popover>
-  );
-}
-
-/* WYSIWYG Teacher Editor */
-function TeacherEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew = false }: {
-  value: any; onChange: (v: any) => void; onSave: () => void;
-  onDelete?: () => void; onCancel: () => void; isNew?: boolean;
-}) {
-  return (
-    <div className="bg-card">
-      {/* Image preview with upload */}
-      <div className="aspect-[4/3] overflow-hidden relative">
-        <img src={value.image_url || teacherImg} alt="preview" className="w-full h-full object-cover" />
-        <ImageUpload
-          currentUrl={value.image_url}
-          onUpload={(url) => onChange({ ...value, image_url: url })}
-          folder="teachers"
-          className="bottom-20 left-4"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
-        <div className="absolute bottom-4 right-4 left-4 space-y-2">
-          <Input
-            value={value.name}
-            onChange={(e) => onChange({ ...value, name: e.target.value })}
-            placeholder="שם המורה"
-            className="bg-card/90 backdrop-blur-sm border-0 rounded-xl font-heading font-semibold text-lg h-12 shadow-lg"
-          />
-          <Input
-            value={value.role}
-            onChange={(e) => onChange({ ...value, role: e.target.value })}
-            placeholder="תפקיד / התמחות"
-            className="bg-card/90 backdrop-blur-sm border-0 rounded-xl text-sm h-10 shadow-lg"
-          />
-        </div>
-      </div>
-
-      <div className="p-5 space-y-4">
-        <FormSection icon={User} title="אודות">
-          <Textarea
-            value={value.description || ""}
-            onChange={(e) => onChange({ ...value, description: e.target.value })}
-            placeholder="קצת על המורה..."
-            className="rounded-xl border-0 bg-card resize-none shadow-sm"
-            rows={3}
-          />
-        </FormSection>
-
-        <div className="flex gap-2 justify-between pt-3 border-t border-border/30">
-          {onDelete && (
-            <Button variant="ghost" size="sm" onClick={onDelete} className="text-destructive gap-1.5 rounded-full hover:bg-destructive/10">
-              <Trash2 className="h-3.5 w-3.5" />מחק
-            </Button>
-          )}
-          <div className="flex gap-2 mr-auto">
-            <Button variant="outline" size="sm" onClick={onCancel} className="rounded-full px-5">ביטול</Button>
-            <Button size="sm" onClick={onSave} className="rounded-full gap-1.5 px-5 shadow-md shadow-primary/20">
-              <Check className="h-3.5 w-3.5" />{isNew ? "הוסף" : "שמור"}
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }
 

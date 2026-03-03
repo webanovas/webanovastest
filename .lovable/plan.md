@@ -1,34 +1,39 @@
-## תוכנית: העברת חלק המורים לדף נפרד
 
-&nbsp;
 
-תעשה דף המורים שלנו, ותעתיק את המורים ואת התמונות והכיתוב בדיוק כמו שהוא
+## Send Contact Form Emails via Resend
 
-### מה נעשה
+Both contact forms (floating button + contact page) will send emails directly to shira.pelleg@gmail.com when submitted, with WhatsApp as a secondary option.
 
-נעביר את חלק המורים ("המורים שלנו") מדף מערכת השעות לדף "על הסטודיו" (`/about`), או לחלופין ניצור דף חדש `/teachers`. מכיוון שבחרת להעביר לדף נפרד, ו"על הסטודיו" כבר מכיל תוכן על שירה והסטודיו, הגיוני להוסיף שם את חלק המורים כחלק טבעי של הדף (הסטודיו → הצוות).
+### Changes
 
-### שינויים
+**1. Store the Resend API key securely**
+- Save `RESEND_API_KEY` (`re_bKgWG7Xx_8bF6DBCdisKjA7KtSXgGyaVT`) as a backend secret
 
-**1. `src/pages/Schedule.tsx**`
+**2. Create backend function: `send-contact-email`**
+- New file: `supabase/functions/send-contact-email/index.ts`
+- Accepts POST with `{ name, phone, message }` (all optional except name+phone)
+- Sends a nicely formatted email to `shira.pelleg@gmail.com` from `onboarding@resend.dev`
+- Public endpoint (no JWT required -- it's a contact form)
+- Proper CORS headers included
 
-- הסרת סקשן המורים (שורות ~299-344) כולל הדיאלוגים של עריכה/הוספת מורים (שורות ~374-400)
-- הסרת ה-state וה-queries הקשורים למורים (`teachers`, `editingTeacher`, `isAddingTeacher`, `newTeacher`, `saveTeacher`, `deleteTeacher`, `addTeacher`)
-- הדף יישאר עם: Hero → לוח שיעורים → כרטיסי שיעורים כלליים
+**3. Update `supabase/config.toml`**
+- Add `[functions.send-contact-email]` with `verify_jwt = false`
 
-**2. `src/pages/About.tsx**`
+**4. Update Floating Contact (`FloatingContact.tsx`)**
+- Replace the current `mailto:` form submission with a call to the backend function
+- Add a loading/sending state on the submit button
+- Show success toast on completion, error toast on failure
+- Keep the WhatsApp link as a secondary option (already exists below the form)
 
-- הוספת query למורים מ-Supabase (`teachers` table)
-- הוספת סקשן "המורים שלנו" עם כרטיסי מורים (אותו עיצוב)
-- העברת דיאלוגי עריכה/הוספת מורים לכאן
-- העברת קומפוננטת `TeacherEditPreview` (או חילוץ לקומפוננטה משותפת)
+**5. Update Contact Page (`Contact.tsx`)**
+- Wire the contact page form to also call the same backend function
+- Add form state management (name, email, phone, message)
+- Add loading state and success/error feedback
+- The WhatsApp button already exists as a secondary option -- no change needed there
 
-**3. `src/components/Header.tsx**`
+### How it will work for visitors
+1. User fills out the form (name, phone, optional message)
+2. Clicks the send button -- email is sent silently in the background
+3. Success message appears: "ההודעה נשלחה בהצלחה"
+4. Alternatively, they can click the WhatsApp button to message directly
 
-- שינוי שם הקישור מ"מערכת שעות ומורים" ל"מערכת שעות" בלבד
-- אופציונלי: עדכון שם הדף ב-`PageHero` בהתאם
-
-### תוצאה
-
-- **דף מערכת שעות**: Hero + לוח שבועי + כרטיסי שיעורים - נקי ומרוכז
-- **דף על הסטודיו**: תוכן קיים + סקשן מורים חדש בתחתית
