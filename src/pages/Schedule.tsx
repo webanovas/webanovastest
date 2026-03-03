@@ -623,6 +623,27 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
           </div>
         </FormSection>
 
+        {/* Image */}
+        <FormSection icon={ImageIcon} title="תמונת השיעור">
+          <div className="flex items-center gap-3">
+            {value.image_url ? (
+              <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+                <img src={value.image_url} alt="" className="w-full h-full object-cover" />
+              </div>
+            ) : (
+              <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <BookOpen className="h-6 w-6 text-primary/40" />
+              </div>
+            )}
+            <ImageUpload
+              currentUrl={value.image_url}
+              onUpload={(url) => onChange({ ...value, image_url: url })}
+              folder="classes"
+              className="relative static"
+            />
+          </div>
+        </FormSection>
+
         {/* Details */}
         <FormSection icon={BookOpen} title="פרטי השיעור">
           <Input
@@ -642,7 +663,7 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
             onChange={(e) => onChange({ ...value, description: e.target.value })}
             placeholder="תיאור (אופציונלי)"
             className="rounded-xl border-0 bg-card resize-none shadow-sm"
-            rows={2}
+            rows={3}
           />
         </FormSection>
 
