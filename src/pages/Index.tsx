@@ -1,14 +1,15 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Link } from "react-router-dom";
 import {
   Heart,
   Leaf, Brain, Sunrise, Wind,
   Phone, Mail, MessageCircle, Send,
-  ArrowLeft, Quote, MapPin, Images, X, Camera, Loader2, Move,
+  ArrowLeft, Quote, MapPin, Images, X, Camera, Loader2,
 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { useQuery } from "@tanstack/react-query";
@@ -17,7 +18,6 @@ import { useAdminMode } from "@/hooks/useAdminMode";
 import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
 import EditableImage from "@/components/admin/EditableImage";
-import FocalPointPicker from "@/components/admin/FocalPointPicker";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useCallback, useEffect, useState, useRef } from "react";
@@ -49,6 +49,57 @@ const benefitDefaults = [
 
 const defaultHeroImages = [heroYoga, studioInterior, yogaGroup, yogaSunset, meditationHands];
 
+const HeroFocalEditor = ({ src, index, objectPosition, onSave }: { src: string; index: number; objectPosition: string; onSave: (pos: string) => void }) => {
+  const imgRef = useRef<HTMLDivElement>(null);
+  const parts = objectPosition.split(" ");
+  const [pos, setPos] = useState({ x: parseFloat(parts[0]) || 50, y: parseFloat(parts[1]) || 50 });
+  const [dragging, setDragging] = useState(false);
+
+  const update = useCallback((e: React.MouseEvent) => {
+    if (!imgRef.current) return;
+    const rect = imgRef.current.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
+    const newPos = { x: Math.round(x), y: Math.round(y) };
+    setPos(newPos);
+    onSave(`${newPos.x}% ${newPos.y}%`);
+  }, [onSave]);
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-[1fr_200px] gap-4 p-4">
+      <div
+        ref={imgRef}
+        className="relative cursor-crosshair rounded-lg overflow-hidden select-none border border-border"
+        onMouseDown={(e) => { e.preventDefault(); setDragging(true); update(e); }}
+        onMouseMove={(e) => { if (dragging) update(e); }}
+        onMouseUp={() => setDragging(false)}
+        onMouseLeave={() => setDragging(false)}
+      >
+        <img src={src} alt={`תמונה ${index + 1}`} className="w-full h-auto block" draggable={false} />
+        <div
+          className="absolute w-7 h-7 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10"
+          style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
+        >
+          <div className="absolute inset-0 rounded-full border-2 border-white shadow-lg" />
+          <div className="absolute inset-[5px] rounded-full bg-primary/80" />
+        </div>
+        <div className="absolute top-0 bottom-0 w-px bg-white/30 pointer-events-none" style={{ left: `${pos.x}%` }} />
+        <div className="absolute left-0 right-0 h-px bg-white/30 pointer-events-none" style={{ top: `${pos.y}%` }} />
+      </div>
+      <div className="flex flex-col gap-2">
+        <p className="text-xs text-muted-foreground">תצוגה מקדימה</p>
+        <div className="aspect-[16/7] rounded-md overflow-hidden border border-border">
+          <img src={src} alt="preview" className="w-full h-full object-cover" style={{ objectPosition: `${pos.x}% ${pos.y}%` }} />
+        </div>
+        <p className="text-[10px] text-muted-foreground text-center">מוקד: {pos.x}% / {pos.y}%</p>
+        <Button variant="ghost" size="sm" className="text-xs" onClick={() => { setPos({ x: 50, y: 50 }); onSave("50% 50%"); }}>
+          איפוס למרכז
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 const Index = () => {
   const { isEditMode } = useAdminMode();
   const { getText, saveText } = usePageContent("home");
@@ -70,7 +121,6 @@ const Index = () => {
   // Hero image editor state
   const [showHeroEditor, setShowHeroEditor] = useState(false);
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
-  const [heroFocalIndex, setHeroFocalIndex] = useState<number | null>(null);
   const fileRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   // Get hero images from page_content or use defaults
@@ -173,25 +223,19 @@ const Index = () => {
           </button>
         )}
 
-        {/* Admin: hero image editor panel */}
-        <AnimatePresence>
-          {isEditMode && showHeroEditor && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="absolute top-24 right-4 z-40 bg-card/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-border p-4 w-[calc(100%-2rem)] max-w-sm"
-              dir="rtl"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-heading font-semibold text-sm">תמונות קרוסלה</h3>
-                <button onClick={() => setShowHeroEditor(false)} className="w-7 h-7 rounded-full bg-muted/60 flex items-center justify-center hover:bg-muted transition-colors">
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {heroImages.map((src, i) => (
-                  <div key={i} className="relative group">
+        {/* Admin: hero image editor dialog */}
+        <Dialog open={isEditMode && showHeroEditor} onOpenChange={setShowHeroEditor}>
+          <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto" dir="rtl">
+            <DialogHeader>
+              <DialogTitle className="font-heading text-lg">עריכת תמונות קרוסלה</DialogTitle>
+              <p className="text-sm text-muted-foreground">החליפו תמונות ושנו את מיקום המוקד של כל תמונה</p>
+            </DialogHeader>
+            <div className="space-y-6">
+              {heroImages.map((src, i) => (
+                <div key={i} className="border border-border rounded-xl overflow-hidden">
+                  <div className="flex items-center gap-2 px-4 py-2 bg-muted/40 border-b border-border">
+                    <span className="font-heading font-semibold text-sm">תמונה {i + 1}</span>
+                    <div className="flex-1" />
                     <input
                       ref={(el) => { fileRefs.current[i] = el; }}
                       type="file"
@@ -202,47 +246,33 @@ const Index = () => {
                         if (file) handleHeroImageUpload(i, file);
                       }}
                     />
-                    <div
-                      className="aspect-video rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-primary transition-colors"
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-1.5 rounded-full"
                       onClick={() => fileRefs.current[i]?.click()}
+                      disabled={uploadingIndex === i}
                     >
-                      <img src={src} alt={`תמונה ${i + 1}`} className="w-full h-full object-cover" style={{ objectPosition: getText(`hero-image-${i}-pos`, "50% 50%") }} />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                        {uploadingIndex === i ? (
-                          <Loader2 className="h-5 w-5 text-white animate-spin" />
-                        ) : (
-                          <Camera className="h-5 w-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-[10px] text-muted-foreground">{i + 1}</span>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setHeroFocalIndex(i); }}
-                        className="text-[10px] text-primary hover:underline flex items-center gap-0.5"
-                      >
-                        <Move className="h-2.5 w-2.5" /> מיקוד
-                      </button>
-                    </div>
+                      {uploadingIndex === i ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Camera className="h-3.5 w-3.5" />}
+                      החלף תמונה
+                    </Button>
                   </div>
-                ))}
-              </div>
-              <Button size="sm" className="w-full mt-3 rounded-full" onClick={() => setShowHeroEditor(false)}>
+                  <HeroFocalEditor
+                    src={src}
+                    index={i}
+                    objectPosition={getText(`hero-image-${i}-pos`, "50% 50%")}
+                    onSave={(pos) => saveText(`hero-image-${i}-pos`, pos)}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-end pt-2">
+              <Button className="rounded-full px-8" onClick={() => setShowHeroEditor(false)}>
                 שמירה וסגירה
               </Button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        {heroFocalIndex !== null && (
-          <FocalPointPicker
-            src={heroImages[heroFocalIndex]}
-            alt={`תמונה ${heroFocalIndex + 1}`}
-            objectPosition={getText(`hero-image-${heroFocalIndex}-pos`, "50% 50%")}
-            onSave={(pos) => saveText(`hero-image-${heroFocalIndex}-pos`, pos)}
-            open={true}
-            onOpenChange={(open) => { if (!open) setHeroFocalIndex(null); }}
-          />
-        )}
+            </div>
+          </DialogContent>
+        </Dialog>
 
         <div className="container mx-auto px-4 relative z-10 pb-12 md:pb-28 pt-28 md:pt-40">
           <motion.div initial="hidden" animate="visible" variants={stagger} className="max-w-2xl">
