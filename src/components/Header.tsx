@@ -9,6 +9,7 @@ import logo from "@/assets/logo.png";
 const navItems = [
   { label: "בית", path: "/" },
   { label: "על הסטודיו", path: "/about" },
+  { label: "הצוות שלנו", path: "/team" },
   { label: "מערכת שעות", path: "/schedule" },
   { label: "סדנאות", path: "/workshops" },
   { label: "מילים חמות", path: "/testimonials" },
