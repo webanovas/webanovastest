@@ -65,6 +65,8 @@ const Schedule = () => {
     },
   });
 
+  const dayClasses = classes.filter((c) => c.day === selectedDay).sort((a, b) => a.time.localeCompare(b.time));
+
   const saveClass = async (cls: any) => {
     const { error } = await supabase.from("classes").update({
       day: cls.day, time: cls.time, end_time: cls.end_time || null, name: cls.name, teacher: cls.teacher, description: cls.description,
@@ -126,7 +128,76 @@ const Schedule = () => {
             </div>
           )}
 
-          <div className="max-w-7xl mx-auto overflow-x-auto pb-4" dir="rtl">
+          {/* Mobile: Day selector tabs */}
+          <div className="md:hidden max-w-lg mx-auto" dir="rtl">
+            <div className="flex gap-1.5 mb-6 overflow-x-auto pb-2 scrollbar-hide">
+              {days.map((day) => (
+                <button
+                  key={day}
+                  onClick={() => setSelectedDay(day)}
+                  className={cn(
+                    "flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-heading font-medium transition-all duration-200",
+                    selectedDay === day
+                      ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                      : "bg-card text-muted-foreground border border-border/40 hover:border-primary/30"
+                  )}
+                >
+                  {day}
+                </button>
+              ))}
+            </div>
+            <div className="space-y-3">
+              {dayClasses.length === 0 ? (
+                <p className="text-sm text-muted-foreground/50 text-center py-10">אין שיעורים ביום {selectedDay}</p>
+              ) : (
+                dayClasses.map((cls) => (
+                  <Card
+                    key={cls.id}
+                    className={cn(
+                      "rounded-xl border-0 shadow-sm overflow-hidden transition-all duration-200 cursor-pointer active:scale-[0.98]",
+                      isEditMode && "ring-2 ring-transparent hover:ring-primary/30 group relative"
+                    )}
+                    onClick={() => isEditMode ? setEditingClass({ ...cls }) : setViewingClass(cls)}
+                  >
+                    {isEditMode && (
+                      <div className="absolute top-2 left-2 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1">
+                        <Pencil className="h-3 w-3 text-primary" />
+                      </div>
+                    )}
+                    <CardContent className="p-0">
+                      <div className="flex items-stretch">
+                        <div className="bg-primary/8 px-4 py-3 border-l border-primary/10 flex flex-col items-center justify-center min-w-[90px]">
+                          <Clock className="h-3.5 w-3.5 text-primary mb-1" />
+                          <span className="font-heading font-bold text-sm text-primary whitespace-nowrap">
+                            {cls.time}
+                          </span>
+                          {cls.end_time && (
+                            <span className="font-heading text-xs text-primary/70">
+                              {cls.end_time}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex-1 p-3">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <h4 className="font-heading font-semibold text-base leading-tight">{cls.name}</h4>
+                            {!cls.is_recurring && (
+                              <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent text-accent-foreground font-medium">חד פעמי</span>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground flex items-center gap-1">
+                            <User className="h-3.5 w-3.5" />{cls.teacher}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Desktop: 7-column grid */}
+          <div className="hidden md:block max-w-7xl mx-auto overflow-x-auto pb-4" dir="rtl">
             <motion.div
               initial="hidden"
               whileInView="visible"
