@@ -405,7 +405,7 @@ const Schedule = () => {
         </Drawer>
       ) : (
         <Dialog open={!!viewingClass} onOpenChange={(open) => !open && setViewingClass(null)}>
-          <DialogContent className="max-w-lg p-0 overflow-hidden" dir="rtl">
+          <DialogContent className="max-w-lg p-0 overflow-hidden [&>button]:hidden" dir="rtl">
             {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} />}
           </DialogContent>
         </Dialog>
