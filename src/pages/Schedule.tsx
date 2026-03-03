@@ -395,6 +395,43 @@ const Schedule = () => {
           />
         </DialogContent>
       </Dialog>
+
+      {/* Class View Dialog */}
+      <Dialog open={!!viewingClass} onOpenChange={(open) => !open && setViewingClass(null)}>
+        <DialogContent className="max-w-lg p-0 overflow-hidden" dir="rtl">
+          {viewingClass && (
+            <div className="bg-card">
+              {viewingClass.image_url && (
+                <div className="aspect-[16/9] overflow-hidden">
+                  <img src={viewingClass.image_url} alt={viewingClass.name} className="w-full h-full object-cover" />
+                </div>
+              )}
+              <div className="p-6 space-y-4">
+                <div>
+                  <h2 className="font-heading text-2xl font-bold mb-1">{viewingClass.name}</h2>
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1.5">
+                      <User className="h-4 w-4 text-primary" />{viewingClass.teacher}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Clock className="h-4 w-4 text-primary" />
+                      {viewingClass.time}{viewingClass.end_time ? ` - ${viewingClass.end_time}` : ""}
+                    </span>
+                  </div>
+                </div>
+                {viewingClass.description && (
+                  <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{viewingClass.description}</p>
+                )}
+                <div className="pt-2">
+                  <Button variant="outline" size="sm" className="rounded-full" onClick={() => setViewingClass(null)}>
+                    סגירה
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
