@@ -103,7 +103,7 @@ const Schedule = () => {
     else {
       toast.success("נוסף");
       queryClient.invalidateQueries({ queryKey: ["classes"] });
-      setNewClass({ day: "ראשון", time: "", end_time: "", name: "", teacher: "", description: "", is_recurring: true, specific_date: null });
+      setNewClass({ day: "ראשון", time: "", end_time: "", name: "", teacher: "", description: "", image_url: null, is_recurring: true, specific_date: null });
       setIsAddingClass(false);
     }
   };
