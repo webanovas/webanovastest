@@ -20,6 +20,11 @@ import {
   Dialog,
   DialogContent,
 } from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerContent,
+} from "@/components/ui/drawer";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { ClockPicker } from "@/components/ui/clock-picker";
 import ImageUpload from "@/components/admin/ImageUpload";
 import { usePageContent } from "@/hooks/usePageContent";
