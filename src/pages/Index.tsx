@@ -70,6 +70,7 @@ const Index = () => {
   // Hero image editor state
   const [showHeroEditor, setShowHeroEditor] = useState(false);
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+  const [heroFocalIndex, setHeroFocalIndex] = useState<number | null>(null);
   const fileRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   // Get hero images from page_content or use defaults
