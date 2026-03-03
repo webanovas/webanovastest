@@ -85,25 +85,37 @@ const Schedule = () => {
   const dayClasses = classes.filter((c) => c.day === selectedDay).sort((a, b) => a.time.localeCompare(b.time));
 
   const saveClass = async (cls: any) => {
+    const oldData = classes.find(c => c.id === cls.id);
     const { error } = await supabase.from("classes").update({
       day: cls.day, time: cls.time, end_time: cls.end_time || null, name: cls.name, teacher: cls.teacher, description: cls.description,
       is_recurring: cls.is_recurring, specific_date: cls.specific_date, image_url: cls.image_url || null,
     }).eq("id", cls.id);
     if (error) { console.error("Save error:", error); toast.error("שגיאה בשמירה: " + error.message); }
-    else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["classes"] }); }
+    else {
+      toast.success("נשמר");
+      if (oldData) {
+        setUndoStack(prev => [...prev, { type: "update", oldData, newData: cls }]);
+        setRedoStack([]);
+      }
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
+    }
     setEditingClass(null);
   };
 
   const addClass = async () => {
     if (!newClass.name || !newClass.time) { toast.error("שם ושעה חובה"); return; }
-    const { error } = await supabase.from("classes").insert({
+    const { data, error } = await supabase.from("classes").insert({
       day: newClass.day, time: newClass.time, end_time: newClass.end_time || null, name: newClass.name,
       teacher: newClass.teacher, description: newClass.description, image_url: newClass.image_url || null,
       is_recurring: newClass.is_recurring, specific_date: newClass.specific_date,
-    } as any);
+    } as any).select().single();
     if (error) { console.error("Add error:", error); toast.error("שגיאה: " + error.message); }
     else {
       toast.success("נוסף");
+      if (data) {
+        setUndoStack(prev => [...prev, { type: "add", classData: data }]);
+        setRedoStack([]);
+      }
       queryClient.invalidateQueries({ queryKey: ["classes"] });
       setNewClass({ day: "ראשון", time: "", end_time: "", name: "", teacher: "", description: "", image_url: null, is_recurring: true, specific_date: null });
       setIsAddingClass(false);
@@ -111,10 +123,72 @@ const Schedule = () => {
   };
 
   const deleteClass = async (id: string) => {
+    const deletedClass = classes.find(c => c.id === id);
     const { error } = await supabase.from("classes").delete().eq("id", id);
     if (error) { console.error("Delete error:", error); toast.error("שגיאה במחיקה: " + error.message); }
-    else { toast.success("נמחק"); queryClient.invalidateQueries({ queryKey: ["classes"] }); }
+    else {
+      toast.success("נמחק");
+      if (deletedClass) {
+        setUndoStack(prev => [...prev, { type: "delete", classData: deletedClass }]);
+        setRedoStack([]);
+      }
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
+    }
     setEditingClass(null);
+  };
+
+  const handleUndo = async () => {
+    if (undoStack.length === 0) return;
+    const action = undoStack[undoStack.length - 1];
+    let success = false;
+    if (action.type === "add") {
+      const { error } = await supabase.from("classes").delete().eq("id", action.classData.id);
+      success = !error;
+    } else if (action.type === "delete") {
+      const { id, ...rest } = action.classData;
+      const { error } = await supabase.from("classes").insert({ ...rest, id } as any);
+      success = !error;
+    } else if (action.type === "update") {
+      const { error } = await supabase.from("classes").update({
+        day: action.oldData.day, time: action.oldData.time, end_time: action.oldData.end_time,
+        name: action.oldData.name, teacher: action.oldData.teacher, description: action.oldData.description,
+        is_recurring: action.oldData.is_recurring, specific_date: action.oldData.specific_date, image_url: action.oldData.image_url,
+      }).eq("id", action.oldData.id);
+      success = !error;
+    }
+    if (success) {
+      setUndoStack(prev => prev.slice(0, -1));
+      setRedoStack(prev => [...prev, action]);
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
+      toast.success("בוטל");
+    } else { toast.error("שגיאה בביטול"); }
+  };
+
+  const handleRedo = async () => {
+    if (redoStack.length === 0) return;
+    const action = redoStack[redoStack.length - 1];
+    let success = false;
+    if (action.type === "add") {
+      const { id, ...rest } = action.classData;
+      const { error } = await supabase.from("classes").insert({ ...rest, id } as any);
+      success = !error;
+    } else if (action.type === "delete") {
+      const { error } = await supabase.from("classes").delete().eq("id", action.classData.id);
+      success = !error;
+    } else if (action.type === "update") {
+      const { error } = await supabase.from("classes").update({
+        day: action.newData.day, time: action.newData.time, end_time: action.newData.end_time,
+        name: action.newData.name, teacher: action.newData.teacher, description: action.newData.description,
+        is_recurring: action.newData.is_recurring, specific_date: action.newData.specific_date, image_url: action.newData.image_url,
+      }).eq("id", action.newData.id);
+      success = !error;
+    }
+    if (success) {
+      setRedoStack(prev => prev.slice(0, -1));
+      setUndoStack(prev => [...prev, action]);
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
+      toast.success("שוחזר");
+    } else { toast.error("שגיאה בשחזור"); }
   };
 
   return (
