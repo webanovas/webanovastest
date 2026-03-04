@@ -247,13 +247,21 @@ const Schedule = () => {
                 const l = LEVELS[key];
                 const Icon = l.icon;
                 const desc = getText(`level-${key}`, "");
+                const hasPopover = isEditMode || !!desc;
+                
+                const badge = (
+                  <span className={cn("inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full", l.bg, l.color, hasPopover && "cursor-pointer transition-transform hover:scale-105")}>
+                    <Icon className="h-3.5 w-3.5" />
+                    {l.label}
+                  </span>
+                );
+
+                if (!hasPopover) return <span key={key}>{badge}</span>;
+
                 return (
                   <Popover key={key}>
                     <PopoverTrigger asChild>
-                      <button className={cn("inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full cursor-pointer transition-transform hover:scale-105", l.bg, l.color)}>
-                        <Icon className="h-3.5 w-3.5" />
-                        {l.label}
-                      </button>
+                      <button>{badge}</button>
                     </PopoverTrigger>
                     <PopoverContent className="w-64 text-right" side="bottom">
                       {isEditMode ? (
@@ -269,14 +277,14 @@ const Schedule = () => {
                             onBlur={(e) => saveText(`level-${key}`, e.target.value)}
                           />
                         </div>
-                      ) : desc ? (
+                      ) : (
                         <div className="space-y-1">
                           <p className={cn("font-semibold text-sm flex items-center gap-1", l.color)}>
                             <Icon className="h-4 w-4" /> {l.label}
                           </p>
                           <p className="text-sm text-muted-foreground whitespace-pre-wrap">{desc}</p>
                         </div>
-                      ) : null}
+                      )}
                     </PopoverContent>
                   </Popover>
                 );
