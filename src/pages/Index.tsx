@@ -206,7 +206,7 @@ const Index = () => {
       {/* Hero - split layout */}
       <section className="relative min-h-[100svh] md:min-h-screen overflow-hidden" dir="rtl">
         {/* Mobile: full background image */}
-        <div className="md:hidden absolute inset-0" ref={heroEmblaRef}>
+        <div className="md:hidden absolute inset-0" ref={heroMobileRef}>
           <div className="flex h-full">
             {heroImages.map((src, i) => (
               <div key={i} className="flex-none w-full h-full min-w-0 relative">
