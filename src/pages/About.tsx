@@ -85,7 +85,7 @@ const About = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="rounded-3xl overflow-hidden shadow-2xl aspect-[4/3]"
+              className="rounded-3xl overflow-hidden shadow-2xl aspect-[3/4]"
             >
               <EditableImage
                 src={getImage("hero-about-image", studioInterior)}
