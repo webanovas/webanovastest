@@ -112,10 +112,15 @@ const Index = () => {
     },
   });
 
-  // Hero carousel
-  const [heroEmblaRef] = useEmblaCarousel(
+  // Hero carousel - mobile
+  const [heroMobileRef] = useEmblaCarousel(
     { loop: true, direction: "rtl" },
     [Autoplay({ delay: 3500, stopOnInteraction: false })]
+  );
+  // Hero carousel - desktop
+  const [heroDesktopRef] = useEmblaCarousel(
+    { loop: true, direction: "rtl" },
+    [Autoplay({ delay: 4000, stopOnInteraction: false })]
   );
 
   // Hero image editor state
@@ -198,10 +203,10 @@ const Index = () => {
 
   return (
     <Layout>
-      {/* Hero with image carousel */}
-      <section className="relative min-h-[85vh] md:min-h-screen flex items-end overflow-hidden" dir="rtl">
-        {/* Image carousel background */}
-        <div className="absolute inset-0" ref={heroEmblaRef}>
+      {/* Hero - split layout */}
+      <section className="relative min-h-[100svh] md:min-h-screen overflow-hidden" dir="rtl">
+        {/* Mobile: full background image */}
+        <div className="md:hidden absolute inset-0" ref={heroMobileRef}>
           <div className="flex h-full">
             {heroImages.map((src, i) => (
               <div key={i} className="flex-none w-full h-full min-w-0 relative">
@@ -210,7 +215,66 @@ const Index = () => {
             ))}
           </div>
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-yoga-dark via-yoga-dark/70 via-[45%] to-transparent" />
+        <div className="md:hidden absolute inset-0 bg-gradient-to-t from-yoga-dark via-yoga-dark/70 via-[55%] to-yoga-dark/30" />
+
+        {/* Desktop: split layout */}
+        <div className="hidden md:flex h-screen">
+          {/* Right side - text content */}
+          <div className="w-1/2 flex items-center justify-center bg-yoga-dark relative z-10">
+            <motion.div initial="hidden" animate="visible" variants={stagger} className="max-w-lg px-8 lg:px-16 text-right">
+              <motion.div variants={fadeUp} className="mb-5">
+                <a
+                  href="https://www.google.com/maps/search/%D7%9B%D7%99%D7%9B%D7%A8+%D7%94%D7%9E%D7%95%D7%A9%D7%91%D7%94+%D7%94%D7%95%D7%93+%D7%94%D7%A9%D7%A8%D7%95%D7%9F"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-foreground/10 text-primary-foreground/80 text-sm font-body border border-primary-foreground/15 hover:bg-primary-foreground/20 transition-colors"
+                  onClick={(e) => isEditMode && e.preventDefault()}
+                >
+                  <MapPin className="h-3.5 w-3.5" />
+                  <E section="hero-badge" fallback="כיכר המושבה, הוד השרון" as="span" className="" />
+                </a>
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <E section="hero-title" fallback="יוגה במושבה" as="h1"
+                  className="font-heading text-5xl lg:text-7xl xl:text-8xl font-extrabold text-primary-foreground mb-4 md:mb-6 leading-[1.05] tracking-tight" />
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <E section="hero-subtitle" fallback="מקום של שקט, נשימה וחיבור. בואו לתרגל במרחב חם ומזמין עם שירה פלג וצוות המורים שלנו." as="p"
+                  className="text-base lg:text-lg text-primary-foreground/70 leading-relaxed mb-8 lg:mb-10 max-w-md" multiline />
+              </motion.div>
+              <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
+                <Button size="lg" className="rounded-full px-8 lg:px-10 h-12 lg:h-14 text-base shadow-xl shadow-primary/30" asChild={!isEditMode}>
+                  {isEditMode ? (
+                    <span><E section="hero-btn-schedule" fallback="לוח שיעורים" /></span>
+                  ) : (
+                    <Link to="/schedule"><E section="hero-btn-schedule" fallback="לוח שיעורים" /></Link>
+                  )}
+                </Button>
+                <Button size="lg" variant="outline" className="rounded-full px-8 lg:px-10 h-12 lg:h-14 text-base border-primary-foreground/30 text-primary-foreground bg-primary-foreground/5 hover:bg-primary-foreground/15 hover:text-primary-foreground" asChild={!isEditMode}>
+                  {isEditMode ? (
+                    <span><E section="hero-btn-about" fallback="הכירו אותנו" /></span>
+                  ) : (
+                    <Link to="/about"><E section="hero-btn-about" fallback="הכירו אותנו" /></Link>
+                  )}
+                </Button>
+              </motion.div>
+            </motion.div>
+          </div>
+          {/* Left side - image carousel */}
+          <div className="w-1/2 relative">
+            <div className="absolute inset-0 overflow-hidden" ref={heroDesktopRef}>
+              <div className="flex h-full">
+                {heroImages.map((src, i) => (
+                  <div key={i} className="flex-none w-full h-full min-w-0 relative">
+                    <img src={src} alt={`יוגה במושבה ${i + 1}`} className="w-full h-full object-cover" style={{ objectPosition: getText(`hero-image-${i}-pos`, "50% 50%") }} />
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* Subtle gradient blending into the dark side */}
+            <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-yoga-dark to-transparent z-10" />
+          </div>
+        </div>
 
         {/* Admin: edit carousel images button */}
         {isEditMode && (
@@ -274,45 +338,48 @@ const Index = () => {
           </DialogContent>
         </Dialog>
 
-        <div className="container mx-auto px-4 relative z-10 pb-8 md:pb-20 pt-28 md:pt-40 flex flex-col items-end text-right">
-          <motion.div initial="hidden" animate="visible" variants={stagger} className="max-w-2xl">
-            <motion.div variants={fadeUp} className="mb-5">
-              <a
-                href="https://www.google.com/maps/search/%D7%9B%D7%99%D7%9B%D7%A8+%D7%94%D7%9E%D7%95%D7%A9%D7%91%D7%94+%D7%94%D7%95%D7%93+%D7%94%D7%A9%D7%A8%D7%95%D7%9F"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-foreground/15 backdrop-blur-md text-primary-foreground/90 text-sm font-body border border-primary-foreground/20 hover:bg-primary-foreground/25 transition-colors"
-                onClick={(e) => isEditMode && e.preventDefault()}
-              >
-                <MapPin className="h-3.5 w-3.5" />
-                <E section="hero-badge" fallback="כיכר המושבה, הוד השרון" as="span" className="" />
-              </a>
+        {/* Mobile: text content overlay at bottom */}
+        <div className="md:hidden relative z-10 min-h-[100svh] flex items-end">
+          <div className="container mx-auto px-5 pb-10 pt-28">
+            <motion.div initial="hidden" animate="visible" variants={stagger} className="max-w-sm">
+              <motion.div variants={fadeUp} className="mb-4">
+                <a
+                  href="https://www.google.com/maps/search/%D7%9B%D7%99%D7%9B%D7%A8+%D7%94%D7%9E%D7%95%D7%A9%D7%91%D7%94+%D7%94%D7%95%D7%93+%D7%94%D7%A9%D7%A8%D7%95%D7%9F"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-foreground/15 backdrop-blur-md text-primary-foreground/90 text-xs font-body border border-primary-foreground/20"
+                  onClick={(e) => isEditMode && e.preventDefault()}
+                >
+                  <MapPin className="h-3 w-3" />
+                  <E section="hero-badge" fallback="כיכר המושבה, הוד השרון" as="span" className="" />
+                </a>
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <E section="hero-title" fallback="יוגה במושבה" as="h1"
+                  className="font-heading text-4xl font-extrabold text-primary-foreground mb-3 leading-[1.1] tracking-tight" />
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <E section="hero-subtitle" fallback="מקום של שקט, נשימה וחיבור. בואו לתרגל במרחב חם ומזמין." as="p"
+                  className="text-sm text-primary-foreground/75 leading-relaxed mb-6" multiline />
+              </motion.div>
+              <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
+                <Button size="default" className="rounded-full px-6 h-11 text-sm shadow-xl shadow-primary/30" asChild={!isEditMode}>
+                  {isEditMode ? (
+                    <span><E section="hero-btn-schedule" fallback="לוח שיעורים" /></span>
+                  ) : (
+                    <Link to="/schedule"><E section="hero-btn-schedule" fallback="לוח שיעורים" /></Link>
+                  )}
+                </Button>
+                <Button size="default" variant="outline" className="rounded-full px-6 h-11 text-sm border-primary-foreground/40 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:text-primary-foreground backdrop-blur-md" asChild={!isEditMode}>
+                  {isEditMode ? (
+                    <span><E section="hero-btn-about" fallback="הכירו אותנו" /></span>
+                  ) : (
+                    <Link to="/about"><E section="hero-btn-about" fallback="הכירו אותנו" /></Link>
+                  )}
+                </Button>
+              </motion.div>
             </motion.div>
-            <motion.div variants={fadeUp}>
-              <E section="hero-title" fallback="יוגה במושבה" as="h1"
-                className="font-heading text-4xl md:text-7xl lg:text-8xl font-extrabold text-primary-foreground mb-4 md:mb-6 leading-[1.05] tracking-tight" />
-            </motion.div>
-            <motion.div variants={fadeUp}>
-              <E section="hero-subtitle" fallback="מקום של שקט, נשימה וחיבור. בואו לתרגל במרחב חם ומזמין עם שירה פלג וצוות המורים שלנו." as="p"
-                className="text-base md:text-xl text-primary-foreground/80 leading-relaxed mb-8 md:mb-10 max-w-lg" multiline />
-            </motion.div>
-            <motion.div variants={fadeUp} className="flex flex-wrap gap-4 justify-end">
-              <Button size="lg" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base shadow-xl shadow-primary/30" asChild={!isEditMode}>
-                {isEditMode ? (
-                  <span><E section="hero-btn-schedule" fallback="לוח שיעורים" /></span>
-                ) : (
-                  <Link to="/schedule"><E section="hero-btn-schedule" fallback="לוח שיעורים" /></Link>
-                )}
-              </Button>
-              <Button size="lg" variant="outline" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base border-primary-foreground/50 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:text-primary-foreground backdrop-blur-md" asChild={!isEditMode}>
-                {isEditMode ? (
-                  <span><E section="hero-btn-about" fallback="הכירו אותנו" /></span>
-                ) : (
-                  <Link to="/about"><E section="hero-btn-about" fallback="הכירו אותנו" /></Link>
-                )}
-              </Button>
-            </motion.div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
