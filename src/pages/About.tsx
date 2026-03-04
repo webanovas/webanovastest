@@ -101,6 +101,11 @@ const About = () => {
         </div>
       </section>
 
+      {/* Studio tagline */}
+      <div className="container mx-auto px-4 pt-10 md:pt-16 text-center">
+        <E section="studio-tagline" fallback="הסטודיו מציע מרחב מודרני ונעים עם ציוד מלא לתרגול ." as="p" className="text-lg md:text-xl font-bold text-foreground" />
+      </div>
+
       {/* About the Studio + Shira */}
       <section className="py-14 md:py-28">
         <div className="container mx-auto px-4 max-w-6xl">
