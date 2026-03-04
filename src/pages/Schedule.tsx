@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Clock, User, Plus, Trash2, Check, Pencil, CalendarDays, BookOpen, Repeat, CalendarIcon, ImageIcon, Undo2, Redo2 } from "lucide-react";
+import { Clock, User, Plus, Trash2, Check, Pencil, CalendarDays, BookOpen, Repeat, CalendarIcon, ImageIcon, Undo2, Redo2, Flame, Leaf, Mountain, Sparkles } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminMode } from "@/hooks/useAdminMode";
@@ -34,6 +34,33 @@ import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
 
 type ClassRow = Tables<"classes">;
+
+const LEVELS = {
+  all: { label: "כל הרמות", icon: Sparkles, color: "text-primary", bg: "bg-primary/10", dots: 0 },
+  beginner: { label: "מתחילים", icon: Leaf, color: "text-emerald-600", bg: "bg-emerald-500/10", dots: 1 },
+  intermediate: { label: "בינוני", icon: Mountain, color: "text-amber-600", bg: "bg-amber-500/10", dots: 2 },
+  advanced: { label: "מתקדמים", icon: Flame, color: "text-rose-600", bg: "bg-rose-500/10", dots: 3 },
+} as const;
+
+type LevelKey = keyof typeof LEVELS;
+
+function LevelBadge({ level, compact = false }: { level: string; compact?: boolean }) {
+  const l = LEVELS[(level as LevelKey)] || LEVELS.all;
+  const Icon = l.icon;
+  if (compact) {
+    return (
+      <span className={cn("inline-flex items-center gap-0.5", l.color)} title={l.label}>
+        <Icon className="h-3 w-3" />
+      </span>
+    );
+  }
+  return (
+    <span className={cn("inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full", l.bg, l.color)}>
+      <Icon className="h-3 w-3" />
+      {l.label}
+    </span>
+  );
+}
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -68,7 +95,7 @@ const Schedule = () => {
   const [viewingClassMode, setViewingClassMode] = useState<"specific" | "general">("specific");
   const [editingClassInfo, setEditingClassInfo] = useState<ClassRow | null>(null);
   const [editingClassInfoOriginalName, setEditingClassInfoOriginalName] = useState<string>("");
-  const [newClass, setNewClass] = useState({ day: "ראשון", time: "", end_time: "" as string | null, name: "", teacher: "", description: "", image_url: null as string | null, is_recurring: true, specific_date: null as string | null });
+  const [newClass, setNewClass] = useState({ day: "ראשון", time: "", end_time: "" as string | null, name: "", teacher: "", description: "", image_url: null as string | null, is_recurring: true, specific_date: null as string | null, level: "all" });
   const [showClassInfoFocal, setShowClassInfoFocal] = useState(false);
 
   // Undo/Redo history
@@ -94,7 +121,7 @@ const Schedule = () => {
     const { error } = await supabase.from("classes").update({
       day: cls.day, time: cls.time, end_time: cls.end_time || null, name: cls.name, teacher: cls.teacher, description: cls.description,
       is_recurring: cls.is_recurring, specific_date: cls.specific_date, image_url: cls.image_url || null,
-      image_position: (cls as any).image_position || "50% 50%",
+      image_position: (cls as any).image_position || "50% 50%", level: (cls as any).level || "all",
     }).eq("id", cls.id);
     if (error) { console.error("Save error:", error); toast.error("שגיאה בשמירה: " + error.message); }
     else {
@@ -113,7 +140,7 @@ const Schedule = () => {
     const { data, error } = await supabase.from("classes").insert({
       day: newClass.day, time: newClass.time, end_time: newClass.end_time || null, name: newClass.name,
       teacher: newClass.teacher, description: newClass.description, image_url: newClass.image_url || null,
-      is_recurring: newClass.is_recurring, specific_date: newClass.specific_date,
+      is_recurring: newClass.is_recurring, specific_date: newClass.specific_date, level: (newClass as any).level || "all",
     } as any).select().single();
     if (error) { console.error("Add error:", error); toast.error("שגיאה: " + error.message); }
     else {
@@ -123,7 +150,7 @@ const Schedule = () => {
         setRedoStack([]);
       }
       queryClient.invalidateQueries({ queryKey: ["classes"] });
-      setNewClass({ day: "ראשון", time: "", end_time: "", name: "", teacher: "", description: "", image_url: null, is_recurring: true, specific_date: null });
+      setNewClass({ day: "ראשון", time: "", end_time: "", name: "", teacher: "", description: "", image_url: null, is_recurring: true, specific_date: null, level: "all" } as any);
       setIsAddingClass(false);
     }
   };
@@ -158,7 +185,7 @@ const Schedule = () => {
       const { error } = await supabase.from("classes").update({
         day: action.oldData.day, time: action.oldData.time, end_time: action.oldData.end_time,
         name: action.oldData.name, teacher: action.oldData.teacher, description: action.oldData.description,
-        is_recurring: action.oldData.is_recurring, specific_date: action.oldData.specific_date, image_url: action.oldData.image_url,
+        is_recurring: action.oldData.is_recurring, specific_date: action.oldData.specific_date, image_url: action.oldData.image_url, level: (action.oldData as any).level || "all",
       }).eq("id", action.oldData.id);
       success = !error;
     }
@@ -185,7 +212,7 @@ const Schedule = () => {
       const { error } = await supabase.from("classes").update({
         day: action.newData.day, time: action.newData.time, end_time: action.newData.end_time,
         name: action.newData.name, teacher: action.newData.teacher, description: action.newData.description,
-        is_recurring: action.newData.is_recurring, specific_date: action.newData.specific_date, image_url: action.newData.image_url,
+        is_recurring: action.newData.is_recurring, specific_date: action.newData.specific_date, image_url: action.newData.image_url, level: (action.newData as any).level || "all",
       }).eq("id", action.newData.id);
       success = !error;
     }
@@ -214,7 +241,20 @@ const Schedule = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
             <ScheduleE section="schedule-label" fallback="שבועי" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
-            <ScheduleE section="schedule-title" fallback="לוח שיעורים" as="h2" className="font-heading text-3xl md:text-4xl font-bold" />
+             <ScheduleE section="schedule-title" fallback="לוח שיעורים" as="h2" className="font-heading text-3xl md:text-4xl font-bold" />
+            {/* Level Legend */}
+            <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
+              {(Object.keys(LEVELS) as LevelKey[]).map((key) => {
+                const l = LEVELS[key];
+                const Icon = l.icon;
+                return (
+                  <span key={key} className={cn("inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full", l.bg, l.color)}>
+                    <Icon className="h-3.5 w-3.5" />
+                    {l.label}
+                  </span>
+                );
+              })}
+            </div>
           </div>
 
           {isEditMode && (
@@ -282,7 +322,8 @@ const Schedule = () => {
                         </div>
                         <div className="flex-1 p-3">
                           <div className="flex items-center gap-1.5 mb-1">
-                            <button
+                          <LevelBadge level={(cls as any).level || "all"} compact />
+                          <button
                               onClick={(e) => { e.stopPropagation(); if (!isEditMode) { setViewingClassMode("specific"); setViewingClass(cls); } }}
                               className="font-heading font-semibold text-base leading-tight text-foreground underline decoration-foreground/20 underline-offset-2 hover:decoration-primary hover:text-primary transition-colors text-right"
                             >
@@ -350,6 +391,7 @@ const Schedule = () => {
                               </div>
                               <div className="p-3">
                                 <div className="flex items-center gap-1.5 mb-1">
+                                  <LevelBadge level={(cls as any).level || "all"} compact />
                                   <button
                                     onClick={(e) => { e.stopPropagation(); if (!isEditMode) { setViewingClassMode("specific"); setViewingClass(cls); } }}
                                     className="font-heading font-semibold text-sm leading-tight text-foreground underline decoration-foreground/20 underline-offset-2 hover:decoration-primary hover:text-primary transition-colors text-right"
@@ -604,7 +646,10 @@ function ClassViewContent({ cls, onClose, allClasses, initialMode = "specific" }
             transition={{ duration: 0.25, ease: "easeInOut" }}
           >
             <div className="p-6 space-y-4">
-              <h2 className="font-heading text-2xl font-bold">{cls.name}</h2>
+              <div className="flex items-center gap-2">
+                <h2 className="font-heading text-2xl font-bold">{cls.name}</h2>
+                <LevelBadge level={(cls as any).level || "all"} />
+              </div>
               <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
                   <Clock className="h-3.5 w-3.5 text-primary" />
@@ -790,6 +835,7 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
             </div>
             <div className="flex-1 p-3">
               <div className="flex items-center gap-1.5">
+                <LevelBadge level={value.level || "all"} compact />
                 <h3 className="font-heading font-semibold text-sm">{value.name || "שם השיעור"}</h3>
                 {value.is_recurring === false && (
                   <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent text-accent-foreground font-medium">חד פעמי</span>
@@ -854,6 +900,31 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
             open={showFocalPicker}
             onOpenChange={setShowFocalPicker}
           />
+        </FormSection>
+
+        <FormSection icon={Flame} title="רמת השיעור">
+          <div className="flex gap-1.5">
+            {(Object.keys(LEVELS) as LevelKey[]).map((key) => {
+              const l = LEVELS[key];
+              const Icon = l.icon;
+              const isSelected = (value.level || "all") === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => onChange({ ...value, level: key })}
+                  className={cn(
+                    "flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-200 border flex flex-col items-center gap-1",
+                    isSelected
+                      ? cn("border-current shadow-md", l.color, l.bg)
+                      : "bg-card text-muted-foreground border-border/50 hover:border-primary/30"
+                  )}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  {l.label}
+                </button>
+              );
+            })}
+          </div>
         </FormSection>
 
         <FormSection icon={BookOpen} title="פרטי השיעור">

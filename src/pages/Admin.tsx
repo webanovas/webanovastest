@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
-import { LogOut, Plus, Trash2, CalendarDays, Clock, MapPin, User, BookOpen, Quote, FileText, Repeat, CalendarIcon } from "lucide-react";
+import { LogOut, Plus, Trash2, CalendarDays, Clock, MapPin, User, BookOpen, Quote, FileText, Repeat, CalendarIcon, Flame, Leaf, Mountain, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
@@ -297,6 +297,35 @@ function ClassesManager() {
                 <Input defaultValue={item.teacher} placeholder="שם המורה" onBlur={(e) => update(item.id, "teacher", e.target.value)} className="rounded-xl h-11 border-0 bg-card shadow-sm" />
               </div>
               <Textarea defaultValue={item.description} placeholder="תיאור קצר" onBlur={(e) => update(item.id, "description", e.target.value)} className="rounded-xl border-0 bg-card shadow-sm" rows={2} />
+            </FormSection>
+
+            {/* Level */}
+            <FormSection icon={Flame} title="רמה">
+              <div className="flex gap-1.5">
+                {([
+                  { key: "all", label: "כל הרמות", icon: Sparkles, color: "text-primary", bg: "bg-primary/10" },
+                  { key: "beginner", label: "מתחילים", icon: Leaf, color: "text-emerald-600", bg: "bg-emerald-500/10" },
+                  { key: "intermediate", label: "בינוני", icon: Mountain, color: "text-amber-600", bg: "bg-amber-500/10" },
+                  { key: "advanced", label: "מתקדמים", icon: Flame, color: "text-rose-600", bg: "bg-rose-500/10" },
+                ] as const).map((l) => {
+                  const isSelected = ((item as any).level || "all") === l.key;
+                  return (
+                    <button
+                      key={l.key}
+                      onClick={() => update(item.id, "level", l.key).then(load)}
+                      className={cn(
+                        "flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-200 border flex flex-col items-center gap-1",
+                        isSelected
+                          ? cn("border-current shadow-md", l.color, l.bg)
+                          : "bg-card text-muted-foreground border-border/50 hover:border-primary/30"
+                      )}
+                    >
+                      <l.icon className="h-3.5 w-3.5" />
+                      {l.label}
+                    </button>
+                  );
+                })}
+              </div>
             </FormSection>
 
             <div className="flex justify-end pt-2 border-t border-border/20">
