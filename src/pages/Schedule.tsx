@@ -212,7 +212,7 @@ const Schedule = () => {
       const { error } = await supabase.from("classes").update({
         day: action.newData.day, time: action.newData.time, end_time: action.newData.end_time,
         name: action.newData.name, teacher: action.newData.teacher, description: action.newData.description,
-        is_recurring: action.newData.is_recurring, specific_date: action.newData.specific_date, image_url: action.newData.image_url,
+        is_recurring: action.newData.is_recurring, specific_date: action.newData.specific_date, image_url: action.newData.image_url, level: (action.newData as any).level || "all",
       }).eq("id", action.newData.id);
       success = !error;
     }
