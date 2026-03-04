@@ -550,7 +550,7 @@ function ClassViewContent({ cls, onClose, allClasses, initialMode = "specific" }
           >
             {generalClass.image_url && (
               <div className="aspect-[16/9] overflow-hidden">
-                <img src={generalClass.image_url} alt={generalClass.name} className="w-full h-full object-cover" />
+                <img src={generalClass.image_url} alt={generalClass.name} className="w-full h-full object-cover" style={{ objectPosition: (generalClass as any).image_position || "50% 50%" }} />
               </div>
             )}
             <div className="p-6 space-y-4">
