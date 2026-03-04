@@ -476,11 +476,31 @@ const Schedule = () => {
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground/70">תמונה</label>
+                {editingClassInfo.image_url && (
+                  <div className="aspect-[16/9] rounded-xl overflow-hidden relative group">
+                    <img src={editingClassInfo.image_url} alt="" className="w-full h-full object-cover" style={{ objectPosition: (editingClassInfo as any).image_position || "50% 50%" }} />
+                    <button
+                      onClick={() => setShowClassInfoFocal(true)}
+                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/90 backdrop-blur-sm rounded-full p-2 shadow-md border border-border hover:bg-background"
+                      title="מיקום מוקד התמונה"
+                    >
+                      <Move className="h-4 w-4 text-foreground" />
+                    </button>
+                  </div>
+                )}
                 <ImageUpload
                   currentUrl={editingClassInfo.image_url}
                   onUpload={(url) => setEditingClassInfo({ ...editingClassInfo, image_url: url })}
                   folder="classes"
-                  className="aspect-[16/9] rounded-xl"
+                  className="relative static"
+                />
+                <FocalPointPicker
+                  src={editingClassInfo.image_url || ""}
+                  alt={editingClassInfo.name}
+                  objectPosition={(editingClassInfo as any).image_position || "50% 50%"}
+                  onSave={(pos) => setEditingClassInfo({ ...editingClassInfo, image_position: pos } as any)}
+                  open={showClassInfoFocal}
+                  onOpenChange={setShowClassInfoFocal}
                 />
               </div>
               <div className="space-y-2">
