@@ -274,7 +274,7 @@ const Index = () => {
           </DialogContent>
         </Dialog>
 
-        <div className="container mx-auto px-4 relative z-10 pb-12 md:pb-24 pt-28 md:pt-40 flex flex-col items-start text-right">
+        <div className="container mx-auto px-4 relative z-10 pb-12 md:pb-24 pt-28 md:pt-40 flex flex-col items-center text-center md:items-start md:text-right">
           <motion.div initial="hidden" animate="visible" variants={stagger} className="max-w-2xl">
             <motion.div variants={fadeUp} className="mb-5">
               <a
