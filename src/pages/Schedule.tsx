@@ -669,7 +669,7 @@ const Schedule = () => {
 
       {/* Class Add - Two Step Flow */}
       <Dialog open={isAddingClass} onOpenChange={(open) => { if (!open) { setIsAddingClass(false); setSelectedClassType(null); setAddClassStep("pick"); } }}>
-        <DialogContent className={cn("p-0 overflow-hidden [&>button]:hidden", addClassStep === "pick" ? "max-w-2xl" : "max-w-md")} dir="rtl">
+        <DialogContent className={cn("p-0 overflow-hidden [&>button]:hidden", addClassStep === "pick" ? "max-w-2xl" : addClassStep === "new-type" ? "max-w-md" : "max-w-md")} dir="rtl">
           <AnimatePresence mode="wait">
             {addClassStep === "pick" ? (
               <motion.div
