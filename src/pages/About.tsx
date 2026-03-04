@@ -72,16 +72,17 @@ const About = () => {
         subtitleSection="hero-subtitle"
       />
 
-      {/* About the Studio */}
+      {/* About the Studio + Shira */}
       <section className="py-14 md:py-28">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center max-w-6xl mx-auto">
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="order-1 md:order-1">
+        <div className="container mx-auto px-4 max-w-6xl">
+          {/* Studio part */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
               <motion.div variants={fadeUp}>
                 <E section="studio-label" fallback="הסטודיו" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
               </motion.div>
               <motion.div variants={fadeUp}>
-                <E section="studio-title" fallback="על הסטודיו" as="h2" className="font-heading text-3xl md:text-4xl font-bold mb-5" />
+                <E section="studio-title" fallback="המקום שלנו" as="h2" className="font-heading text-3xl md:text-4xl font-bold mb-5" />
               </motion.div>
               <motion.div variants={fadeUp}>
                 <E section="shira-bio-2" fallback="הסטודיו מציע מרחב חם ומזמין, עם קבוצות קטנות שמאפשרות תשומת לב אישית לכל מתרגל ומתרגלת." as="p" className="text-muted-foreground leading-relaxed mb-4 text-lg" multiline />
@@ -91,8 +92,8 @@ const About = () => {
               </motion.div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative order-2 md:order-2">
-              <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[3/4]">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative">
+              <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[4/3]">
                 <EditableImage
                   src={getImage("studio-main-image", studioInterior)}
                   alt="הסטודיו"
@@ -105,14 +106,27 @@ const About = () => {
               </div>
             </motion.div>
           </div>
-        </div>
-      </section>
 
-      {/* About Shira */}
-      <section className="py-14 md:py-28">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center max-w-6xl mx-auto">
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="order-1 md:order-1">
+          {/* Divider */}
+          <div className="my-14 md:my-24 border-t border-border/30" />
+
+          {/* Shira part - reversed layout on desktop */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative order-2 md:order-1">
+              <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[3/4]">
+                <EditableImage
+                  src={getImage("shira-image", teacherShira)}
+                  alt="שירה פלג"
+                  className="w-full h-full object-cover"
+                  folder="about"
+                  onUpload={isEditMode ? (url) => saveText("shira-image", url) : undefined}
+                  objectPosition={getText("shira-image-pos", "50% 50%")}
+                  onPositionChange={isEditMode ? (pos) => saveText("shira-image-pos", pos) : undefined}
+                />
+              </div>
+            </motion.div>
+
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="order-1 md:order-2">
               <motion.div variants={fadeUp}>
                 <E section="shira-label" fallback="בעלת הסטודיו" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
               </motion.div>
@@ -131,20 +145,6 @@ const About = () => {
                   )}
                 </Button>
               </motion.div>
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative order-2 md:order-2">
-              <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[3/4]">
-                <EditableImage
-                  src={getImage("shira-image", teacherShira)}
-                  alt="שירה פלג"
-                  className="w-full h-full object-cover"
-                  folder="about"
-                  onUpload={isEditMode ? (url) => saveText("shira-image", url) : undefined}
-                  objectPosition={getText("shira-image-pos", "50% 50%")}
-                  onPositionChange={isEditMode ? (pos) => saveText("shira-image-pos", pos) : undefined}
-                />
-              </div>
             </motion.div>
           </div>
         </div>
