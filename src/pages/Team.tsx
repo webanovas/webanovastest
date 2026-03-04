@@ -55,6 +55,7 @@ function TeacherEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew
   value: any; onChange: (v: any) => void; onSave: () => void;
   onDelete?: () => void; onCancel: () => void; isNew?: boolean;
 }) {
+  const [showFocalPicker, setShowFocalPicker] = useState(false);
   return (
     <div className="bg-card">
       <div className="aspect-[4/3] overflow-hidden relative">
