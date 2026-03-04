@@ -183,7 +183,7 @@ const Workshops = () => {
 
           {isEditMode && (
             <div className="text-center mb-8">
-              <Button size="sm" onClick={() => setIsAdding(true)} className="rounded-full gap-2">
+              <Button size="sm" onClick={() => { setNewItem({ title: "", date: "", time: "", location: "", description: "", is_active: activeTab === "upcoming" }); setIsAdding(true); }} className="rounded-full gap-2">
                 <Plus className="h-4 w-4" />הוסף סדנה
               </Button>
             </div>
