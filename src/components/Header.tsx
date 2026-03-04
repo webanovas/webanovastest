@@ -88,13 +88,15 @@ const Header = () => {
             variant="ghost"
             size="icon"
             className={cn(
-              "md:hidden rounded-xl z-50 h-12 w-12",
-              !scrolled && isHome && !mobileOpen && "text-primary-foreground hover:bg-primary-foreground/10"
+              "md:hidden rounded-2xl z-50 h-14 w-14 border-2 border-border/50",
+              !scrolled && isHome && !mobileOpen
+                ? "text-primary-foreground border-primary-foreground/30 hover:bg-primary-foreground/10"
+                : "text-foreground border-border hover:bg-accent"
             )}
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="תפריט"
           >
-            {mobileOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
+            {mobileOpen ? <X className="h-8 w-8" /> : <Menu className="h-8 w-8" />}
           </Button>
         </div>
       </header>
