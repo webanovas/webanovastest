@@ -69,6 +69,7 @@ const Schedule = () => {
   const [editingClassInfo, setEditingClassInfo] = useState<ClassRow | null>(null);
   const [editingClassInfoOriginalName, setEditingClassInfoOriginalName] = useState<string>("");
   const [newClass, setNewClass] = useState({ day: "ראשון", time: "", end_time: "" as string | null, name: "", teacher: "", description: "", image_url: null as string | null, is_recurring: true, specific_date: null as string | null });
+  const [showClassInfoFocal, setShowClassInfoFocal] = useState(false);
 
   // Undo/Redo history
   type UndoAction = 
