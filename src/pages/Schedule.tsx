@@ -246,11 +246,41 @@ const Schedule = () => {
               {(Object.keys(LEVELS) as LevelKey[]).map((key) => {
                 const l = LEVELS[key];
                 const Icon = l.icon;
+                const desc = getText(`level-${key}`, "");
                 return (
-                  <span key={key} className={cn("inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full", l.bg, l.color)}>
-                    <Icon className="h-3.5 w-3.5" />
-                    {l.label}
-                  </span>
+                  <Popover key={key}>
+                    <PopoverTrigger asChild>
+                      <button className={cn("inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full cursor-pointer transition-transform hover:scale-105", l.bg, l.color)}>
+                        <Icon className="h-3.5 w-3.5" />
+                        {l.label}
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 text-right" side="bottom">
+                      {isEditMode ? (
+                        <div className="space-y-2">
+                          <p className={cn("font-semibold text-sm flex items-center gap-1", l.color)}>
+                            <Icon className="h-4 w-4" /> {l.label}
+                          </p>
+                          <Textarea
+                            value={desc}
+                            onChange={() => {}}
+                            placeholder="הוסף תיאור לרמה..."
+                            className="min-h-[60px] text-sm"
+                            onBlur={(e) => saveText(`level-${key}`, e.target.value)}
+                            defaultValue={desc}
+                            key={`level-${key}-${desc}`}
+                          />
+                        </div>
+                      ) : desc ? (
+                        <div className="space-y-1">
+                          <p className={cn("font-semibold text-sm flex items-center gap-1", l.color)}>
+                            <Icon className="h-4 w-4" /> {l.label}
+                          </p>
+                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{desc}</p>
+                        </div>
+                      ) : null}
+                    </PopoverContent>
+                  </Popover>
                 );
               })}
             </div>
