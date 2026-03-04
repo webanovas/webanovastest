@@ -324,7 +324,7 @@ const Schedule = () => {
                           <div className="flex items-center gap-1.5 mb-1">
                           <LevelBadge level={(cls as any).level || "all"} compact />
                           <button
-                              onClick={(e) => { e.stopPropagation(); if (!isEditMode) { setViewingClassMode("specific"); setViewingClass(cls); } }}
+                              onClick={(e) => { e.stopPropagation(); if (!isEditMode) { setViewingClassMode("general"); setViewingClass(cls); } }}
                               className="font-heading font-semibold text-base leading-tight text-foreground underline decoration-foreground/20 underline-offset-2 hover:decoration-primary hover:text-primary transition-colors text-right"
                             >
                               {cls.name}
@@ -393,7 +393,7 @@ const Schedule = () => {
                                 <div className="flex items-center gap-1.5 mb-1">
                                   <LevelBadge level={(cls as any).level || "all"} compact />
                                   <button
-                                    onClick={(e) => { e.stopPropagation(); if (!isEditMode) { setViewingClassMode("specific"); setViewingClass(cls); } }}
+                                    onClick={(e) => { e.stopPropagation(); if (!isEditMode) { setViewingClassMode("general"); setViewingClass(cls); } }}
                                     className="font-heading font-semibold text-sm leading-tight text-foreground underline decoration-foreground/20 underline-offset-2 hover:decoration-primary hover:text-primary transition-colors text-right"
                                   >
                                     {cls.name}
@@ -595,95 +595,29 @@ const Schedule = () => {
 };
 
 /* ──── Class View Content (shared between Drawer & Dialog) ──── */
-function ClassViewContent({ cls, onClose, allClasses, initialMode = "specific" }: { cls: ClassRow; onClose: () => void; allClasses?: ClassRow[]; initialMode?: "specific" | "general" }) {
-  const [mode, setMode] = useState<"specific" | "general">(initialMode);
-  const cameFromSpecific = initialMode === "specific";
-
+function ClassViewContent({ cls, onClose, allClasses }: { cls: ClassRow; onClose: () => void; allClasses?: ClassRow[]; initialMode?: "specific" | "general" }) {
   const generalClass = allClasses?.find(c => c.name === cls.name) || cls;
 
   return (
     <div className="bg-card overflow-hidden">
-      <AnimatePresence mode="wait">
-        {mode === "general" ? (
-          <motion.div
-            key="general"
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -40 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-          >
-            {generalClass.image_url && (
-              <div className="aspect-[16/9] overflow-hidden">
-                <img src={generalClass.image_url} alt={generalClass.name} className="w-full h-full object-cover" style={{ objectPosition: (generalClass as any).image_position || "50% 50%" }} />
-              </div>
-            )}
-            <div className="p-6 space-y-4">
-              <div className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-primary" />
-                <h2 className="font-heading text-2xl font-bold">{generalClass.name}</h2>
-              </div>
-              {generalClass.description && (
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{generalClass.description}</p>
-              )}
-              <div className="flex gap-2 pt-2">
-                {cameFromSpecific && (
-                  <Button variant="outline" size="sm" className="rounded-full gap-1.5" onClick={() => setMode("specific")}>
-                    ← פרטי השיעור
-                  </Button>
-                )}
-                <Button variant="outline" size="sm" className="rounded-full" onClick={onClose}>
-                  סגירה
-                </Button>
-              </div>
-            </div>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="specific"
-            initial={{ opacity: 0, x: -40 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 40 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-          >
-            <div className="p-6 space-y-4">
-              <div className="flex items-center gap-2">
-                <h2 className="font-heading text-2xl font-bold">{cls.name}</h2>
-                <LevelBadge level={(cls as any).level || "all"} />
-              </div>
-              <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-                <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
-                  <Clock className="h-3.5 w-3.5 text-primary" />
-                  {cls.time}{cls.end_time ? ` - ${cls.end_time}` : ""}
-                </span>
-                <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
-                  <CalendarDays className="h-3.5 w-3.5 text-primary" />
-                  יום {cls.day}
-                </span>
-                <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
-                  <User className="h-3.5 w-3.5 text-primary" />
-                  {cls.teacher}
-                </span>
-              </div>
-              {cls.description && (
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{cls.description}</p>
-              )}
-              <div className="flex flex-col gap-2 pt-3">
-                <Button
-                  onClick={() => setMode("general")}
-                  className="rounded-full gap-2 w-full bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20"
-                  variant="ghost"
-                >
-                  <BookOpen className="h-4 w-4" />
-                  מה זה {cls.name}?
-                </Button>
-                <Button variant="outline" size="sm" className="rounded-full w-full md:w-auto" onClick={onClose}>
-                  סגירה
-                </Button>
-              </div>
-            </div>
-          </motion.div>
+      {generalClass.image_url && (
+        <div className="aspect-[16/9] overflow-hidden">
+          <img src={generalClass.image_url} alt={generalClass.name} className="w-full h-full object-cover" style={{ objectPosition: (generalClass as any).image_position || "50% 50%" }} />
+        </div>
+      )}
+      <div className="p-6 space-y-4">
+        <div className="flex items-center gap-2">
+          <BookOpen className="h-5 w-5 text-primary" />
+          <h2 className="font-heading text-2xl font-bold">{generalClass.name}</h2>
+          <LevelBadge level={(generalClass as any).level || "all"} />
+        </div>
+        {generalClass.description && (
+          <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{generalClass.description}</p>
         )}
-      </AnimatePresence>
+        <Button variant="outline" size="sm" className="rounded-full" onClick={onClose}>
+          סגירה
+        </Button>
+      </div>
     </div>
   );
 }
@@ -939,13 +873,6 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
             onChange={(e) => onChange({ ...value, teacher: e.target.value })}
             placeholder="שם המורה"
             className="rounded-xl border-0 bg-card h-11 shadow-sm"
-          />
-          <Textarea
-            value={value.description || ""}
-            onChange={(e) => onChange({ ...value, description: e.target.value })}
-            placeholder="תיאור (אופציונלי)"
-            className="rounded-xl border-0 bg-card resize-none shadow-sm"
-            rows={3}
           />
         </FormSection>
 
