@@ -412,7 +412,7 @@ const Schedule = () => {
                       )}
                       {cls.image_url ? (
                         <div className="aspect-[16/9] overflow-hidden">
-                          <img src={cls.image_url} alt={cls.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                          <img src={cls.image_url} alt={cls.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" style={{ objectPosition: (cls as any).image_position || "50% 50%" }} />
                         </div>
                       ) : (
                         <div className="aspect-[16/9] bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 flex items-center justify-center">
