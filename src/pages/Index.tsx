@@ -274,7 +274,7 @@ const Index = () => {
           </DialogContent>
         </Dialog>
 
-        <div className="container mx-auto px-4 relative z-10 pb-12 md:pb-24 pt-28 md:pt-40 flex flex-col items-center text-center">
+        <div className="container mx-auto px-4 relative z-10 pb-12 md:pb-24 pt-28 md:pt-40 flex flex-col items-start text-right">
           <motion.div initial="hidden" animate="visible" variants={stagger} className="max-w-2xl">
             <motion.div variants={fadeUp} className="mb-5">
               <a
@@ -290,11 +290,12 @@ const Index = () => {
             </motion.div>
             <motion.div variants={fadeUp}>
               <E section="hero-title" fallback="יוגה במושבה" as="h1"
-                className="font-heading text-4xl md:text-7xl lg:text-8xl font-extrabold text-primary-foreground mb-4 md:mb-6 leading-[1.05] tracking-tight" />
+                className="font-heading text-4xl md:text-7xl lg:text-8xl font-extrabold text-primary-foreground mb-4 md:mb-6 leading-[1.05] tracking-tight"
+                style={{ textShadow: '0 2px 20px rgba(0,0,0,0.4), 0 4px 40px rgba(0,0,0,0.2)' }} />
             </motion.div>
             <motion.div variants={fadeUp}>
               <E section="hero-subtitle" fallback="מקום של שקט, נשימה וחיבור. בואו לתרגל במרחב חם ומזמין עם שירה פלג וצוות המורים שלנו." as="p"
-                className="text-base md:text-xl text-primary-foreground/80 leading-relaxed mb-8 md:mb-10 max-w-lg mx-auto" multiline />
+                className="text-base md:text-xl text-primary-foreground/90 leading-relaxed mb-8 md:mb-10 max-w-lg" multiline />
             </motion.div>
             <motion.div variants={fadeUp} className="flex flex-wrap gap-4 justify-center">
               <Button size="lg" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base shadow-xl shadow-primary/30" asChild={!isEditMode}>
