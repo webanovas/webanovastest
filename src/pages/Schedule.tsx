@@ -33,6 +33,15 @@ import { Move } from "lucide-react";
 import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
 
+import poseArdha from "@/assets/poses/ardha-matsyendrasana.png";
+import poseVriksha from "@/assets/poses/vrikshasana.png";
+import poseSiddha from "@/assets/poses/siddhasana.png";
+import poseHalasana from "@/assets/poses/halasana.png";
+import poseTrikona from "@/assets/poses/trikonasana.png";
+import poseBakasana from "@/assets/poses/bakasana.png";
+
+const POSE_ILLUSTRATIONS = [poseArdha, poseVriksha, poseSiddha, poseHalasana, poseTrikona, poseBakasana];
+
 type ClassRow = Tables<"classes">;
 
 const fadeUp = {
