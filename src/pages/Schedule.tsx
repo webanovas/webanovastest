@@ -520,7 +520,7 @@ const Schedule = () => {
       ) : (
         <Dialog open={!!viewingClass} onOpenChange={(open) => !open && setViewingClass(null)}>
           <DialogContent className="max-w-lg p-0 overflow-hidden [&>button]:hidden" dir="rtl">
-            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} allClasses={classes} />}
+            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} allClasses={classes} initialMode={viewingClassMode} />}
           </DialogContent>
         </Dialog>
       )}
