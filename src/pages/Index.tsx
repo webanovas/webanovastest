@@ -112,10 +112,15 @@ const Index = () => {
     },
   });
 
-  // Hero carousel
-  const [heroEmblaRef] = useEmblaCarousel(
+  // Hero carousel - mobile
+  const [heroMobileRef] = useEmblaCarousel(
     { loop: true, direction: "rtl" },
     [Autoplay({ delay: 3500, stopOnInteraction: false })]
+  );
+  // Hero carousel - desktop
+  const [heroDesktopRef] = useEmblaCarousel(
+    { loop: true, direction: "rtl" },
+    [Autoplay({ delay: 4000, stopOnInteraction: false })]
   );
 
   // Hero image editor state
