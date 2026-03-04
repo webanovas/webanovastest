@@ -1,0 +1,1 @@
+ALTER TABLE public.classes ADD COLUMN level text NOT NULL DEFAULT 'all';

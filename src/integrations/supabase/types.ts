@@ -24,6 +24,7 @@ export type Database = {
           image_position: string | null
           image_url: string | null
           is_recurring: boolean
+          level: string
           name: string
           sort_order: number
           specific_date: string | null
@@ -39,6 +40,7 @@ export type Database = {
           image_position?: string | null
           image_url?: string | null
           is_recurring?: boolean
+          level?: string
           name: string
           sort_order?: number
           specific_date?: string | null
@@ -54,6 +56,7 @@ export type Database = {
           image_position?: string | null
           image_url?: string | null
           is_recurring?: boolean
+          level?: string
           name?: string
           sort_order?: number
           specific_date?: string | null
