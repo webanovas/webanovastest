@@ -922,24 +922,64 @@ const Schedule = () => {
 };
 
 /* ──── Class View Content (shared between Drawer & Dialog) ──── */
-function ClassViewContent({ cls, onClose, allClasses }: { cls: ClassRow; onClose: () => void; allClasses?: ClassRow[]; initialMode?: "specific" | "general" }) {
+function ClassViewContent({ cls, onClose, allClasses, specialClasses }: { cls: ClassRow; onClose: () => void; allClasses?: ClassRow[]; specialClasses?: SpecialClass[]; initialMode?: "specific" | "general" }) {
   const generalClass = allClasses?.find(c => c.name === cls.name) || cls;
+  // Check if there's a special class with matching name that has better info
+  const matchingSpecial = specialClasses?.find(sc => sc.name === cls.name && sc.is_active);
+  const displayData = matchingSpecial ? {
+    name: matchingSpecial.name,
+    description: matchingSpecial.description || generalClass.description,
+    image_url: matchingSpecial.image_url || generalClass.image_url,
+    image_position: matchingSpecial.image_position || (generalClass as any).image_position || "50% 50%",
+    level: (generalClass as any).level || "all",
+  } : {
+    name: generalClass.name,
+    description: generalClass.description,
+    image_url: generalClass.image_url,
+    image_position: (generalClass as any).image_position || "50% 50%",
+    level: (generalClass as any).level || "all",
+  };
 
   return (
     <div className="bg-card overflow-hidden">
-      {generalClass.image_url && (
+      {displayData.image_url && (
         <div className="aspect-[16/9] overflow-hidden">
-          <img src={generalClass.image_url} alt={generalClass.name} className="w-full h-full object-cover" style={{ objectPosition: (generalClass as any).image_position || "50% 50%" }} />
+          <img src={displayData.image_url} alt={displayData.name} className="w-full h-full object-cover" style={{ objectPosition: displayData.image_position }} />
         </div>
       )}
       <div className="p-6 space-y-4">
         <div className="flex items-center gap-2">
-          <BookOpen className="h-5 w-5 text-primary" />
-          <h2 className="font-heading text-2xl font-bold">{generalClass.name}</h2>
-          <LevelBadge level={(generalClass as any).level || "all"} />
+          {matchingSpecial ? <Star className="h-5 w-5 text-primary" /> : <BookOpen className="h-5 w-5 text-primary" />}
+          <h2 className="font-heading text-2xl font-bold">{displayData.name}</h2>
+          <LevelBadge level={displayData.level} />
         </div>
-        {generalClass.description && (
-          <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{generalClass.description}</p>
+        {displayData.description && (
+          <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{displayData.description}</p>
+        )}
+        <Button variant="outline" size="sm" className="rounded-full" onClick={onClose}>
+          סגירה
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/* ──── Special Class View Content ──── */
+function SpecialClassViewContent({ sc, onClose }: { sc: SpecialClass; onClose: () => void }) {
+  return (
+    <div className="bg-card overflow-hidden">
+      {sc.image_url && (
+        <div className="aspect-[16/9] overflow-hidden">
+          <img src={sc.image_url} alt={sc.name} className="w-full h-full object-cover" style={{ objectPosition: sc.image_position || "50% 50%" }} />
+        </div>
+      )}
+      <div className="p-6 space-y-4">
+        <div className="flex items-center gap-2">
+          <Star className="h-5 w-5 text-primary" />
+          <h2 className="font-heading text-2xl font-bold">{sc.name}</h2>
+        </div>
+        {sc.description && (
+          <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{sc.description}</p>
         )}
         <Button variant="outline" size="sm" className="rounded-full" onClick={onClose}>
           סגירה
