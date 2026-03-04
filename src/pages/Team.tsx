@@ -18,6 +18,8 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { Tables } from "@/integrations/supabase/types";
 import ImageUpload from "@/components/admin/ImageUpload";
+import FocalPointPicker from "@/components/admin/FocalPointPicker";
+import { Move } from "lucide-react";
 import teacherImg from "@/assets/teacher-placeholder.jpg";
 
 type TeacherRow = Tables<"teachers">;
