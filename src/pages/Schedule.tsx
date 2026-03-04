@@ -555,6 +555,7 @@ const Schedule = () => {
 /* ──── Class View Content (shared between Drawer & Dialog) ──── */
 function ClassViewContent({ cls, onClose, allClasses, initialMode = "specific" }: { cls: ClassRow; onClose: () => void; allClasses?: ClassRow[]; initialMode?: "specific" | "general" }) {
   const [mode, setMode] = useState<"specific" | "general">(initialMode);
+  const cameFromSpecific = initialMode === "specific";
 
   const generalClass = allClasses?.find(c => c.name === cls.name) || cls;
 
@@ -583,9 +584,11 @@ function ClassViewContent({ cls, onClose, allClasses, initialMode = "specific" }
                 <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{generalClass.description}</p>
               )}
               <div className="flex gap-2 pt-2">
-                <Button variant="outline" size="sm" className="rounded-full gap-1.5" onClick={() => setMode("specific")}>
-                  ← פרטי השיעור
-                </Button>
+                {cameFromSpecific && (
+                  <Button variant="outline" size="sm" className="rounded-full gap-1.5" onClick={() => setMode("specific")}>
+                    ← פרטי השיעור
+                  </Button>
+                )}
                 <Button variant="outline" size="sm" className="rounded-full" onClick={onClose}>
                   סגירה
                 </Button>
