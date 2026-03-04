@@ -70,9 +70,6 @@ const About = () => {
             {/* Text */}
             <motion.div initial="hidden" animate="visible" variants={stagger}>
               <motion.div variants={fadeUp}>
-                <E section="hero-label" fallback="הסטודיו שלנו" as="span" className="text-primary font-medium text-xs md:text-sm tracking-wider uppercase mb-2 md:mb-3 block" />
-              </motion.div>
-              <motion.div variants={fadeUp}>
                 <E section="hero-title" fallback="על הסטודיו" as="h1" className="font-heading text-3xl md:text-6xl font-extrabold mb-3 md:mb-4 tracking-tight" />
               </motion.div>
               <motion.div variants={fadeUp}>
