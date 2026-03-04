@@ -28,6 +28,8 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ClockPicker } from "@/components/ui/clock-picker";
 import ImageUpload from "@/components/admin/ImageUpload";
+import FocalPointPicker from "@/components/admin/FocalPointPicker";
+import { Move } from "lucide-react";
 import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
 
@@ -91,6 +93,7 @@ const Schedule = () => {
     const { error } = await supabase.from("classes").update({
       day: cls.day, time: cls.time, end_time: cls.end_time || null, name: cls.name, teacher: cls.teacher, description: cls.description,
       is_recurring: cls.is_recurring, specific_date: cls.specific_date, image_url: cls.image_url || null,
+      image_position: (cls as any).image_position || "50% 50%",
     }).eq("id", cls.id);
     if (error) { console.error("Save error:", error); toast.error("שגיאה בשמירה: " + error.message); }
     else {
@@ -409,7 +412,7 @@ const Schedule = () => {
                       )}
                       {cls.image_url ? (
                         <div className="aspect-[16/9] overflow-hidden">
-                          <img src={cls.image_url} alt={cls.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                          <img src={cls.image_url} alt={cls.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" style={{ objectPosition: (cls as any).image_position || "50% 50%" }} />
                         </div>
                       ) : (
                         <div className="aspect-[16/9] bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 flex items-center justify-center">
@@ -547,7 +550,7 @@ function ClassViewContent({ cls, onClose, allClasses, initialMode = "specific" }
           >
             {generalClass.image_url && (
               <div className="aspect-[16/9] overflow-hidden">
-                <img src={generalClass.image_url} alt={generalClass.name} className="w-full h-full object-cover" />
+                <img src={generalClass.image_url} alt={generalClass.name} className="w-full h-full object-cover" style={{ objectPosition: (generalClass as any).image_position || "50% 50%" }} />
               </div>
             )}
             <div className="p-6 space-y-4">
@@ -748,6 +751,7 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
   value: any; onChange: (v: any) => void; onSave: () => void;
   onDelete?: () => void; onCancel: () => void; isNew?: boolean;
 }) {
+  const [showFocalPicker, setShowFocalPicker] = useState(false);
   return (
      <div className="bg-card max-h-[85vh] overflow-y-auto">
        <div className="bg-gradient-to-b from-primary/8 to-primary/3 px-5 py-4 border-b border-border/30">
@@ -795,7 +799,7 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
           <div className="flex items-center gap-3">
             {value.image_url ? (
               <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
-                <img src={value.image_url} alt="" className="w-full h-full object-cover" />
+                <img src={value.image_url} alt="" className="w-full h-full object-cover" style={{ objectPosition: value.image_position || "50% 50%" }} />
               </div>
             ) : (
               <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -808,7 +812,24 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
               folder="classes"
               className="relative static"
             />
+            {value.image_url && (
+              <button
+                onClick={(e) => { e.stopPropagation(); setShowFocalPicker(true); }}
+                className="bg-background/90 backdrop-blur-sm rounded-full p-2 shadow-md border border-border hover:bg-background"
+                title="מיקום מוקד התמונה"
+              >
+                <Move className="h-4 w-4 text-foreground" />
+              </button>
+            )}
           </div>
+          <FocalPointPicker
+            src={value.image_url || ""}
+            alt="preview"
+            objectPosition={value.image_position || "50% 50%"}
+            onSave={(pos) => onChange({ ...value, image_position: pos })}
+            open={showFocalPicker}
+            onOpenChange={setShowFocalPicker}
+          />
         </FormSection>
 
         <FormSection icon={BookOpen} title="פרטי השיעור">

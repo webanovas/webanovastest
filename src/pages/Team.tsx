@@ -18,6 +18,8 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { Tables } from "@/integrations/supabase/types";
 import ImageUpload from "@/components/admin/ImageUpload";
+import FocalPointPicker from "@/components/admin/FocalPointPicker";
+import { Move } from "lucide-react";
 import teacherImg from "@/assets/teacher-placeholder.jpg";
 
 type TeacherRow = Tables<"teachers">;
@@ -53,15 +55,33 @@ function TeacherEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew
   value: any; onChange: (v: any) => void; onSave: () => void;
   onDelete?: () => void; onCancel: () => void; isNew?: boolean;
 }) {
+  const [showFocalPicker, setShowFocalPicker] = useState(false);
   return (
     <div className="bg-card">
       <div className="aspect-[4/3] overflow-hidden relative">
-        <img src={value.image_url || teacherImg} alt="preview" className="w-full h-full object-cover" />
+        <img src={value.image_url || teacherImg} alt="preview" className="w-full h-full object-cover" style={{ objectPosition: value.image_position || "50% 50%" }} />
         <ImageUpload
           currentUrl={value.image_url}
           onUpload={(url) => onChange({ ...value, image_url: url })}
           folder="teachers"
           className="bottom-20 left-4"
+        />
+        {value.image_url && (
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowFocalPicker(true); }}
+            className="absolute bottom-20 left-16 z-50 bg-background/90 backdrop-blur-sm rounded-full p-2 shadow-md border border-border hover:bg-background"
+            title="מיקום מוקד התמונה"
+          >
+            <Move className="h-4 w-4 text-foreground" />
+          </button>
+        )}
+        <FocalPointPicker
+          src={value.image_url || teacherImg}
+          alt="preview"
+          objectPosition={value.image_position || "50% 50%"}
+          onSave={(pos) => onChange({ ...value, image_position: pos })}
+          open={showFocalPicker}
+          onOpenChange={setShowFocalPicker}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
         <div className="absolute bottom-4 right-4 left-4 space-y-2">
@@ -139,7 +159,7 @@ const Team = () => {
 
   const saveTeacher = async (t: TeacherRow) => {
     const { error } = await supabase.from("teachers").update({
-      name: t.name, role: t.role, description: t.description, image_url: t.image_url,
+      name: t.name, role: t.role, description: t.description, image_url: t.image_url, image_position: (t as any).image_position || "50% 50%",
     }).eq("id", t.id);
     if (error) { toast.error("שגיאה: " + error.message); }
     else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["teachers"] }); }
@@ -213,7 +233,7 @@ const Team = () => {
                     onClick={() => isEditMode && setEditingTeacher({ ...t })}
                   >
                     <div className="aspect-[3/4] overflow-hidden relative">
-                      <img src={t.image_url || teacherImg} alt={t.name} className="w-full h-full object-cover" />
+                      <img src={t.image_url || teacherImg} alt={t.name} className="w-full h-full object-cover" style={{ objectPosition: (t as any).image_position || "50% 50%" }} />
                       {isEditMode && (
                         <div className="absolute top-3 left-3 bg-card/90 backdrop-blur-sm rounded-full p-1.5">
                           <Pencil className="h-3.5 w-3.5 text-primary" />

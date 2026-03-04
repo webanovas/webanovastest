@@ -25,6 +25,8 @@ import { ClockPicker } from "@/components/ui/clock-picker";
 import workshopImg1 from "@/assets/workshop-1.jpg";
 import workshopImg2 from "@/assets/workshop-2.jpg";
 import ImageUpload from "@/components/admin/ImageUpload";
+import FocalPointPicker from "@/components/admin/FocalPointPicker";
+import { Move } from "lucide-react";
 import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
 
@@ -115,6 +117,7 @@ const Workshops = () => {
     const { error } = await supabase.from("workshops").update({
       title: w.title, date: w.date, time: w.time, location: w.location,
       description: w.description, is_active: w.is_active, image_url: w.image_url,
+      image_position: (w as any).image_position || "50% 50%",
     }).eq("id", w.id);
     if (error) { console.error("Save error:", error); toast.error("שגיאה: " + error.message); }
     else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["workshops"] }); }
@@ -278,7 +281,7 @@ function WorkshopCard({ workshop: w, isEditMode, onEdit, imgSrc }: { workshop: W
         </div>
       )}
       <div className="w-full sm:w-56 md:w-64 shrink-0 aspect-square sm:aspect-auto overflow-hidden">
-        <img src={imgSrc} alt={w.title} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" />
+        <img src={imgSrc} alt={w.title} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" style={{ objectPosition: (w as any).image_position || "50% 50%" }} />
       </div>
       <CardContent className="pt-6 pb-6 flex flex-col justify-center flex-1">
         <h3 className="font-heading font-semibold text-xl mb-3">{w.title}</h3>
@@ -327,6 +330,7 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
   onDelete?: () => void; onCancel: () => void; isNew?: boolean;
 }) {
   const [dateOpen, setDateOpen] = useState(false);
+  const [showFocalPicker, setShowFocalPicker] = useState(false);
   if (!value) return null;
 
   const parsedDate = value.date ? parseHebrewDate(value.date) : undefined;
@@ -335,12 +339,29 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
     <div className="bg-card rounded-3xl overflow-hidden">
       {/* Image preview with upload */}
       <div className="aspect-video overflow-hidden relative">
-        <img src={value.image_url || workshopImg1} alt="preview" className="w-full h-full object-cover" />
+        <img src={value.image_url || workshopImg1} alt="preview" className="w-full h-full object-cover" style={{ objectPosition: value.image_position || "50% 50%" }} />
         <ImageUpload
           currentUrl={value.image_url}
           onUpload={(url) => onChange({ ...value, image_url: url })}
           folder="workshops"
           className="bottom-20 left-4"
+        />
+        {value.image_url && (
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowFocalPicker(true); }}
+            className="absolute bottom-20 left-16 z-50 bg-background/90 backdrop-blur-sm rounded-full p-2 shadow-md border border-border hover:bg-background"
+            title="מיקום מוקד התמונה"
+          >
+            <Move className="h-4 w-4 text-foreground" />
+          </button>
+        )}
+        <FocalPointPicker
+          src={value.image_url || workshopImg1}
+          alt="preview"
+          objectPosition={value.image_position || "50% 50%"}
+          onSave={(pos) => onChange({ ...value, image_position: pos })}
+          open={showFocalPicker}
+          onOpenChange={setShowFocalPicker}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
         <div className="absolute bottom-4 right-4 left-4">

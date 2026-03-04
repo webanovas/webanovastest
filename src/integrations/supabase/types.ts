@@ -21,6 +21,7 @@ export type Database = {
           description: string
           end_time: string | null
           id: string
+          image_position: string | null
           image_url: string | null
           is_recurring: boolean
           name: string
@@ -35,6 +36,7 @@ export type Database = {
           description?: string
           end_time?: string | null
           id?: string
+          image_position?: string | null
           image_url?: string | null
           is_recurring?: boolean
           name: string
@@ -49,6 +51,7 @@ export type Database = {
           description?: string
           end_time?: string | null
           id?: string
+          image_position?: string | null
           image_url?: string | null
           is_recurring?: boolean
           name?: string
@@ -88,6 +91,7 @@ export type Database = {
           created_at: string
           description: string
           id: string
+          image_position: string | null
           image_url: string | null
           name: string
           role: string
@@ -97,6 +101,7 @@ export type Database = {
           created_at?: string
           description?: string
           id?: string
+          image_position?: string | null
           image_url?: string | null
           name: string
           role?: string
@@ -106,6 +111,7 @@ export type Database = {
           created_at?: string
           description?: string
           id?: string
+          image_position?: string | null
           image_url?: string | null
           name?: string
           role?: string
@@ -161,6 +167,7 @@ export type Database = {
           date: string
           description: string
           id: string
+          image_position: string | null
           image_url: string | null
           is_active: boolean
           location: string | null
@@ -173,6 +180,7 @@ export type Database = {
           date: string
           description?: string
           id?: string
+          image_position?: string | null
           image_url?: string | null
           is_active?: boolean
           location?: string | null
@@ -185,6 +193,7 @@ export type Database = {
           date?: string
           description?: string
           id?: string
+          image_position?: string | null
           image_url?: string | null
           is_active?: boolean
           location?: string | null
