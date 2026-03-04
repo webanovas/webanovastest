@@ -98,6 +98,10 @@ const Schedule = () => {
   const [editingClassInfoOriginalName, setEditingClassInfoOriginalName] = useState<string>("");
   const [newClass, setNewClass] = useState({ day: "ראשון", time: "", end_time: "" as string | null, name: "", teacher: "", description: "", image_url: null as string | null, is_recurring: true, specific_date: null as string | null, level: "all" });
   const [showClassInfoFocal, setShowClassInfoFocal] = useState(false);
+  const [showSpecialClasses, setShowSpecialClasses] = useState(false);
+  const [editingSpecialClass, setEditingSpecialClass] = useState<SpecialClass | null>(null);
+  const [isAddingSpecialClass, setIsAddingSpecialClass] = useState(false);
+  const [newSpecialClass, setNewSpecialClass] = useState({ name: "", description: "", image_url: null as string | null, image_position: "50% 50%" });
 
   // Auto-adopt description/image when renaming to an existing class name
   useEffect(() => {
