@@ -368,20 +368,18 @@ const Index = () => {
       </section>
 
       {/* Full-width image divider */}
-      <section className="relative overflow-hidden">
-        <div className="h-[40vh] md:h-[50vh]">
-          <EditableImage
-            src={getImage("cta-bg-image", yogaSunset)}
-            alt="יוגה"
-            className="absolute inset-0 w-full h-full object-cover"
-            folder="cta"
-            onUpload={isEditMode ? (url) => saveText("cta-bg-image", url) : undefined}
-            objectPosition={getText("cta-bg-image-pos", "50% 50%")}
-            onPositionChange={isEditMode ? (pos) => saveText("cta-bg-image-pos", pos) : undefined}
-          />
-        </div>
-        <div className="bg-yoga-dark py-12 md:py-16">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center px-4">
+      <section className="relative h-[50vh] md:h-[60vh] overflow-hidden">
+        <EditableImage
+          src={getImage("cta-bg-image", yogaSunset)}
+          alt="יוגה"
+          className="absolute inset-0 w-full h-full object-cover"
+          folder="cta"
+          onUpload={isEditMode ? (url) => saveText("cta-bg-image", url) : undefined}
+          objectPosition={getText("cta-bg-image-pos", "50% 50%")}
+          onPositionChange={isEditMode ? (pos) => saveText("cta-bg-image-pos", pos) : undefined}
+        />
+        <div className="absolute inset-0 bg-yoga-dark/50 flex items-center justify-center pointer-events-none">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center px-4 pointer-events-auto">
             <E section="cta-title" fallback="התחילו לנשום" as="h2"
               className="font-heading text-3xl md:text-6xl font-bold text-primary-foreground mb-4" />
             <E section="cta-subtitle" fallback="הצטרפו למשפחת יוגה במושבה ותגלו מרחב חדש של שקט ורוגע" as="p"
