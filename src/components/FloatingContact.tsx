@@ -48,6 +48,8 @@ const FloatingContact = () => {
     }
   };
 
+  if (dialogOpen && !isOpen) return null;
+
   return (
     <>
       {/* Overlay */}
