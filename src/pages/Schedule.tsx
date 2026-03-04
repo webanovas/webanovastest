@@ -591,7 +591,7 @@ function ClassViewContent({ cls, onClose, allClasses }: { cls: ClassRow; onClose
             variant="ghost"
           >
             <BookOpen className="h-4 w-4" />
-            מה זה {cls.name}? →
+            ← מה זה {cls.name}?
           </Button>
           <Button variant="outline" size="sm" className="rounded-full w-full md:w-auto" onClick={onClose}>
             סגירה
