@@ -750,7 +750,7 @@ function parseDateStr(str: string): Date | undefined {
 function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew = false }: {
   value: any; onChange: (v: any) => void; onSave: () => void;
   onDelete?: () => void; onCancel: () => void; isNew?: boolean;
-) {
+}) {
   const [showFocalPicker, setShowFocalPicker] = useState(false);
   return (
      <div className="bg-card max-h-[85vh] overflow-y-auto">
