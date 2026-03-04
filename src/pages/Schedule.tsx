@@ -1061,6 +1061,29 @@ const Schedule = () => {
                 />
               </div>
               <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground/70">רמת השיעור</label>
+                <div className="flex gap-1.5">
+                  {(Object.keys(LEVELS) as LevelKey[]).map((key) => {
+                    const l = LEVELS[key];
+                    const Icon = l.icon;
+                    const isSelected = ((editingClassInfo as any).level || "all") === key;
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => setEditingClassInfo({ ...editingClassInfo, level: key } as any)}
+                        className={cn(
+                          "flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-200 border flex flex-col items-center gap-1",
+                          isSelected ? cn("border-current shadow-md", l.color, l.bg) : "bg-card text-muted-foreground border-border/50 hover:border-primary/30"
+                        )}
+                      >
+                        <Icon className="h-3.5 w-3.5" />
+                        {l.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground/70">תיאור השיעור</label>
                 <Textarea
                   value={editingClassInfo.description}
@@ -1075,7 +1098,7 @@ const Schedule = () => {
                   // Update all classes with same name
                   const { error } = await supabase
                     .from("classes")
-                    .update({ name: editingClassInfo.name, description: editingClassInfo.description, image_url: editingClassInfo.image_url || null, image_position: (editingClassInfo as any).image_position || "50% 50%" })
+                    .update({ name: editingClassInfo.name, description: editingClassInfo.description, image_url: editingClassInfo.image_url || null, image_position: (editingClassInfo as any).image_position || "50% 50%", level: (editingClassInfo as any).level || "all" })
                     .eq("name", editingClassInfoOriginalName);
                   if (error) { toast.error("שגיאה: " + error.message); }
                   else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["classes"] }); }
