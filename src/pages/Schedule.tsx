@@ -33,15 +33,6 @@ import { Move } from "lucide-react";
 import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
 
-import poseArdha from "@/assets/poses/ardha-matsyendrasana.png";
-import poseVriksha from "@/assets/poses/vrikshasana.png";
-import poseSiddha from "@/assets/poses/siddhasana.png";
-import poseHalasana from "@/assets/poses/halasana.png";
-import poseTrikona from "@/assets/poses/trikonasana.png";
-import poseBakasana from "@/assets/poses/bakasana.png";
-
-const POSE_ILLUSTRATIONS = [poseArdha, poseVriksha, poseSiddha, poseHalasana, poseTrikona, poseBakasana];
-
 type ClassRow = Tables<"classes">;
 
 const fadeUp = {
@@ -425,12 +416,8 @@ const Schedule = () => {
                           <img src={cls.image_url} alt={cls.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" style={{ objectPosition: (cls as any).image_position || "50% 50%" }} />
                         </div>
                       ) : (
-                        <div className="aspect-[16/9] bg-gradient-to-br from-primary/5 via-accent/5 to-muted/20 flex items-center justify-center">
-                          <img
-                            src={POSE_ILLUSTRATIONS[uniqueClasses.indexOf(cls) % POSE_ILLUSTRATIONS.length]}
-                            alt=""
-                            className="h-24 w-24 opacity-60"
-                          />
+                        <div className="aspect-[16/9] bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 flex items-center justify-center">
+                          <BookOpen className="h-12 w-12 text-primary/25" />
                         </div>
                       )}
                       <CardContent className="p-5" dir="rtl">
