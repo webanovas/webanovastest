@@ -1,39 +1,21 @@
 
 
-## Send Contact Form Emails via Resend
+## Plan: Move hero text to the side and make it more prominent
 
-Both contact forms (floating button + contact page) will send emails directly to shira.pelleg@gmail.com when submitted, with WhatsApp as a secondary option.
+Currently the hero carousel text (title, subtitle, buttons) is centered (`text-center`, `items-center`, `max-w-2xl`, `mx-auto`). I'll move it to the right side (since it's RTL) and make the text slightly more prominent.
 
-### Changes
+### Changes in `src/pages/Index.tsx` (lines 277-316)
 
-**1. Store the Resend API key securely**
-- Save `RESEND_API_KEY` (`re_bKgWG7Xx_8bF6DBCdisKjA7KtSXgGyaVT`) as a backend secret
+1. **Move text to the side**: Change the container from `flex-col items-center text-center` to `flex-col items-start text-right` (RTL means start = right side). Remove `mx-auto` from the inner `max-w-2xl` div and the subtitle.
 
-**2. Create backend function: `send-contact-email`**
-- New file: `supabase/functions/send-contact-email/index.ts`
-- Accepts POST with `{ name, phone, message }` (all optional except name+phone)
-- Sends a nicely formatted email to `shira.pelleg@gmail.com` from `onboarding@resend.dev`
-- Public endpoint (no JWT required -- it's a contact form)
-- Proper CORS headers included
+2. **Make text more prominent**:
+   - Increase title text shadow or add a stronger drop shadow for better contrast against images
+   - Slightly increase subtitle opacity from `text-primary-foreground/80` to `text-primary-foreground/90`
+   - Add text-shadow utility via inline style for the title
 
-**3. Update `supabase/config.toml`**
-- Add `[functions.send-contact-email]` with `verify_jwt = false`
+3. **Buttons alignment**: Change `justify-center` to `justify-start` on the buttons flex container.
 
-**4. Update Floating Contact (`FloatingContact.tsx`)**
-- Replace the current `mailto:` form submission with a call to the backend function
-- Add a loading/sending state on the submit button
-- Show success toast on completion, error toast on failure
-- Keep the WhatsApp link as a secondary option (already exists below the form)
+4. **Badge alignment**: Keep the location badge aligned to the start instead of centered.
 
-**5. Update Contact Page (`Contact.tsx`)**
-- Wire the contact page form to also call the same backend function
-- Add form state management (name, email, phone, message)
-- Add loading state and success/error feedback
-- The WhatsApp button already exists as a secondary option -- no change needed there
-
-### How it will work for visitors
-1. User fills out the form (name, phone, optional message)
-2. Clicks the send button -- email is sent silently in the background
-3. Success message appears: "ההודעה נשלחה בהצלחה"
-4. Alternatively, they can click the WhatsApp button to message directly
+Single file change: `src/pages/Index.tsx`, approximately lines 277-314.
 
