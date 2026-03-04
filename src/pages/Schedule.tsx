@@ -898,6 +898,31 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
           />
         </FormSection>
 
+        <FormSection icon={Flame} title="רמת השיעור">
+          <div className="flex gap-1.5">
+            {(Object.keys(LEVELS) as LevelKey[]).map((key) => {
+              const l = LEVELS[key];
+              const Icon = l.icon;
+              const isSelected = (value.level || "all") === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => onChange({ ...value, level: key })}
+                  className={cn(
+                    "flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-200 border flex flex-col items-center gap-1",
+                    isSelected
+                      ? cn("border-current shadow-md", l.color, l.bg)
+                      : "bg-card text-muted-foreground border-border/50 hover:border-primary/30"
+                  )}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  {l.label}
+                </button>
+              );
+            })}
+          </div>
+        </FormSection>
+
         <FormSection icon={BookOpen} title="פרטי השיעור">
           <Input
             value={value.name}
