@@ -72,11 +72,68 @@ const About = () => {
         subtitleSection="hero-subtitle"
       />
 
-      {/* About Shira */}
-      <section className="py-14 md:py-36">
+      {/* About the Studio */}
+      <section className="py-14 md:py-28">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center max-w-6xl mx-auto">
-            <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative">
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="order-1 md:order-1">
+              <motion.div variants={fadeUp}>
+                <E section="studio-label" fallback="הסטודיו" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <E section="studio-title" fallback="על הסטודיו" as="h2" className="font-heading text-3xl md:text-4xl font-bold mb-5" />
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <E section="shira-bio-2" fallback="הסטודיו מציע מרחב חם ומזמין, עם קבוצות קטנות שמאפשרות תשומת לב אישית לכל מתרגל ומתרגלת." as="p" className="text-muted-foreground leading-relaxed mb-4 text-lg" multiline />
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <E section="studio-desc" fallback="יוגה במושבה הוא סטודיו בוטיק בכיכר המושבה בהוד השרון, המציע מגוון שיעורים וסדנאות לכל הרמות." as="p" className="text-muted-foreground leading-relaxed" multiline />
+              </motion.div>
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative order-2 md:order-2">
+              <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[3/4]">
+                <EditableImage
+                  src={getImage("studio-main-image", studioInterior)}
+                  alt="הסטודיו"
+                  className="w-full h-full object-cover"
+                  folder="about"
+                  onUpload={isEditMode ? (url) => saveText("studio-main-image", url) : undefined}
+                  objectPosition={getText("studio-main-image-pos", "50% 50%")}
+                  onPositionChange={isEditMode ? (pos) => saveText("studio-main-image-pos", pos) : undefined}
+                />
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* About Shira */}
+      <section className="py-14 md:py-28">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center max-w-6xl mx-auto">
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="order-1 md:order-1">
+              <motion.div variants={fadeUp}>
+                <E section="shira-label" fallback="בעלת הסטודיו" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <E section="shira-name" fallback="שירה פלג" as="h2" className="font-heading text-3xl md:text-4xl font-bold mb-5" />
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <E section="shira-bio-1" fallback="מורה ומטפלת ביוגה עם ניסיון של שנים רבות. שירה מלמדת מתוך אהבה אמיתית לתרגול ומאמינה שכל אחד יכול למצוא את הדרך שלו על המזרן." as="p" className="text-muted-foreground leading-relaxed mb-4 text-lg" multiline />
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <Button variant="outline" className="rounded-full gap-2 px-8 h-12" asChild={!isEditMode}>
+                  {isEditMode ? (
+                    <span><E section="shira-btn" fallback="הצוות שלנו" /><ArrowLeft className="h-4 w-4" /></span>
+                  ) : (
+                    <Link to="/team"><E section="shira-btn" fallback="הצוות שלנו" /><ArrowLeft className="h-4 w-4" /></Link>
+                  )}
+                </Button>
+              </motion.div>
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative order-2 md:order-2">
               <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[3/4]">
                 <EditableImage
                   src={getImage("shira-image", teacherShira)}
@@ -88,30 +145,6 @@ const About = () => {
                   onPositionChange={isEditMode ? (pos) => saveText("shira-image-pos", pos) : undefined}
                 />
               </div>
-            </motion.div>
-
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
-              <motion.div variants={fadeUp}>
-                <E section="shira-label" fallback="בעלת הסטודיו" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
-              </motion.div>
-              <motion.div variants={fadeUp}>
-                <E section="shira-name" fallback="שירה פלג" as="h2" className="font-heading text-3xl md:text-4xl font-bold mb-5" />
-              </motion.div>
-              <motion.div variants={fadeUp}>
-                <E section="shira-bio-1" fallback="מורה ומטפלת ביוגה עם ניסיון של שנים רבות. שירה מלמדת מתוך אהבה אמיתית לתרגול ומאמינה שכל אחד יכול למצוא את הדרך שלו על המזרן." as="p" className="text-muted-foreground leading-relaxed mb-4 text-lg" multiline />
-              </motion.div>
-              <motion.div variants={fadeUp}>
-                <E section="shira-bio-2" fallback="הסטודיו מציע מרחב חם ומזמין, עם קבוצות קטנות שמאפשרות תשומת לב אישית לכל מתרגל ומתרגלת." as="p" className="text-muted-foreground leading-relaxed mb-8" multiline />
-              </motion.div>
-              <motion.div variants={fadeUp}>
-                <Button variant="outline" className="rounded-full gap-2 px-8 h-12" asChild={!isEditMode}>
-                  {isEditMode ? (
-                    <span><E section="shira-btn" fallback="הצוות שלנו" /><ArrowLeft className="h-4 w-4" /></span>
-                  ) : (
-                    <Link to="/team"><E section="shira-btn" fallback="הצוות שלנו" /><ArrowLeft className="h-4 w-4" /></Link>
-                  )}
-                </Button>
-              </motion.div>
             </motion.div>
           </div>
         </div>
