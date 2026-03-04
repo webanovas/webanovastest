@@ -751,16 +751,172 @@ const Schedule = () => {
       {isMobile ? (
         <Drawer open={!!viewingClass} onOpenChange={(open) => !open && setViewingClass(null)}>
           <DrawerContent className="max-h-[85vh]" dir="rtl">
-            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} allClasses={classes} initialMode={viewingClassMode} />}
+            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} allClasses={classes} specialClasses={specialClasses} initialMode={viewingClassMode} />}
           </DrawerContent>
         </Drawer>
       ) : (
         <Dialog open={!!viewingClass} onOpenChange={(open) => !open && setViewingClass(null)}>
           <DialogContent className="max-w-lg p-0 overflow-hidden [&>button]:hidden" dir="rtl">
-            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} allClasses={classes} initialMode={viewingClassMode} />}
+            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} allClasses={classes} specialClasses={specialClasses} initialMode={viewingClassMode} />}
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Special Class View */}
+      {isMobile ? (
+        <Drawer open={!!viewingSpecialClass} onOpenChange={(open) => !open && setViewingSpecialClass(null)}>
+          <DrawerContent className="max-h-[85vh]" dir="rtl">
+            {viewingSpecialClass && <SpecialClassViewContent sc={viewingSpecialClass} onClose={() => setViewingSpecialClass(null)} />}
+          </DrawerContent>
+        </Drawer>
+      ) : (
+        <Dialog open={!!viewingSpecialClass} onOpenChange={(open) => !open && setViewingSpecialClass(null)}>
+          <DialogContent className="max-w-lg p-0 overflow-hidden [&>button]:hidden" dir="rtl">
+            {viewingSpecialClass && <SpecialClassViewContent sc={viewingSpecialClass} onClose={() => setViewingSpecialClass(null)} />}
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Special Class Edit */}
+      <Dialog open={!!editingSpecialClass} onOpenChange={(open) => !open && setEditingSpecialClass(null)}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto" dir="rtl">
+          {editingSpecialClass && (
+            <div className="space-y-5 pt-2">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground/70">שם השיעור</label>
+                <Input
+                  value={editingSpecialClass.name}
+                  onChange={(e) => setEditingSpecialClass({ ...editingSpecialClass, name: e.target.value })}
+                  className="rounded-xl font-heading text-lg font-bold"
+                  placeholder="שם השיעור..."
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground/70">תמונה</label>
+                {editingSpecialClass.image_url && (
+                  <div className="aspect-[16/9] rounded-xl overflow-hidden relative group">
+                    <img src={editingSpecialClass.image_url} alt="" className="w-full h-full object-cover" style={{ objectPosition: editingSpecialClass.image_position || "50% 50%" }} />
+                    <button
+                      onClick={() => setShowSpecialClassFocal(true)}
+                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/90 backdrop-blur-sm rounded-full p-2 shadow-md border border-border hover:bg-background"
+                      title="מיקום מוקד התמונה"
+                    >
+                      <Move className="h-4 w-4 text-foreground" />
+                    </button>
+                  </div>
+                )}
+                <ImageUpload
+                  currentUrl={editingSpecialClass.image_url}
+                  onUpload={(url) => setEditingSpecialClass({ ...editingSpecialClass, image_url: url })}
+                  folder="classes"
+                  className="relative static"
+                />
+                <FocalPointPicker
+                  src={editingSpecialClass.image_url || ""}
+                  alt={editingSpecialClass.name}
+                  objectPosition={editingSpecialClass.image_position || "50% 50%"}
+                  onSave={(pos) => setEditingSpecialClass({ ...editingSpecialClass, image_position: pos })}
+                  open={showSpecialClassFocal}
+                  onOpenChange={setShowSpecialClassFocal}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground/70">תיאור השיעור</label>
+                <Textarea
+                  value={editingSpecialClass.description}
+                  onChange={(e) => setEditingSpecialClass({ ...editingSpecialClass, description: e.target.value })}
+                  rows={4}
+                  className="rounded-xl resize-none"
+                  placeholder="תיאור השיעור..."
+                />
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="text-sm font-medium text-foreground/70">פעיל</label>
+                <Switch
+                  checked={editingSpecialClass.is_active}
+                  onCheckedChange={(checked) => setEditingSpecialClass({ ...editingSpecialClass, is_active: checked })}
+                />
+              </div>
+              <div className="flex gap-2 pt-2">
+                <Button onClick={async () => {
+                  const { error } = await supabase
+                    .from("special_classes" as any)
+                    .update({ name: editingSpecialClass.name, description: editingSpecialClass.description, image_url: editingSpecialClass.image_url || null, image_position: editingSpecialClass.image_position || "50% 50%", is_active: editingSpecialClass.is_active } as any)
+                    .eq("id", editingSpecialClass.id);
+                  if (error) { toast.error("שגיאה: " + error.message); }
+                  else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["special_classes"] }); }
+                  setEditingSpecialClass(null);
+                }} className="rounded-full flex-1 gap-2">
+                  <Check className="h-4 w-4" />שמירה
+                </Button>
+                <Button variant="destructive" size="sm" onClick={async () => {
+                  const { error } = await supabase.from("special_classes" as any).delete().eq("id", editingSpecialClass.id);
+                  if (error) { toast.error("שגיאה: " + error.message); }
+                  else { toast.success("נמחק"); queryClient.invalidateQueries({ queryKey: ["special_classes"] }); }
+                  setEditingSpecialClass(null);
+                }} className="rounded-full gap-1.5">
+                  <Trash2 className="h-3.5 w-3.5" />מחק
+                </Button>
+                <Button variant="outline" onClick={() => setEditingSpecialClass(null)} className="rounded-full">ביטול</Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Special Class Add */}
+      <Dialog open={isAddingSpecialClass} onOpenChange={setIsAddingSpecialClass}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto" dir="rtl">
+          <div className="space-y-5 pt-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground/70">שם השיעור</label>
+              <Input
+                value={newSpecialClass.name}
+                onChange={(e) => setNewSpecialClass({ ...newSpecialClass, name: e.target.value })}
+                className="rounded-xl font-heading text-lg font-bold"
+                placeholder="למשל: היפהופ, פילאטיס..."
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground/70">תמונה</label>
+              <ImageUpload
+                currentUrl={newSpecialClass.image_url}
+                onUpload={(url) => setNewSpecialClass({ ...newSpecialClass, image_url: url })}
+                folder="classes"
+                className="relative static"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground/70">תיאור השיעור</label>
+              <Textarea
+                value={newSpecialClass.description}
+                onChange={(e) => setNewSpecialClass({ ...newSpecialClass, description: e.target.value })}
+                rows={4}
+                className="rounded-xl resize-none"
+                placeholder="תיאור השיעור..."
+              />
+            </div>
+            <div className="flex gap-2 pt-2">
+              <Button onClick={async () => {
+                if (!newSpecialClass.name) { toast.error("שם השיעור חובה"); return; }
+                const { error } = await supabase.from("special_classes" as any).insert({
+                  name: newSpecialClass.name,
+                  description: newSpecialClass.description,
+                  image_url: newSpecialClass.image_url || null,
+                  image_position: newSpecialClass.image_position,
+                } as any);
+                if (error) { toast.error("שגיאה: " + error.message); }
+                else { toast.success("נוסף"); queryClient.invalidateQueries({ queryKey: ["special_classes"] }); }
+                setNewSpecialClass({ name: "", description: "", image_url: null, image_position: "50% 50%" });
+                setIsAddingSpecialClass(false);
+              }} className="rounded-full flex-1 gap-2">
+                <Check className="h-4 w-4" />הוסף
+              </Button>
+              <Button variant="outline" onClick={() => setIsAddingSpecialClass(false)} className="rounded-full">ביטול</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
