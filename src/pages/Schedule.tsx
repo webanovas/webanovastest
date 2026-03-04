@@ -7,7 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Clock, User, Plus, Trash2, Check, Pencil, CalendarDays, BookOpen, Repeat, CalendarIcon, ImageIcon, Undo2, Redo2, Flame, Leaf, Mountain, Sparkles } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Clock, User, Plus, Trash2, Check, Pencil, CalendarDays, BookOpen, Repeat, CalendarIcon, ImageIcon, Undo2, Redo2, Flame, Leaf, Mountain, Sparkles, Star } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminMode } from "@/hooks/useAdminMode";
@@ -34,6 +35,7 @@ import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
 
 type ClassRow = Tables<"classes">;
+type SpecialClass = { id: string; name: string; description: string; image_url: string | null; image_position: string | null; sort_order: number; is_active: boolean; created_at: string };
 
 const LEVELS = {
   beginner: { label: "מתחילים", icon: Leaf, color: "text-emerald-600", bg: "bg-emerald-500/10", dots: 1 },
@@ -96,14 +98,21 @@ const Schedule = () => {
   const [editingClassInfoOriginalName, setEditingClassInfoOriginalName] = useState<string>("");
   const [newClass, setNewClass] = useState({ day: "ראשון", time: "", end_time: "" as string | null, name: "", teacher: "", description: "", image_url: null as string | null, is_recurring: true, specific_date: null as string | null, level: "all" });
   const [showClassInfoFocal, setShowClassInfoFocal] = useState(false);
+  const [showSpecialClasses, setShowSpecialClasses] = useState(false);
+  const [editingSpecialClass, setEditingSpecialClass] = useState<SpecialClass | null>(null);
+  const [isAddingSpecialClass, setIsAddingSpecialClass] = useState(false);
+  const [viewingSpecialClass, setViewingSpecialClass] = useState<SpecialClass | null>(null);
+  const [newSpecialClass, setNewSpecialClass] = useState({ name: "", description: "", image_url: null as string | null, image_position: "50% 50%" });
+  const [showSpecialClassFocal, setShowSpecialClassFocal] = useState(false);
 
-  // Auto-adopt description/image when renaming to an existing class name
+  // Auto-adopt description/image when renaming to an existing class or special class name
   useEffect(() => {
     if (
       editingClassInfo?.name &&
       editingClassInfo.name !== editingClassInfoOriginalName &&
       classes
     ) {
+      // Check regular classes first
       const existing = classes.find(c => c.name === editingClassInfo.name);
       if (existing) {
         setEditingClassInfo(prev => prev ? {
@@ -111,6 +120,17 @@ const Schedule = () => {
           description: existing.description,
           image_url: existing.image_url,
           image_position: existing.image_position,
+        } : prev);
+        return;
+      }
+      // Then check special classes
+      const special = specialClasses.find(sc => sc.name === editingClassInfo.name);
+      if (special) {
+        setEditingClassInfo(prev => prev ? {
+          ...prev,
+          description: special.description,
+          image_url: special.image_url,
+          image_position: special.image_position,
         } : prev);
       }
     }
@@ -129,6 +149,14 @@ const Schedule = () => {
     queryFn: async () => {
       const { data } = await supabase.from("classes").select("*").order("sort_order");
       return data ?? [];
+    },
+  });
+
+  const { data: specialClasses = [] } = useQuery({
+    queryKey: ["special_classes"],
+    queryFn: async () => {
+      const { data } = await supabase.from("special_classes" as any).select("*").order("sort_order") as any;
+      return (data ?? []) as SpecialClass[];
     },
   });
 
@@ -531,6 +559,90 @@ const Schedule = () => {
               </motion.div>
             );
           })()}
+
+          {/* Special Classes Toggle */}
+          {(specialClasses.filter(sc => sc.is_active).length > 0 || isEditMode) && (
+            <div className="mt-12 max-w-5xl mx-auto">
+              <div className="flex items-center justify-center gap-3 mb-8">
+                <button
+                  onClick={() => setShowSpecialClasses(!showSpecialClasses)}
+                  className="flex items-center gap-2 text-primary font-heading font-semibold text-lg hover:opacity-80 transition-opacity"
+                >
+                  <Star className="h-5 w-5" />
+                  <ScheduleE section="special-classes-title" fallback="שיעורים מיוחדים" as="span" className="" />
+                  <motion.span
+                    animate={{ rotate: showSpecialClasses ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-primary"
+                  >
+                    ▼
+                  </motion.span>
+                </button>
+              </div>
+
+              <AnimatePresence>
+                {showSpecialClasses && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {isEditMode && (
+                      <div className="flex justify-center mb-6">
+                        <Button size="sm" onClick={() => setIsAddingSpecialClass(true)} className="rounded-full gap-2">
+                          <Plus className="h-4 w-4" />הוסף שיעור מיוחד
+                        </Button>
+                      </div>
+                    )}
+
+                    <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {specialClasses.filter(sc => sc.is_active || isEditMode).map((sc) => (
+                        <motion.div key={sc.id} variants={fadeUp}>
+                          <Card
+                            className={cn(
+                              "rounded-2xl border-0 overflow-hidden shadow-md cursor-pointer group h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
+                              isEditMode && "ring-2 ring-transparent hover:ring-primary/30 relative",
+                              !sc.is_active && "opacity-50"
+                            )}
+                            onClick={() => {
+                              if (isEditMode) {
+                                setEditingSpecialClass({ ...sc });
+                              } else {
+                                setViewingSpecialClass(sc);
+                              }
+                            }}
+                          >
+                            {isEditMode && (
+                              <div className="absolute top-3 left-3 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Pencil className="h-3.5 w-3.5 text-primary" />
+                              </div>
+                            )}
+                            {sc.image_url ? (
+                              <div className="aspect-[16/9] overflow-hidden">
+                                <img src={sc.image_url} alt={sc.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" style={{ objectPosition: sc.image_position || "50% 50%" }} />
+                              </div>
+                            ) : (
+                              <div className="aspect-[16/9] bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 flex items-center justify-center">
+                                <Star className="h-12 w-12 text-primary/25" />
+                              </div>
+                            )}
+                            <CardContent className="p-5" dir="rtl">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Star className="h-4 w-4 text-primary" />
+                                <h3 className="font-heading font-bold text-lg group-hover:text-primary transition-colors">{sc.name}</h3>
+                              </div>
+                              <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">{sc.description || "לחצו לפרטים נוספים"}</p>
+                            </CardContent>
+                          </Card>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
         </div>
       </section>
 
@@ -639,39 +751,235 @@ const Schedule = () => {
       {isMobile ? (
         <Drawer open={!!viewingClass} onOpenChange={(open) => !open && setViewingClass(null)}>
           <DrawerContent className="max-h-[85vh]" dir="rtl">
-            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} allClasses={classes} initialMode={viewingClassMode} />}
+            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} allClasses={classes} specialClasses={specialClasses} initialMode={viewingClassMode} />}
           </DrawerContent>
         </Drawer>
       ) : (
         <Dialog open={!!viewingClass} onOpenChange={(open) => !open && setViewingClass(null)}>
           <DialogContent className="max-w-lg p-0 overflow-hidden [&>button]:hidden" dir="rtl">
-            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} allClasses={classes} initialMode={viewingClassMode} />}
+            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} allClasses={classes} specialClasses={specialClasses} initialMode={viewingClassMode} />}
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Special Class View */}
+      {isMobile ? (
+        <Drawer open={!!viewingSpecialClass} onOpenChange={(open) => !open && setViewingSpecialClass(null)}>
+          <DrawerContent className="max-h-[85vh]" dir="rtl">
+            {viewingSpecialClass && <SpecialClassViewContent sc={viewingSpecialClass} onClose={() => setViewingSpecialClass(null)} />}
+          </DrawerContent>
+        </Drawer>
+      ) : (
+        <Dialog open={!!viewingSpecialClass} onOpenChange={(open) => !open && setViewingSpecialClass(null)}>
+          <DialogContent className="max-w-lg p-0 overflow-hidden [&>button]:hidden" dir="rtl">
+            {viewingSpecialClass && <SpecialClassViewContent sc={viewingSpecialClass} onClose={() => setViewingSpecialClass(null)} />}
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Special Class Edit */}
+      <Dialog open={!!editingSpecialClass} onOpenChange={(open) => !open && setEditingSpecialClass(null)}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto" dir="rtl">
+          {editingSpecialClass && (
+            <div className="space-y-5 pt-2">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground/70">שם השיעור</label>
+                <Input
+                  value={editingSpecialClass.name}
+                  onChange={(e) => setEditingSpecialClass({ ...editingSpecialClass, name: e.target.value })}
+                  className="rounded-xl font-heading text-lg font-bold"
+                  placeholder="שם השיעור..."
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground/70">תמונה</label>
+                {editingSpecialClass.image_url && (
+                  <div className="aspect-[16/9] rounded-xl overflow-hidden relative group">
+                    <img src={editingSpecialClass.image_url} alt="" className="w-full h-full object-cover" style={{ objectPosition: editingSpecialClass.image_position || "50% 50%" }} />
+                    <button
+                      onClick={() => setShowSpecialClassFocal(true)}
+                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/90 backdrop-blur-sm rounded-full p-2 shadow-md border border-border hover:bg-background"
+                      title="מיקום מוקד התמונה"
+                    >
+                      <Move className="h-4 w-4 text-foreground" />
+                    </button>
+                  </div>
+                )}
+                <ImageUpload
+                  currentUrl={editingSpecialClass.image_url}
+                  onUpload={(url) => setEditingSpecialClass({ ...editingSpecialClass, image_url: url })}
+                  folder="classes"
+                  className="relative static"
+                />
+                <FocalPointPicker
+                  src={editingSpecialClass.image_url || ""}
+                  alt={editingSpecialClass.name}
+                  objectPosition={editingSpecialClass.image_position || "50% 50%"}
+                  onSave={(pos) => setEditingSpecialClass({ ...editingSpecialClass, image_position: pos })}
+                  open={showSpecialClassFocal}
+                  onOpenChange={setShowSpecialClassFocal}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground/70">תיאור השיעור</label>
+                <Textarea
+                  value={editingSpecialClass.description}
+                  onChange={(e) => setEditingSpecialClass({ ...editingSpecialClass, description: e.target.value })}
+                  rows={4}
+                  className="rounded-xl resize-none"
+                  placeholder="תיאור השיעור..."
+                />
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="text-sm font-medium text-foreground/70">פעיל</label>
+                <Switch
+                  checked={editingSpecialClass.is_active}
+                  onCheckedChange={(checked) => setEditingSpecialClass({ ...editingSpecialClass, is_active: checked })}
+                />
+              </div>
+              <div className="flex gap-2 pt-2">
+                <Button onClick={async () => {
+                  const { error } = await supabase
+                    .from("special_classes" as any)
+                    .update({ name: editingSpecialClass.name, description: editingSpecialClass.description, image_url: editingSpecialClass.image_url || null, image_position: editingSpecialClass.image_position || "50% 50%", is_active: editingSpecialClass.is_active } as any)
+                    .eq("id", editingSpecialClass.id);
+                  if (error) { toast.error("שגיאה: " + error.message); }
+                  else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["special_classes"] }); }
+                  setEditingSpecialClass(null);
+                }} className="rounded-full flex-1 gap-2">
+                  <Check className="h-4 w-4" />שמירה
+                </Button>
+                <Button variant="destructive" size="sm" onClick={async () => {
+                  const { error } = await supabase.from("special_classes" as any).delete().eq("id", editingSpecialClass.id);
+                  if (error) { toast.error("שגיאה: " + error.message); }
+                  else { toast.success("נמחק"); queryClient.invalidateQueries({ queryKey: ["special_classes"] }); }
+                  setEditingSpecialClass(null);
+                }} className="rounded-full gap-1.5">
+                  <Trash2 className="h-3.5 w-3.5" />מחק
+                </Button>
+                <Button variant="outline" onClick={() => setEditingSpecialClass(null)} className="rounded-full">ביטול</Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Special Class Add */}
+      <Dialog open={isAddingSpecialClass} onOpenChange={setIsAddingSpecialClass}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto" dir="rtl">
+          <div className="space-y-5 pt-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground/70">שם השיעור</label>
+              <Input
+                value={newSpecialClass.name}
+                onChange={(e) => setNewSpecialClass({ ...newSpecialClass, name: e.target.value })}
+                className="rounded-xl font-heading text-lg font-bold"
+                placeholder="למשל: היפהופ, פילאטיס..."
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground/70">תמונה</label>
+              <ImageUpload
+                currentUrl={newSpecialClass.image_url}
+                onUpload={(url) => setNewSpecialClass({ ...newSpecialClass, image_url: url })}
+                folder="classes"
+                className="relative static"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground/70">תיאור השיעור</label>
+              <Textarea
+                value={newSpecialClass.description}
+                onChange={(e) => setNewSpecialClass({ ...newSpecialClass, description: e.target.value })}
+                rows={4}
+                className="rounded-xl resize-none"
+                placeholder="תיאור השיעור..."
+              />
+            </div>
+            <div className="flex gap-2 pt-2">
+              <Button onClick={async () => {
+                if (!newSpecialClass.name) { toast.error("שם השיעור חובה"); return; }
+                const { error } = await supabase.from("special_classes" as any).insert({
+                  name: newSpecialClass.name,
+                  description: newSpecialClass.description,
+                  image_url: newSpecialClass.image_url || null,
+                  image_position: newSpecialClass.image_position,
+                } as any);
+                if (error) { toast.error("שגיאה: " + error.message); }
+                else { toast.success("נוסף"); queryClient.invalidateQueries({ queryKey: ["special_classes"] }); }
+                setNewSpecialClass({ name: "", description: "", image_url: null, image_position: "50% 50%" });
+                setIsAddingSpecialClass(false);
+              }} className="rounded-full flex-1 gap-2">
+                <Check className="h-4 w-4" />הוסף
+              </Button>
+              <Button variant="outline" onClick={() => setIsAddingSpecialClass(false)} className="rounded-full">ביטול</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
 
 /* ──── Class View Content (shared between Drawer & Dialog) ──── */
-function ClassViewContent({ cls, onClose, allClasses }: { cls: ClassRow; onClose: () => void; allClasses?: ClassRow[]; initialMode?: "specific" | "general" }) {
+function ClassViewContent({ cls, onClose, allClasses, specialClasses }: { cls: ClassRow; onClose: () => void; allClasses?: ClassRow[]; specialClasses?: SpecialClass[]; initialMode?: "specific" | "general" }) {
   const generalClass = allClasses?.find(c => c.name === cls.name) || cls;
+  // Check if there's a special class with matching name that has better info
+  const matchingSpecial = specialClasses?.find(sc => sc.name === cls.name && sc.is_active);
+  const displayData = matchingSpecial ? {
+    name: matchingSpecial.name,
+    description: matchingSpecial.description || generalClass.description,
+    image_url: matchingSpecial.image_url || generalClass.image_url,
+    image_position: matchingSpecial.image_position || (generalClass as any).image_position || "50% 50%",
+    level: (generalClass as any).level || "all",
+  } : {
+    name: generalClass.name,
+    description: generalClass.description,
+    image_url: generalClass.image_url,
+    image_position: (generalClass as any).image_position || "50% 50%",
+    level: (generalClass as any).level || "all",
+  };
 
   return (
     <div className="bg-card overflow-hidden">
-      {generalClass.image_url && (
+      {displayData.image_url && (
         <div className="aspect-[16/9] overflow-hidden">
-          <img src={generalClass.image_url} alt={generalClass.name} className="w-full h-full object-cover" style={{ objectPosition: (generalClass as any).image_position || "50% 50%" }} />
+          <img src={displayData.image_url} alt={displayData.name} className="w-full h-full object-cover" style={{ objectPosition: displayData.image_position }} />
         </div>
       )}
       <div className="p-6 space-y-4">
         <div className="flex items-center gap-2">
-          <BookOpen className="h-5 w-5 text-primary" />
-          <h2 className="font-heading text-2xl font-bold">{generalClass.name}</h2>
-          <LevelBadge level={(generalClass as any).level || "all"} />
+          {matchingSpecial ? <Star className="h-5 w-5 text-primary" /> : <BookOpen className="h-5 w-5 text-primary" />}
+          <h2 className="font-heading text-2xl font-bold">{displayData.name}</h2>
+          <LevelBadge level={displayData.level} />
         </div>
-        {generalClass.description && (
-          <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{generalClass.description}</p>
+        {displayData.description && (
+          <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{displayData.description}</p>
+        )}
+        <Button variant="outline" size="sm" className="rounded-full" onClick={onClose}>
+          סגירה
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/* ──── Special Class View Content ──── */
+function SpecialClassViewContent({ sc, onClose }: { sc: SpecialClass; onClose: () => void }) {
+  return (
+    <div className="bg-card overflow-hidden">
+      {sc.image_url && (
+        <div className="aspect-[16/9] overflow-hidden">
+          <img src={sc.image_url} alt={sc.name} className="w-full h-full object-cover" style={{ objectPosition: sc.image_position || "50% 50%" }} />
+        </div>
+      )}
+      <div className="p-6 space-y-4">
+        <div className="flex items-center gap-2">
+          <Star className="h-5 w-5 text-primary" />
+          <h2 className="font-heading text-2xl font-bold">{sc.name}</h2>
+        </div>
+        {sc.description && (
+          <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{sc.description}</p>
         )}
         <Button variant="outline" size="sm" className="rounded-full" onClick={onClose}>
           סגירה
