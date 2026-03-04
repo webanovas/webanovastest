@@ -117,6 +117,7 @@ const Workshops = () => {
     const { error } = await supabase.from("workshops").update({
       title: w.title, date: w.date, time: w.time, location: w.location,
       description: w.description, is_active: w.is_active, image_url: w.image_url,
+      image_position: (w as any).image_position || "50% 50%",
     }).eq("id", w.id);
     if (error) { console.error("Save error:", error); toast.error("שגיאה: " + error.message); }
     else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["workshops"] }); }
