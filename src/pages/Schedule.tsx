@@ -35,6 +35,33 @@ import EditableText from "@/components/admin/EditableText";
 
 type ClassRow = Tables<"classes">;
 
+const LEVELS = {
+  all: { label: "כל הרמות", icon: Sparkles, color: "text-primary", bg: "bg-primary/10", dots: 0 },
+  beginner: { label: "מתחילים", icon: Leaf, color: "text-emerald-600", bg: "bg-emerald-500/10", dots: 1 },
+  intermediate: { label: "בינוני", icon: Mountain, color: "text-amber-600", bg: "bg-amber-500/10", dots: 2 },
+  advanced: { label: "מתקדמים", icon: Flame, color: "text-rose-600", bg: "bg-rose-500/10", dots: 3 },
+} as const;
+
+type LevelKey = keyof typeof LEVELS;
+
+function LevelBadge({ level, compact = false }: { level: string; compact?: boolean }) {
+  const l = LEVELS[(level as LevelKey)] || LEVELS.all;
+  const Icon = l.icon;
+  if (compact) {
+    return (
+      <span className={cn("inline-flex items-center gap-0.5", l.color)} title={l.label}>
+        <Icon className="h-3 w-3" />
+      </span>
+    );
+  }
+  return (
+    <span className={cn("inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full", l.bg, l.color)}>
+      <Icon className="h-3 w-3" />
+      {l.label}
+    </span>
+  );
+}
+
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
