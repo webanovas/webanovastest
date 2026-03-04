@@ -102,8 +102,21 @@ const About = () => {
       </section>
 
       {/* Studio tagline */}
-      <div className="container mx-auto px-4 pt-10 md:pt-16 text-center">
-        <E section="studio-tagline" fallback="הסטודיו מציע מרחב מודרני ונעים עם ציוד מלא לתרגול ." as="p" className="text-lg md:text-xl font-bold text-foreground" />
+      <div className="container mx-auto px-4 py-10 md:py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="max-w-2xl mx-auto text-center"
+        >
+          <div className="inline-block relative">
+            <div className="absolute -right-4 -top-3 w-8 h-8 rounded-full bg-primary/10" />
+            <div className="absolute -left-3 -bottom-2 w-5 h-5 rounded-full bg-primary/5" />
+            <E section="studio-tagline" fallback="הסטודיו מציע מרחב מודרני ונעים עם ציוד מלא לתרגול ." as="p" className="text-lg md:text-2xl font-heading font-semibold text-foreground/90 leading-relaxed relative z-10" />
+          </div>
+          <div className="mt-5 w-16 h-0.5 bg-primary/30 mx-auto rounded-full" />
+        </motion.div>
       </div>
 
       {/* About the Studio + Shira */}
