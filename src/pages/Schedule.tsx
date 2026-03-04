@@ -1300,9 +1300,10 @@ function parseDateStr(str: string): Date | undefined {
 }
 
 /* WYSIWYG Class Editor */
-function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew = false }: {
+function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew = false, hideClassTypeFields = false, isEvent = false }: {
   value: any; onChange: (v: any) => void; onSave: () => void;
   onDelete?: () => void; onCancel: () => void; isNew?: boolean;
+  hideClassTypeFields?: boolean; isEvent?: boolean;
 }) {
   const [showFocalPicker, setShowFocalPicker] = useState(false);
   return (
