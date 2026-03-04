@@ -38,7 +38,6 @@ type ClassRow = Tables<"classes">;
 const LEVELS = {
   all: { label: "כל הרמות", icon: Sparkles, color: "text-primary", bg: "bg-primary/10", dots: 0 },
   beginner: { label: "מתחילים", icon: Leaf, color: "text-emerald-600", bg: "bg-emerald-500/10", dots: 1 },
-  intermediate: { label: "בינוני", icon: Mountain, color: "text-amber-600", bg: "bg-amber-500/10", dots: 2 },
   advanced: { label: "מתקדמים", icon: Flame, color: "text-rose-600", bg: "bg-rose-500/10", dots: 3 },
 } as const;
 
