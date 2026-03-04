@@ -94,7 +94,7 @@ const Header = () => {
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="תפריט"
           >
-            {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {mobileOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
           </Button>
         </div>
       </header>
