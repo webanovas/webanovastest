@@ -346,7 +346,7 @@ const Schedule = () => {
               <Button size="sm" variant="outline" onClick={handleUndo} disabled={undoStack.length === 0} className="rounded-full gap-1.5">
                 <Undo2 className="h-4 w-4" />ביטול
               </Button>
-              <Button size="sm" onClick={() => setIsAddingClass(true)} className="rounded-full gap-2">
+              <Button size="sm" onClick={() => { setAddClassStep("pick"); setSelectedClassType(null); setIsAddingClass(true); }} className="rounded-full gap-2">
                 <Plus className="h-4 w-4" />הוסף שיעור
               </Button>
               <Button size="sm" variant="outline" onClick={handleRedo} disabled={redoStack.length === 0} className="rounded-full gap-1.5">
