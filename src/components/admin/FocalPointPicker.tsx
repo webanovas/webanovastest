@@ -50,7 +50,7 @@ const FocalPointPicker = ({ src, alt, objectPosition, onSave, open, onOpenChange
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl" dir="rtl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir="rtl">
         <DialogHeader>
           <DialogTitle className="font-heading">מיקום מוקד התמונה</DialogTitle>
           <p className="text-sm text-muted-foreground">לחצו על התמונה כדי לבחור את הנקודה שתישאר במרכז כשהתמונה נחתכת</p>
@@ -123,7 +123,7 @@ const FocalPointPicker = ({ src, alt, objectPosition, onSave, open, onOpenChange
             </div>
           </div>
 
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center sticky bottom-0 bg-card/95 backdrop-blur-sm pt-3 pb-1">
             <span className="text-xs text-muted-foreground">
               מיקום: {position.x}% / {position.y}%
             </span>
