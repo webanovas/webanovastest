@@ -209,8 +209,6 @@ const Team = () => {
       <section className="py-14 md:py-36">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <E section="teachers-label" fallback="המורים שלנו" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
-            <E section="teachers-title" fallback="צוות הסטודיו" as="h2" className="font-heading text-3xl md:text-4xl font-bold" />
             {isEditMode && (
               <Button size="sm" onClick={() => setIsAddingTeacher(true)} className="mt-4 rounded-full gap-2">
                 <Plus className="h-4 w-4" />הוסף מורה
