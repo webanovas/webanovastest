@@ -940,13 +940,6 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
             placeholder="שם המורה"
             className="rounded-xl border-0 bg-card h-11 shadow-sm"
           />
-          <Textarea
-            value={value.description || ""}
-            onChange={(e) => onChange({ ...value, description: e.target.value })}
-            placeholder="תיאור (אופציונלי)"
-            className="rounded-xl border-0 bg-card resize-none shadow-sm"
-            rows={3}
-          />
         </FormSection>
 
         <div className="flex gap-2 justify-between pt-3 border-t border-border/30">
