@@ -557,98 +557,90 @@ const Schedule = () => {
               </motion.div>
             );
           })()}
-        </div>
 
-        {/* Special Classes Toggle */}
-        {(specialClasses.filter(sc => sc.is_active).length > 0 || isEditMode) && (
-          <div className="mt-12 max-w-5xl mx-auto">
-            <div className="flex items-center justify-center gap-3 mb-8">
-              <button
-                onClick={() => setShowSpecialClasses(!showSpecialClasses)}
-                className="flex items-center gap-2 text-primary font-heading font-semibold text-lg hover:opacity-80 transition-opacity"
-              >
-                <Star className="h-5 w-5" />
-                <ScheduleE section="special-classes-title" fallback="שיעורים מיוחדים" as="span" className="" />
-                <motion.span
-                  animate={{ rotate: showSpecialClasses ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="text-primary"
+          {/* Special Classes Toggle */}
+          {(specialClasses.filter(sc => sc.is_active).length > 0 || isEditMode) && (
+            <div className="mt-12 max-w-5xl mx-auto">
+              <div className="flex items-center justify-center gap-3 mb-8">
+                <button
+                  onClick={() => setShowSpecialClasses(!showSpecialClasses)}
+                  className="flex items-center gap-2 text-primary font-heading font-semibold text-lg hover:opacity-80 transition-opacity"
                 >
-                  ▼
-                </motion.span>
-              </button>
-            </div>
+                  <Star className="h-5 w-5" />
+                  <ScheduleE section="special-classes-title" fallback="שיעורים מיוחדים" as="span" className="" />
+                  <motion.span
+                    animate={{ rotate: showSpecialClasses ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-primary"
+                  >
+                    ▼
+                  </motion.span>
+                </button>
+              </div>
 
-            <AnimatePresence>
-              {showSpecialClasses && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {isEditMode && (
-                    <div className="flex justify-center mb-6">
-                      <Button size="sm" onClick={() => setIsAddingSpecialClass(true)} className="rounded-full gap-2">
-                        <Plus className="h-4 w-4" />הוסף שיעור מיוחד
-                      </Button>
-                    </div>
-                  )}
+              <AnimatePresence>
+                {showSpecialClasses && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {isEditMode && (
+                      <div className="flex justify-center mb-6">
+                        <Button size="sm" onClick={() => setIsAddingSpecialClass(true)} className="rounded-full gap-2">
+                          <Plus className="h-4 w-4" />הוסף שיעור מיוחד
+                        </Button>
+                      </div>
+                    )}
 
-                  <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {specialClasses.filter(sc => sc.is_active || isEditMode).map((sc) => (
-                      <motion.div key={sc.id} variants={fadeUp}>
-                        <Card
-                          className={cn(
-                            "rounded-2xl border-0 overflow-hidden shadow-md cursor-pointer group h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
-                            isEditMode && "ring-2 ring-transparent hover:ring-primary/30 relative",
-                            !sc.is_active && "opacity-50"
-                          )}
-                          onClick={() => {
-                            if (isEditMode) {
-                              setEditingSpecialClass({ ...sc });
-                            } else {
-                              // Find a matching scheduled class or show special class info
-                              const matchingClass = classes.find(c => c.name === sc.name);
-                              if (matchingClass) {
-                                setViewingClassMode("general");
-                                setViewingClass(matchingClass);
+                    <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {specialClasses.filter(sc => sc.is_active || isEditMode).map((sc) => (
+                        <motion.div key={sc.id} variants={fadeUp}>
+                          <Card
+                            className={cn(
+                              "rounded-2xl border-0 overflow-hidden shadow-md cursor-pointer group h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
+                              isEditMode && "ring-2 ring-transparent hover:ring-primary/30 relative",
+                              !sc.is_active && "opacity-50"
+                            )}
+                            onClick={() => {
+                              if (isEditMode) {
+                                setEditingSpecialClass({ ...sc });
                               } else {
                                 setViewingSpecialClass(sc);
                               }
-                            }
-                          }}
-                        >
-                          {isEditMode && (
-                            <div className="absolute top-3 left-3 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Pencil className="h-3.5 w-3.5 text-primary" />
-                            </div>
-                          )}
-                          {sc.image_url ? (
-                            <div className="aspect-[16/9] overflow-hidden">
-                              <img src={sc.image_url} alt={sc.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" style={{ objectPosition: sc.image_position || "50% 50%" }} />
-                            </div>
-                          ) : (
-                            <div className="aspect-[16/9] bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 flex items-center justify-center">
-                              <Star className="h-12 w-12 text-primary/25" />
-                            </div>
-                          )}
-                          <CardContent className="p-5" dir="rtl">
-                            <div className="flex items-center gap-2 mb-2">
-                              <Star className="h-4 w-4 text-primary" />
-                              <h3 className="font-heading font-bold text-lg group-hover:text-primary transition-colors">{sc.name}</h3>
-                            </div>
-                            <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">{sc.description || "לחצו לפרטים נוספים"}</p>
-                          </CardContent>
-                        </Card>
-                      </motion.div>
-                    ))}
+                            }}
+                          >
+                            {isEditMode && (
+                              <div className="absolute top-3 left-3 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Pencil className="h-3.5 w-3.5 text-primary" />
+                              </div>
+                            )}
+                            {sc.image_url ? (
+                              <div className="aspect-[16/9] overflow-hidden">
+                                <img src={sc.image_url} alt={sc.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" style={{ objectPosition: sc.image_position || "50% 50%" }} />
+                              </div>
+                            ) : (
+                              <div className="aspect-[16/9] bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 flex items-center justify-center">
+                                <Star className="h-12 w-12 text-primary/25" />
+                              </div>
+                            )}
+                            <CardContent className="p-5" dir="rtl">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Star className="h-4 w-4 text-primary" />
+                                <h3 className="font-heading font-bold text-lg group-hover:text-primary transition-colors">{sc.name}</h3>
+                              </div>
+                              <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">{sc.description || "לחצו לפרטים נוספים"}</p>
+                            </CardContent>
+                          </Card>
+                        </motion.div>
+                      ))}
+                    </motion.div>
                   </motion.div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )}
+                )}
+              </AnimatePresence>
+            </div>
+          )}
         </div>
       </section>
 
