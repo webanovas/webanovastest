@@ -488,7 +488,7 @@ const Schedule = () => {
             const uniqueClasses = classes.reduce<ClassRow[]>((acc, cls) => {
               if (!acc.find(c => c.name === cls.name)) acc.push(cls);
               return acc;
-            }, []).sort((a, b) => {
+            }, []).filter(cls => cls.name.trim() !== "יוגה ויניאסה יסודות").sort((a, b) => {
               const priority = "יוגה ויניאסה לכל הרמות";
               if (a.name === priority && b.name !== priority) return -1;
               if (b.name === priority && a.name !== priority) return 1;
