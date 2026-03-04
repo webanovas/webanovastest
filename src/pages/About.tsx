@@ -62,15 +62,44 @@ const About = () => {
 
   return (
     <Layout>
-      <PageHero
-        label="הסטודיו שלנו"
-        title="על הסטודיו"
-        subtitle="יוגה במושבה הוא סטודיו בוטיק בכיכר המושבה בהוד השרון"
-        page="about"
-        labelSection="hero-label"
-        titleSection="hero-title"
-        subtitleSection="hero-subtitle"
-      />
+      {/* Custom Hero with image */}
+      <section className="relative min-h-[40vh] md:min-h-[50vh] overflow-hidden">
+        <div className="absolute inset-0 page-hero-gradient" />
+        <div className="container mx-auto px-4 relative z-10 pb-10 md:pb-20 pt-24 md:pt-32">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
+            {/* Text */}
+            <motion.div initial="hidden" animate="visible" variants={stagger}>
+              <motion.div variants={fadeUp}>
+                <E section="hero-label" fallback="הסטודיו שלנו" as="span" className="text-primary font-medium text-xs md:text-sm tracking-wider uppercase mb-2 md:mb-3 block" />
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <E section="hero-title" fallback="על הסטודיו" as="h1" className="font-heading text-3xl md:text-6xl font-extrabold mb-3 md:mb-4 tracking-tight" />
+              </motion.div>
+              <motion.div variants={fadeUp}>
+                <E section="hero-subtitle" fallback="יוגה במושבה הוא סטודיו בוטיק בכיכר המושבה בהוד השרון" as="p" className="text-base md:text-lg max-w-xl text-muted-foreground" />
+              </motion.div>
+            </motion.div>
+
+            {/* Image */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="rounded-3xl overflow-hidden shadow-2xl aspect-[4/3]"
+            >
+              <EditableImage
+                src={getImage("hero-about-image", studioInterior)}
+                alt="הסטודיו"
+                className="w-full h-full object-cover"
+                folder="about"
+                onUpload={isEditMode ? (url) => saveText("hero-about-image", url) : undefined}
+                objectPosition={getText("hero-about-image-pos", "50% 50%")}
+                onPositionChange={isEditMode ? (pos) => saveText("hero-about-image-pos", pos) : undefined}
+              />
+            </motion.div>
+          </div>
+        </div>
+      </section>
 
       {/* About the Studio + Shira */}
       <section className="py-14 md:py-28">
