@@ -192,7 +192,7 @@ const Workshops = () => {
                 {activeWorkshops.length === 0 && !isEditMode ? (
                   <p className="text-center text-muted-foreground py-12">אין סדנאות קרובות כרגע – עקבו אחרינו לעדכונים</p>
                 ) : (
-                  <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                  <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="flex flex-col gap-8 max-w-3xl mx-auto">
                     {activeWorkshops.map((w, i) => (
                       <motion.div key={w.id} variants={fadeUp}>
                         <WorkshopCard workshop={w} isEditMode={isEditMode} onEdit={() => setEditing({ ...w })} imgSrc={w.image_url || workshopImages[i % workshopImages.length]} />
