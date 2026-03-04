@@ -89,6 +89,39 @@ export type Database = {
         }
         Relationships: []
       }
+      special_classes: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          image_position: string | null
+          image_url: string | null
+          is_active: boolean
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          image_position?: string | null
+          image_url?: string | null
+          is_active?: boolean
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          image_position?: string | null
+          image_url?: string | null
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
       teachers: {
         Row: {
           created_at: string
