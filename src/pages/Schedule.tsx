@@ -97,6 +97,25 @@ const Schedule = () => {
   const [newClass, setNewClass] = useState({ day: "ראשון", time: "", end_time: "" as string | null, name: "", teacher: "", description: "", image_url: null as string | null, is_recurring: true, specific_date: null as string | null, level: "all" });
   const [showClassInfoFocal, setShowClassInfoFocal] = useState(false);
 
+  // Auto-adopt description/image when renaming to an existing class name
+  useEffect(() => {
+    if (
+      editingClassInfo?.name &&
+      editingClassInfo.name !== editingClassInfoOriginalName &&
+      classes
+    ) {
+      const existing = classes.find(c => c.name === editingClassInfo.name);
+      if (existing) {
+        setEditingClassInfo(prev => prev ? {
+          ...prev,
+          description: existing.description,
+          image_url: existing.image_url,
+          image_position: existing.image_position,
+        } : prev);
+      }
+    }
+  }, [editingClassInfo?.name]);
+
   // Undo/Redo history
   type UndoAction = 
     | { type: "add"; classData: ClassRow }
