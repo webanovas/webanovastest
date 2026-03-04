@@ -92,11 +92,13 @@ const Schedule = () => {
   const [selectedDay, setSelectedDay] = useState(days[0]);
   const [editingClass, setEditingClass] = useState<ClassRow | null>(null);
   const [isAddingClass, setIsAddingClass] = useState(false);
+  const [addClassStep, setAddClassStep] = useState<"pick" | "details">("pick");
+  const [selectedClassType, setSelectedClassType] = useState<{ source: "regular" | "special" | "event"; name: string; description: string; image_url: string | null; image_position: string | null; level: string } | null>(null);
   const [viewingClass, setViewingClass] = useState<ClassRow | null>(null);
   const [viewingClassMode, setViewingClassMode] = useState<"specific" | "general">("specific");
   const [editingClassInfo, setEditingClassInfo] = useState<ClassRow | null>(null);
   const [editingClassInfoOriginalName, setEditingClassInfoOriginalName] = useState<string>("");
-  const [newClass, setNewClass] = useState({ day: "ראשון", time: "", end_time: "" as string | null, name: "", teacher: "", description: "", image_url: null as string | null, is_recurring: true, specific_date: null as string | null, level: "all" });
+  const [newClass, setNewClass] = useState({ day: "ראשון", time: "", end_time: "" as string | null, name: "", teacher: "", description: "", image_url: null as string | null, is_recurring: true, specific_date: null as string | null, level: "all", image_position: "50% 50%" });
   const [showClassInfoFocal, setShowClassInfoFocal] = useState(false);
   const [showSpecialClasses, setShowSpecialClasses] = useState(false);
   const [editingSpecialClass, setEditingSpecialClass] = useState<SpecialClass | null>(null);
@@ -187,6 +189,7 @@ const Schedule = () => {
       day: newClass.day, time: newClass.time, end_time: newClass.end_time || null, name: newClass.name,
       teacher: newClass.teacher, description: newClass.description, image_url: newClass.image_url || null,
       is_recurring: newClass.is_recurring, specific_date: newClass.specific_date, level: (newClass as any).level || "all",
+      image_position: newClass.image_position || "50% 50%",
     } as any).select().single();
     if (error) { console.error("Add error:", error); toast.error("שגיאה: " + error.message); }
     else {
@@ -196,7 +199,8 @@ const Schedule = () => {
         setRedoStack([]);
       }
       queryClient.invalidateQueries({ queryKey: ["classes"] });
-      setNewClass({ day: "ראשון", time: "", end_time: "", name: "", teacher: "", description: "", image_url: null, is_recurring: true, specific_date: null, level: "all" } as any);
+      setNewClass({ day: "ראשון", time: "", end_time: "", name: "", teacher: "", description: "", image_url: null, is_recurring: true, specific_date: null, level: "all", image_position: "50% 50%" });
+      setSelectedClassType(null);
       setIsAddingClass(false);
     }
   };
@@ -344,7 +348,7 @@ const Schedule = () => {
               <Button size="sm" variant="outline" onClick={handleUndo} disabled={undoStack.length === 0} className="rounded-full gap-1.5">
                 <Undo2 className="h-4 w-4" />ביטול
               </Button>
-              <Button size="sm" onClick={() => setIsAddingClass(true)} className="rounded-full gap-2">
+              <Button size="sm" onClick={() => { setAddClassStep("pick"); setSelectedClassType(null); setIsAddingClass(true); }} className="rounded-full gap-2">
                 <Plus className="h-4 w-4" />הוסף שיעור
               </Button>
               <Button size="sm" variant="outline" onClick={handleRedo} disabled={redoStack.length === 0} className="rounded-full gap-1.5">
@@ -661,16 +665,195 @@ const Schedule = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Class Add */}
-      <Dialog open={isAddingClass} onOpenChange={setIsAddingClass}>
-        <DialogContent className="max-w-md p-0 overflow-hidden" dir="rtl">
-          <ClassEditPreview
-            value={newClass as any}
-            onChange={setNewClass as any}
-            onSave={addClass}
-            onCancel={() => setIsAddingClass(false)}
-            isNew
-          />
+      {/* Class Add - Two Step Flow */}
+      <Dialog open={isAddingClass} onOpenChange={(open) => { if (!open) { setIsAddingClass(false); setSelectedClassType(null); setAddClassStep("pick"); } }}>
+        <DialogContent className={cn("p-0 overflow-hidden [&>button]:hidden", addClassStep === "pick" ? "max-w-2xl" : "max-w-md")} dir="rtl">
+          <AnimatePresence mode="wait">
+            {addClassStep === "pick" ? (
+              <motion.div
+                key="pick"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+                className="bg-card max-h-[85vh] overflow-y-auto"
+              >
+                <div className="bg-gradient-to-b from-primary/8 to-primary/3 px-6 py-5 border-b border-border/30">
+                  <h2 className="font-heading text-xl font-bold text-foreground">בחרי סוג שיעור</h2>
+                  <p className="text-sm text-muted-foreground mt-1">בחרי שיעור מהרשימה או צרי אירוע חדש</p>
+                </div>
+
+                <div className="p-5 space-y-6">
+                  {/* Regular Classes */}
+                  {(() => {
+                    const uniqueRegular = classes.reduce<ClassRow[]>((acc, cls) => {
+                      if (!acc.find(c => c.name === cls.name)) acc.push(cls);
+                      return acc;
+                    }, []);
+                    return uniqueRegular.length > 0 && (
+                      <div>
+                        <p className="text-xs font-heading font-semibold text-foreground/60 uppercase tracking-wider mb-3 flex items-center gap-2">
+                          <BookOpen className="h-3.5 w-3.5" />שיעורים קבועים
+                        </p>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                          {uniqueRegular.map((cls) => (
+                            <button
+                              key={cls.id}
+                              onClick={() => {
+                                setSelectedClassType({
+                                  source: "regular",
+                                  name: cls.name,
+                                  description: cls.description,
+                                  image_url: cls.image_url,
+                                  image_position: cls.image_position,
+                                  level: (cls as any).level || "all",
+                                });
+                                setNewClass(prev => ({
+                                  ...prev,
+                                  name: cls.name,
+                                  description: cls.description,
+                                  image_url: cls.image_url,
+                                  image_position: cls.image_position || "50% 50%",
+                                  level: (cls as any).level || "all",
+                                  is_recurring: true,
+                                }));
+                                setAddClassStep("details");
+                              }}
+                              className="group relative rounded-xl overflow-hidden border border-border/40 hover:border-primary/50 hover:shadow-lg transition-all duration-200 text-right"
+                            >
+                              {cls.image_url ? (
+                                <div className="aspect-[16/10] overflow-hidden">
+                                  <img src={cls.image_url} alt={cls.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" style={{ objectPosition: cls.image_position || "50% 50%" }} />
+                                </div>
+                              ) : (
+                                <div className="aspect-[16/10] bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 flex items-center justify-center">
+                                  <BookOpen className="h-8 w-8 text-primary/20" />
+                                </div>
+                              )}
+                              <div className="p-2.5">
+                                <div className="flex items-center gap-1 mb-0.5">
+                                  <LevelBadge level={(cls as any).level || "all"} compact />
+                                  <span className="font-heading font-semibold text-sm truncate">{cls.name}</span>
+                                </div>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Special Classes */}
+                  {specialClasses.filter(sc => sc.is_active).length > 0 && (
+                    <div>
+                      <p className="text-xs font-heading font-semibold text-foreground/60 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <Star className="h-3.5 w-3.5" />שיעורים מיוחדים
+                      </p>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                        {specialClasses.filter(sc => sc.is_active).map((sc) => (
+                          <button
+                            key={sc.id}
+                            onClick={() => {
+                              setSelectedClassType({
+                                source: "special",
+                                name: sc.name,
+                                description: sc.description,
+                                image_url: sc.image_url,
+                                image_position: sc.image_position,
+                                level: "all",
+                              });
+                              setNewClass(prev => ({
+                                ...prev,
+                                name: sc.name,
+                                description: sc.description,
+                                image_url: sc.image_url,
+                                image_position: sc.image_position || "50% 50%",
+                                level: "all",
+                                is_recurring: false,
+                              }));
+                              setAddClassStep("details");
+                            }}
+                            className="group relative rounded-xl overflow-hidden border border-border/40 hover:border-primary/50 hover:shadow-lg transition-all duration-200 text-right"
+                          >
+                            {sc.image_url ? (
+                              <div className="aspect-[16/10] overflow-hidden">
+                                <img src={sc.image_url} alt={sc.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" style={{ objectPosition: sc.image_position || "50% 50%" }} />
+                              </div>
+                            ) : (
+                              <div className="aspect-[16/10] bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 flex items-center justify-center">
+                                <Star className="h-8 w-8 text-primary/20" />
+                              </div>
+                            )}
+                            <div className="p-2.5">
+                              <div className="flex items-center gap-1 mb-0.5">
+                                <Star className="h-3 w-3 text-primary" />
+                                <span className="font-heading font-semibold text-sm truncate">{sc.name}</span>
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Event Option */}
+                  <div>
+                    <p className="text-xs font-heading font-semibold text-foreground/60 uppercase tracking-wider mb-3 flex items-center gap-2">
+                      <CalendarDays className="h-3.5 w-3.5" />אירוע חד-פעמי
+                    </p>
+                    <button
+                      onClick={() => {
+                        setSelectedClassType({
+                          source: "event",
+                          name: "",
+                          description: "",
+                          image_url: null,
+                          image_position: "50% 50%",
+                          level: "all",
+                        });
+                        setNewClass(prev => ({
+                          ...prev,
+                          name: "",
+                          description: "",
+                          image_url: null,
+                          image_position: "50% 50%",
+                          level: "all",
+                          is_recurring: false,
+                        }));
+                        setAddClassStep("details");
+                      }}
+                      className="w-full rounded-xl border-2 border-dashed border-border/60 hover:border-primary/50 p-6 flex flex-col items-center gap-2 text-muted-foreground hover:text-primary transition-all duration-200"
+                    >
+                      <Plus className="h-8 w-8" />
+                      <span className="font-heading font-semibold text-sm">צרי אירוע חדש עם הסבר משלו</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-4 border-t border-border/30">
+                  <Button variant="outline" onClick={() => setIsAddingClass(false)} className="rounded-full w-full">ביטול</Button>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="details"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.2 }}
+              >
+                <ClassEditPreview
+                  value={newClass as any}
+                  onChange={setNewClass as any}
+                  onSave={addClass}
+                  onCancel={() => setAddClassStep("pick")}
+                  isNew
+                  hideClassTypeFields={selectedClassType?.source !== "event"}
+                  isEvent={selectedClassType?.source === "event"}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </DialogContent>
       </Dialog>
 
@@ -1117,9 +1300,10 @@ function parseDateStr(str: string): Date | undefined {
 }
 
 /* WYSIWYG Class Editor */
-function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew = false }: {
+function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew = false, hideClassTypeFields = false, isEvent = false }: {
   value: any; onChange: (v: any) => void; onSave: () => void;
   onDelete?: () => void; onCancel: () => void; isNew?: boolean;
+  hideClassTypeFields?: boolean; isEvent?: boolean;
 }) {
   const [showFocalPicker, setShowFocalPicker] = useState(false);
   return (
@@ -1166,81 +1350,97 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
           </div>
         </FormSection>
 
-        <FormSection icon={ImageIcon} title="תמונת השיעור">
-          <div className="flex items-center gap-3">
-            {value.image_url ? (
-              <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
-                <img src={value.image_url} alt="" className="w-full h-full object-cover" style={{ objectPosition: value.image_position || "50% 50%" }} />
+        {/* Show image/level/name only for events or when not hidden */}
+        {!hideClassTypeFields && (
+          <>
+            <FormSection icon={ImageIcon} title="תמונת השיעור">
+              <div className="flex items-center gap-3">
+                {value.image_url ? (
+                  <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+                    <img src={value.image_url} alt="" className="w-full h-full object-cover" style={{ objectPosition: value.image_position || "50% 50%" }} />
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <BookOpen className="h-6 w-6 text-primary/40" />
+                  </div>
+                )}
+                <ImageUpload
+                  currentUrl={value.image_url}
+                  onUpload={(url) => onChange({ ...value, image_url: url })}
+                  folder="classes"
+                  className="relative static"
+                />
+                {value.image_url && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setShowFocalPicker(true); }}
+                    className="bg-background/90 backdrop-blur-sm rounded-full p-2 shadow-md border border-border hover:bg-background"
+                    title="מיקום מוקד התמונה"
+                  >
+                    <Move className="h-4 w-4 text-foreground" />
+                  </button>
+                )}
               </div>
-            ) : (
-              <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <BookOpen className="h-6 w-6 text-primary/40" />
+              <FocalPointPicker
+                src={value.image_url || ""}
+                alt="preview"
+                objectPosition={value.image_position || "50% 50%"}
+                onSave={(pos) => onChange({ ...value, image_position: pos })}
+                open={showFocalPicker}
+                onOpenChange={setShowFocalPicker}
+              />
+            </FormSection>
+
+            <FormSection icon={Flame} title="רמת השיעור">
+              <div className="flex gap-1.5">
+                {(Object.keys(LEVELS) as LevelKey[]).map((key) => {
+                  const l = LEVELS[key];
+                  const Icon = l.icon;
+                  const isSelected = (value.level || "all") === key;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => onChange({ ...value, level: key })}
+                      className={cn(
+                        "flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-200 border flex flex-col items-center gap-1",
+                        isSelected
+                          ? cn("border-current shadow-md", l.color, l.bg)
+                          : "bg-card text-muted-foreground border-border/50 hover:border-primary/30"
+                      )}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      {l.label}
+                    </button>
+                  );
+                })}
               </div>
-            )}
-            <ImageUpload
-              currentUrl={value.image_url}
-              onUpload={(url) => onChange({ ...value, image_url: url })}
-              folder="classes"
-              className="relative static"
+            </FormSection>
+          </>
+        )}
+
+        <FormSection icon={BookOpen} title={isEvent ? "פרטי האירוע" : "פרטי השיעור"}>
+          {!hideClassTypeFields && (
+            <Input
+              value={value.name}
+              onChange={(e) => onChange({ ...value, name: e.target.value })}
+              placeholder={isEvent ? "שם האירוע" : "שם השיעור"}
+              className="rounded-xl border-0 bg-card h-11 shadow-sm"
             />
-            {value.image_url && (
-              <button
-                onClick={(e) => { e.stopPropagation(); setShowFocalPicker(true); }}
-                className="bg-background/90 backdrop-blur-sm rounded-full p-2 shadow-md border border-border hover:bg-background"
-                title="מיקום מוקד התמונה"
-              >
-                <Move className="h-4 w-4 text-foreground" />
-              </button>
-            )}
-          </div>
-          <FocalPointPicker
-            src={value.image_url || ""}
-            alt="preview"
-            objectPosition={value.image_position || "50% 50%"}
-            onSave={(pos) => onChange({ ...value, image_position: pos })}
-            open={showFocalPicker}
-            onOpenChange={setShowFocalPicker}
-          />
-        </FormSection>
-
-        <FormSection icon={Flame} title="רמת השיעור">
-          <div className="flex gap-1.5">
-            {(Object.keys(LEVELS) as LevelKey[]).map((key) => {
-              const l = LEVELS[key];
-              const Icon = l.icon;
-              const isSelected = (value.level || "all") === key;
-              return (
-                <button
-                  key={key}
-                  onClick={() => onChange({ ...value, level: key })}
-                  className={cn(
-                    "flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-200 border flex flex-col items-center gap-1",
-                    isSelected
-                      ? cn("border-current shadow-md", l.color, l.bg)
-                      : "bg-card text-muted-foreground border-border/50 hover:border-primary/30"
-                  )}
-                >
-                  <Icon className="h-3.5 w-3.5" />
-                  {l.label}
-                </button>
-              );
-            })}
-          </div>
-        </FormSection>
-
-        <FormSection icon={BookOpen} title="פרטי השיעור">
-          <Input
-            value={value.name}
-            onChange={(e) => onChange({ ...value, name: e.target.value })}
-            placeholder="שם השיעור"
-            className="rounded-xl border-0 bg-card h-11 shadow-sm"
-          />
+          )}
           <Input
             value={value.teacher}
             onChange={(e) => onChange({ ...value, teacher: e.target.value })}
             placeholder="שם המורה"
             className="rounded-xl border-0 bg-card h-11 shadow-sm"
           />
+          {isEvent && (
+            <Textarea
+              value={value.description}
+              onChange={(e) => onChange({ ...value, description: e.target.value })}
+              placeholder="הסבר על האירוע..."
+              rows={3}
+              className="rounded-xl border-0 bg-card shadow-sm resize-none"
+            />
+          )}
         </FormSection>
 
         <div className="flex gap-2 justify-between pt-3 border-t border-border/30">
