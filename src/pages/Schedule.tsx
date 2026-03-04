@@ -121,7 +121,7 @@ const Schedule = () => {
     const { error } = await supabase.from("classes").update({
       day: cls.day, time: cls.time, end_time: cls.end_time || null, name: cls.name, teacher: cls.teacher, description: cls.description,
       is_recurring: cls.is_recurring, specific_date: cls.specific_date, image_url: cls.image_url || null,
-      image_position: (cls as any).image_position || "50% 50%",
+      image_position: (cls as any).image_position || "50% 50%", level: (cls as any).level || "all",
     }).eq("id", cls.id);
     if (error) { console.error("Save error:", error); toast.error("שגיאה בשמירה: " + error.message); }
     else {
