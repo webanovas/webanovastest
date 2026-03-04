@@ -35,6 +35,7 @@ import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
 
 type ClassRow = Tables<"classes">;
+type SpecialClass = { id: string; name: string; description: string; image_url: string | null; image_position: string | null; sort_order: number; is_active: boolean; created_at: string };
 
 const LEVELS = {
   beginner: { label: "מתחילים", icon: Leaf, color: "text-emerald-600", bg: "bg-emerald-500/10", dots: 1 },
