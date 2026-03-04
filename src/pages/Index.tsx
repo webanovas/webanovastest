@@ -262,11 +262,14 @@ const Index = () => {
           </div>
           {/* Left side - image carousel */}
           <div className="w-1/2 relative">
-            <div className="absolute inset-0" ref={isEditMode ? undefined : undefined}>
-              {heroImages.map((src, i) => (
-                <img key={i} src={src} alt={`יוגה במושבה ${i + 1}`} className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: getText(`hero-image-${i}-pos`, "50% 50%"), display: i === 0 ? 'block' : 'none' }} />
-              ))}
-            </div>
+            <div className="absolute inset-0 overflow-hidden" ref={heroDesktopRef}>
+              <div className="flex h-full">
+                {heroImages.map((src, i) => (
+                  <div key={i} className="flex-none w-full h-full min-w-0 relative">
+                    <img src={src} alt={`יוגה במושבה ${i + 1}`} className="w-full h-full object-cover" style={{ objectPosition: getText(`hero-image-${i}-pos`, "50% 50%") }} />
+                  </div>
+                ))}
+              </div>
             {/* Subtle gradient blending into the dark side */}
             <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-yoga-dark to-transparent z-10" />
           </div>
