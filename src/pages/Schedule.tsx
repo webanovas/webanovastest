@@ -832,6 +832,7 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
             </div>
             <div className="flex-1 p-3">
               <div className="flex items-center gap-1.5">
+                <LevelBadge level={value.level || "all"} compact />
                 <h3 className="font-heading font-semibold text-sm">{value.name || "שם השיעור"}</h3>
                 {value.is_recurring === false && (
                   <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent text-accent-foreground font-medium">חד פעמי</span>
