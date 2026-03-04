@@ -469,7 +469,12 @@ const Schedule = () => {
             const uniqueClasses = classes.reduce<ClassRow[]>((acc, cls) => {
               if (!acc.find(c => c.name === cls.name)) acc.push(cls);
               return acc;
-            }, []);
+            }, []).sort((a, b) => {
+              const priority = "יוגה ויניאסה לכל הרמות";
+              if (a.name === priority && b.name !== priority) return -1;
+              if (b.name === priority && a.name !== priority) return 1;
+              return 0;
+            });
             return uniqueClasses.length === 0 && !isEditMode ? (
               <p className="text-center text-muted-foreground">השיעורים יעודכנו בקרוב</p>
             ) : (
