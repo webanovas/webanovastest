@@ -646,7 +646,10 @@ function ClassViewContent({ cls, onClose, allClasses, initialMode = "specific" }
             transition={{ duration: 0.25, ease: "easeInOut" }}
           >
             <div className="p-6 space-y-4">
-              <h2 className="font-heading text-2xl font-bold">{cls.name}</h2>
+              <div className="flex items-center gap-2">
+                <h2 className="font-heading text-2xl font-bold">{cls.name}</h2>
+                <LevelBadge level={(cls as any).level || "all"} />
+              </div>
               <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
                   <Clock className="h-3.5 w-3.5 text-primary" />
