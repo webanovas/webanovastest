@@ -665,16 +665,195 @@ const Schedule = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Class Add */}
-      <Dialog open={isAddingClass} onOpenChange={setIsAddingClass}>
-        <DialogContent className="max-w-md p-0 overflow-hidden" dir="rtl">
-          <ClassEditPreview
-            value={newClass as any}
-            onChange={setNewClass as any}
-            onSave={addClass}
-            onCancel={() => setIsAddingClass(false)}
-            isNew
-          />
+      {/* Class Add - Two Step Flow */}
+      <Dialog open={isAddingClass} onOpenChange={(open) => { if (!open) { setIsAddingClass(false); setSelectedClassType(null); setAddClassStep("pick"); } }}>
+        <DialogContent className={cn("p-0 overflow-hidden [&>button]:hidden", addClassStep === "pick" ? "max-w-2xl" : "max-w-md")} dir="rtl">
+          <AnimatePresence mode="wait">
+            {addClassStep === "pick" ? (
+              <motion.div
+                key="pick"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+                className="bg-card max-h-[85vh] overflow-y-auto"
+              >
+                <div className="bg-gradient-to-b from-primary/8 to-primary/3 px-6 py-5 border-b border-border/30">
+                  <h2 className="font-heading text-xl font-bold text-foreground">בחרי סוג שיעור</h2>
+                  <p className="text-sm text-muted-foreground mt-1">בחרי שיעור מהרשימה או צרי אירוע חדש</p>
+                </div>
+
+                <div className="p-5 space-y-6">
+                  {/* Regular Classes */}
+                  {(() => {
+                    const uniqueRegular = classes.reduce<ClassRow[]>((acc, cls) => {
+                      if (!acc.find(c => c.name === cls.name)) acc.push(cls);
+                      return acc;
+                    }, []);
+                    return uniqueRegular.length > 0 && (
+                      <div>
+                        <p className="text-xs font-heading font-semibold text-foreground/60 uppercase tracking-wider mb-3 flex items-center gap-2">
+                          <BookOpen className="h-3.5 w-3.5" />שיעורים קבועים
+                        </p>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                          {uniqueRegular.map((cls) => (
+                            <button
+                              key={cls.id}
+                              onClick={() => {
+                                setSelectedClassType({
+                                  source: "regular",
+                                  name: cls.name,
+                                  description: cls.description,
+                                  image_url: cls.image_url,
+                                  image_position: cls.image_position,
+                                  level: (cls as any).level || "all",
+                                });
+                                setNewClass(prev => ({
+                                  ...prev,
+                                  name: cls.name,
+                                  description: cls.description,
+                                  image_url: cls.image_url,
+                                  image_position: cls.image_position || "50% 50%",
+                                  level: (cls as any).level || "all",
+                                  is_recurring: true,
+                                }));
+                                setAddClassStep("details");
+                              }}
+                              className="group relative rounded-xl overflow-hidden border border-border/40 hover:border-primary/50 hover:shadow-lg transition-all duration-200 text-right"
+                            >
+                              {cls.image_url ? (
+                                <div className="aspect-[16/10] overflow-hidden">
+                                  <img src={cls.image_url} alt={cls.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" style={{ objectPosition: cls.image_position || "50% 50%" }} />
+                                </div>
+                              ) : (
+                                <div className="aspect-[16/10] bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 flex items-center justify-center">
+                                  <BookOpen className="h-8 w-8 text-primary/20" />
+                                </div>
+                              )}
+                              <div className="p-2.5">
+                                <div className="flex items-center gap-1 mb-0.5">
+                                  <LevelBadge level={(cls as any).level || "all"} compact />
+                                  <span className="font-heading font-semibold text-sm truncate">{cls.name}</span>
+                                </div>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Special Classes */}
+                  {specialClasses.filter(sc => sc.is_active).length > 0 && (
+                    <div>
+                      <p className="text-xs font-heading font-semibold text-foreground/60 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <Star className="h-3.5 w-3.5" />שיעורים מיוחדים
+                      </p>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                        {specialClasses.filter(sc => sc.is_active).map((sc) => (
+                          <button
+                            key={sc.id}
+                            onClick={() => {
+                              setSelectedClassType({
+                                source: "special",
+                                name: sc.name,
+                                description: sc.description,
+                                image_url: sc.image_url,
+                                image_position: sc.image_position,
+                                level: "all",
+                              });
+                              setNewClass(prev => ({
+                                ...prev,
+                                name: sc.name,
+                                description: sc.description,
+                                image_url: sc.image_url,
+                                image_position: sc.image_position || "50% 50%",
+                                level: "all",
+                                is_recurring: false,
+                              }));
+                              setAddClassStep("details");
+                            }}
+                            className="group relative rounded-xl overflow-hidden border border-border/40 hover:border-primary/50 hover:shadow-lg transition-all duration-200 text-right"
+                          >
+                            {sc.image_url ? (
+                              <div className="aspect-[16/10] overflow-hidden">
+                                <img src={sc.image_url} alt={sc.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" style={{ objectPosition: sc.image_position || "50% 50%" }} />
+                              </div>
+                            ) : (
+                              <div className="aspect-[16/10] bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 flex items-center justify-center">
+                                <Star className="h-8 w-8 text-primary/20" />
+                              </div>
+                            )}
+                            <div className="p-2.5">
+                              <div className="flex items-center gap-1 mb-0.5">
+                                <Star className="h-3 w-3 text-primary" />
+                                <span className="font-heading font-semibold text-sm truncate">{sc.name}</span>
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Event Option */}
+                  <div>
+                    <p className="text-xs font-heading font-semibold text-foreground/60 uppercase tracking-wider mb-3 flex items-center gap-2">
+                      <CalendarDays className="h-3.5 w-3.5" />אירוע חד-פעמי
+                    </p>
+                    <button
+                      onClick={() => {
+                        setSelectedClassType({
+                          source: "event",
+                          name: "",
+                          description: "",
+                          image_url: null,
+                          image_position: "50% 50%",
+                          level: "all",
+                        });
+                        setNewClass(prev => ({
+                          ...prev,
+                          name: "",
+                          description: "",
+                          image_url: null,
+                          image_position: "50% 50%",
+                          level: "all",
+                          is_recurring: false,
+                        }));
+                        setAddClassStep("details");
+                      }}
+                      className="w-full rounded-xl border-2 border-dashed border-border/60 hover:border-primary/50 p-6 flex flex-col items-center gap-2 text-muted-foreground hover:text-primary transition-all duration-200"
+                    >
+                      <Plus className="h-8 w-8" />
+                      <span className="font-heading font-semibold text-sm">צרי אירוע חדש עם הסבר משלו</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-4 border-t border-border/30">
+                  <Button variant="outline" onClick={() => setIsAddingClass(false)} className="rounded-full w-full">ביטול</Button>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="details"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.2 }}
+              >
+                <ClassEditPreview
+                  value={newClass as any}
+                  onChange={setNewClass as any}
+                  onSave={addClass}
+                  onCancel={() => setAddClassStep("pick")}
+                  isNew
+                  hideClassTypeFields={selectedClassType?.source !== "event"}
+                  isEvent={selectedClassType?.source === "event"}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </DialogContent>
       </Dialog>
 
