@@ -101,7 +101,9 @@ const Schedule = () => {
   const [showSpecialClasses, setShowSpecialClasses] = useState(false);
   const [editingSpecialClass, setEditingSpecialClass] = useState<SpecialClass | null>(null);
   const [isAddingSpecialClass, setIsAddingSpecialClass] = useState(false);
+  const [viewingSpecialClass, setViewingSpecialClass] = useState<SpecialClass | null>(null);
   const [newSpecialClass, setNewSpecialClass] = useState({ name: "", description: "", image_url: null as string | null, image_position: "50% 50%" });
+  const [showSpecialClassFocal, setShowSpecialClassFocal] = useState(false);
 
   // Auto-adopt description/image when renaming to an existing class or special class name
   useEffect(() => {
