@@ -584,9 +584,11 @@ function ClassViewContent({ cls, onClose, allClasses, initialMode = "specific" }
                 <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{generalClass.description}</p>
               )}
               <div className="flex gap-2 pt-2">
-                <Button variant="outline" size="sm" className="rounded-full gap-1.5" onClick={() => setMode("specific")}>
-                  ← פרטי השיעור
-                </Button>
+                {cameFromSpecific && (
+                  <Button variant="outline" size="sm" className="rounded-full gap-1.5" onClick={() => setMode("specific")}>
+                    ← פרטי השיעור
+                  </Button>
+                )}
                 <Button variant="outline" size="sm" className="rounded-full" onClick={onClose}>
                   סגירה
                 </Button>
