@@ -367,36 +367,55 @@ const Index = () => {
         </div>
       </section>
 
-      {/* CTA – split layout */}
-      <section className="relative overflow-hidden bg-yoga-dark">
-        <div className="grid grid-cols-1 md:grid-cols-2 min-h-[50vh] md:min-h-[60vh]">
-          {/* Right side – text */}
-          <div className="flex items-center justify-center px-8 py-16 md:py-24 order-1 md:order-1">
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center md:text-right max-w-md">
-              <E section="cta-title" fallback="התחילו לנשום" as="h2"
-                className="font-heading text-3xl md:text-6xl font-bold text-primary-foreground mb-4" />
-              <E section="cta-subtitle" fallback="הצטרפו למשפחת יוגה במושבה ותגלו מרחב חדש של שקט ורוגע" as="p"
-                className="text-primary-foreground/70 text-lg mb-8 max-w-md" />
-              <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild={!isEditMode}>
-                {isEditMode ? (
-                  <span><E section="cta-btn" fallback="בואו נתחיל" /></span>
-                ) : (
-                  <Link to="/contact"><E section="cta-btn" fallback="בואו נתחיל" /></Link>
-                )}
-              </Button>
-            </motion.div>
-          </div>
-          {/* Left side – image */}
-          <div className="relative min-h-[40vh] md:min-h-0 order-2 md:order-2">
-            <EditableImage
-              src={getImage("cta-bg-image", yogaSunset)}
-              alt="יוגה"
-              className="absolute inset-0 w-full h-full object-cover"
-              folder="cta"
-              onUpload={isEditMode ? (url) => saveText("cta-bg-image", url) : undefined}
-              objectPosition={getText("cta-bg-image-pos", "50% 50%")}
-              onPositionChange={isEditMode ? (pos) => saveText("cta-bg-image-pos", pos) : undefined}
-            />
+      {/* CTA – split layout with diagonal clip */}
+      <section className="relative overflow-hidden bg-yoga-dark min-h-[50vh] md:min-h-[60vh]">
+        {/* Full background image */}
+        <div className="absolute inset-0">
+          <EditableImage
+            src={getImage("cta-bg-image", yogaSunset)}
+            alt="יוגה"
+            className="absolute inset-0 w-full h-full object-cover"
+            folder="cta"
+            onUpload={isEditMode ? (url) => saveText("cta-bg-image", url) : undefined}
+            objectPosition={getText("cta-bg-image-pos", "50% 50%")}
+            onPositionChange={isEditMode ? (pos) => saveText("cta-bg-image-pos", pos) : undefined}
+          />
+        </div>
+
+        {/* Dark overlay on right side with diagonal edge */}
+        <div
+          className="absolute inset-0 z-[1]"
+          style={{
+            background: `linear-gradient(to left, hsl(var(--yoga-dark)) 40%, hsl(var(--yoga-dark) / 0.95) 48%, transparent 62%)`,
+          }}
+        />
+
+        {/* Decorative diagonal line */}
+        <div
+          className="absolute inset-0 z-[2] hidden md:block pointer-events-none"
+          style={{
+            background: `linear-gradient(to left, transparent 49.5%, hsl(var(--primary) / 0.15) 49.5%, hsl(var(--primary) / 0.15) 50.5%, transparent 50.5%)`,
+          }}
+        />
+
+        {/* Text content – right side */}
+        <div className="relative z-[3] h-full min-h-[50vh] md:min-h-[60vh] flex items-center">
+          <div className="container mx-auto px-4">
+            <div className="md:w-1/2 md:mr-0 md:pr-8">
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center md:text-right max-w-md md:mr-auto">
+                <E section="cta-title" fallback="התחילו לנשום" as="h2"
+                  className="font-heading text-3xl md:text-6xl font-bold text-primary-foreground mb-4" />
+                <E section="cta-subtitle" fallback="הצטרפו למשפחת יוגה במושבה ותגלו מרחב חדש של שקט ורוגע" as="p"
+                  className="text-primary-foreground/70 text-lg mb-8 max-w-md" />
+                <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild={!isEditMode}>
+                  {isEditMode ? (
+                    <span><E section="cta-btn" fallback="בואו נתחיל" /></span>
+                  ) : (
+                    <Link to="/contact"><E section="cta-btn" fallback="בואו נתחיל" /></Link>
+                  )}
+                </Button>
+              </motion.div>
+            </div>
           </div>
         </div>
       </section>
