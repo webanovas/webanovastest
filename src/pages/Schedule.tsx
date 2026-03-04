@@ -1070,6 +1070,15 @@ const Schedule = () => {
                 }} className="rounded-full flex-1 gap-2">
                   <Check className="h-4 w-4" />שמירה
                 </Button>
+                <Button variant="destructive" size="sm" onClick={async () => {
+                  if (!confirm(`למחוק את סוג השיעור "${editingClassInfoOriginalName}" וכל המופעים שלו?`)) return;
+                  const { error } = await supabase.from("classes").delete().eq("name", editingClassInfoOriginalName);
+                  if (error) { toast.error("שגיאה: " + error.message); }
+                  else { toast.success("סוג השיעור נמחק"); queryClient.invalidateQueries({ queryKey: ["classes"] }); }
+                  setEditingClassInfo(null);
+                }} className="rounded-full gap-1.5">
+                  <Trash2 className="h-3.5 w-3.5" />מחק
+                </Button>
                 <Button variant="outline" onClick={() => setEditingClassInfo(null)} className="rounded-full">ביטול</Button>
               </div>
             </div>
