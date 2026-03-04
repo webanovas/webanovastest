@@ -125,17 +125,11 @@ const Team = () => {
     },
   });
 
-  const [activeHighlight, setActiveHighlight] = useState<string | null>(null);
-
   useEffect(() => {
     if (highlightTeacher && teachers.length > 0) {
-      setActiveHighlight(highlightTeacher);
       setTimeout(() => {
         teacherRefs.current[highlightTeacher]?.scrollIntoView({ behavior: "smooth", block: "center" });
       }, 300);
-      // Remove highlight after 4 seconds
-      const timer = setTimeout(() => setActiveHighlight(null), 4500);
-      return () => clearTimeout(timer);
     }
   }, [highlightTeacher, teachers]);
   const [editingTeacher, setEditingTeacher] = useState<TeacherRow | null>(null);
