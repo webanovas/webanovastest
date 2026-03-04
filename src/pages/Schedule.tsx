@@ -569,8 +569,7 @@ const Schedule = () => {
                       className="rounded-2xl border-2 border-dashed border-border/50 hover:border-primary/50 cursor-pointer h-full transition-all duration-300 hover:shadow-lg flex flex-col items-center justify-center min-h-[250px]"
                       onClick={() => {
                         setNewClassType({ name: "", description: "", image_url: null, image_position: "50% 50%", level: "all" });
-                        setAddClassStep("new-type");
-                        setIsAddingClass(true);
+                        setIsAddingClassTypeStandalone(true);
                       }}
                     >
                       <Plus className="h-10 w-10 text-muted-foreground/50 mb-2" />
