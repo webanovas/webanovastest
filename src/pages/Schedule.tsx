@@ -261,14 +261,12 @@ const Schedule = () => {
                           <p className={cn("font-semibold text-sm flex items-center gap-1", l.color)}>
                             <Icon className="h-4 w-4" /> {l.label}
                           </p>
-                          <Textarea
-                            value={desc}
-                            onChange={() => {}}
+                          <textarea
                             placeholder="הוסף תיאור לרמה..."
-                            className="min-h-[60px] text-sm"
-                            onBlur={(e) => saveText(`level-${key}`, e.target.value)}
+                            className="w-full min-h-[60px] text-sm rounded-md border border-input bg-background px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring resize-y"
                             defaultValue={desc}
                             key={`level-${key}-${desc}`}
+                            onBlur={(e) => saveText(`level-${key}`, e.target.value)}
                           />
                         </div>
                       ) : desc ? (
