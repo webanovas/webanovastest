@@ -92,7 +92,7 @@ const Schedule = () => {
   const [selectedDay, setSelectedDay] = useState(days[0]);
   const [editingClass, setEditingClass] = useState<ClassRow | null>(null);
   const [isAddingClass, setIsAddingClass] = useState(false);
-  const [addClassStep, setAddClassStep] = useState<"pick" | "details">("pick");
+  const [addClassStep, setAddClassStep] = useState<"pick" | "details" | "new-type">("pick");
   const [selectedClassType, setSelectedClassType] = useState<{ source: "regular" | "special" | "event"; name: string; description: string; image_url: string | null; image_position: string | null; level: string } | null>(null);
   const [viewingClass, setViewingClass] = useState<ClassRow | null>(null);
   const [viewingClassMode, setViewingClassMode] = useState<"specific" | "general">("specific");
