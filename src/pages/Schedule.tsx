@@ -103,13 +103,14 @@ const Schedule = () => {
   const [isAddingSpecialClass, setIsAddingSpecialClass] = useState(false);
   const [newSpecialClass, setNewSpecialClass] = useState({ name: "", description: "", image_url: null as string | null, image_position: "50% 50%" });
 
-  // Auto-adopt description/image when renaming to an existing class name
+  // Auto-adopt description/image when renaming to an existing class or special class name
   useEffect(() => {
     if (
       editingClassInfo?.name &&
       editingClassInfo.name !== editingClassInfoOriginalName &&
       classes
     ) {
+      // Check regular classes first
       const existing = classes.find(c => c.name === editingClassInfo.name);
       if (existing) {
         setEditingClassInfo(prev => prev ? {
@@ -117,6 +118,17 @@ const Schedule = () => {
           description: existing.description,
           image_url: existing.image_url,
           image_position: existing.image_position,
+        } : prev);
+        return;
+      }
+      // Then check special classes
+      const special = specialClasses.find(sc => sc.name === editingClassInfo.name);
+      if (special) {
+        setEditingClassInfo(prev => prev ? {
+          ...prev,
+          description: special.description,
+          image_url: special.image_url,
+          image_position: special.image_position,
         } : prev);
       }
     }
