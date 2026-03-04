@@ -206,22 +206,22 @@ const Workshops = () => {
                 {pastWorkshops.length === 0 ? (
                   <p className="text-center text-muted-foreground py-12">אין סדנאות עבר</p>
                 ) : (
-                  <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="max-w-3xl mx-auto flex flex-col gap-6">
                     {pastWorkshops.map((w, i) => (
                       <Card
                         key={w.id}
                         className={cn(
-                          "rounded-3xl border-0 overflow-hidden shadow-md",
+                          "rounded-3xl border-0 overflow-hidden shadow-md flex flex-col sm:flex-row",
                           isEditMode && "cursor-pointer hover:ring-2 hover:ring-primary/30"
                         )}
                         onClick={() => isEditMode && setEditing({ ...w })}
                       >
-                        <div className="aspect-square max-w-[200px] mx-auto mt-4 rounded-2xl overflow-hidden">
+                        <div className="w-full sm:w-40 h-40 sm:h-auto shrink-0 overflow-hidden">
                           <img src={w.image_url || workshopImages[i % workshopImages.length]} alt={w.title} className="w-full h-full object-cover" />
                         </div>
-                        <CardContent className="p-5">
-                          <span className="font-heading font-medium text-sm">{w.title}</span>
-                          <p className="text-xs text-muted-foreground mt-2 leading-relaxed line-clamp-3">{w.description}</p>
+                        <CardContent className="p-5 flex flex-col justify-center">
+                          <span className="font-heading font-semibold text-base">{w.title}</span>
+                          <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{w.description}</p>
                         </CardContent>
                       </Card>
                     ))}
