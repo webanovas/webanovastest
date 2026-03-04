@@ -562,6 +562,21 @@ const Schedule = () => {
                     </Card>
                   </motion.div>
                 ))}
+                {isEditMode && (
+                  <motion.div variants={fadeUp}>
+                    <Card
+                      className="rounded-2xl border-2 border-dashed border-border/50 hover:border-primary/50 cursor-pointer h-full transition-all duration-300 hover:shadow-lg flex flex-col items-center justify-center min-h-[250px]"
+                      onClick={() => {
+                        setNewClassType({ name: "", description: "", image_url: null, image_position: "50% 50%", level: "all" });
+                        setAddClassStep("new-type");
+                        setIsAddingClass(true);
+                      }}
+                    >
+                      <Plus className="h-10 w-10 text-muted-foreground/50 mb-2" />
+                      <p className="font-heading font-semibold text-muted-foreground">הוסף סוג שיעור חדש</p>
+                    </Card>
+                  </motion.div>
+                )}
               </motion.div>
             );
           })()}
