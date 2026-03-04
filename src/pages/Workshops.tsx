@@ -25,6 +25,8 @@ import { ClockPicker } from "@/components/ui/clock-picker";
 import workshopImg1 from "@/assets/workshop-1.jpg";
 import workshopImg2 from "@/assets/workshop-2.jpg";
 import ImageUpload from "@/components/admin/ImageUpload";
+import FocalPointPicker from "@/components/admin/FocalPointPicker";
+import { Move } from "lucide-react";
 import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
 
