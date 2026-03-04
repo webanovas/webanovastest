@@ -235,7 +235,7 @@ const Workshops = () => {
 
       {/* Edit Dialog */}
       <Dialog open={!!editing} onOpenChange={(open) => !open && setEditing(null)}>
-        <DialogContent className="max-w-lg p-0 overflow-hidden" dir="rtl">
+        <DialogContent className="max-w-lg p-0 overflow-hidden max-h-[85vh] overflow-y-auto" dir="rtl">
           <WorkshopEditPreview
             value={editing!}
             onChange={setEditing}
@@ -248,7 +248,7 @@ const Workshops = () => {
 
       {/* Add Dialog */}
       <Dialog open={isAdding} onOpenChange={setIsAdding}>
-        <DialogContent className="max-w-lg p-0 overflow-hidden" dir="rtl">
+        <DialogContent className="max-w-lg p-0 overflow-hidden max-h-[85vh] overflow-y-auto" dir="rtl">
           <WorkshopEditPreview
             value={newItem as any}
             onChange={setNewItem as any}

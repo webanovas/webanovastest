@@ -125,17 +125,11 @@ const Team = () => {
     },
   });
 
-  const [activeHighlight, setActiveHighlight] = useState<string | null>(null);
-
   useEffect(() => {
     if (highlightTeacher && teachers.length > 0) {
-      setActiveHighlight(highlightTeacher);
       setTimeout(() => {
         teacherRefs.current[highlightTeacher]?.scrollIntoView({ behavior: "smooth", block: "center" });
       }, 300);
-      // Remove highlight after 4 seconds
-      const timer = setTimeout(() => setActiveHighlight(null), 4500);
-      return () => clearTimeout(timer);
     }
   }, [highlightTeacher, teachers]);
   const [editingTeacher, setEditingTeacher] = useState<TeacherRow | null>(null);
@@ -214,7 +208,7 @@ const Team = () => {
                     className={cn(
                       "text-center h-full rounded-3xl border-0 overflow-hidden hover-lift shadow-lg transition-all duration-500",
                       isEditMode && "cursor-pointer ring-2 ring-transparent hover:ring-primary/30",
-                      activeHighlight === t.name && "ring-2 ring-primary shadow-xl shadow-primary/20 animate-pulse"
+                      highlightTeacher === t.name && "ring-2 ring-primary shadow-xl shadow-primary/20"
                     )}
                     onClick={() => isEditMode && setEditingTeacher({ ...t })}
                   >
