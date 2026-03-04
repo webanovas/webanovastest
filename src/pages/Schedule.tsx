@@ -92,11 +92,13 @@ const Schedule = () => {
   const [selectedDay, setSelectedDay] = useState(days[0]);
   const [editingClass, setEditingClass] = useState<ClassRow | null>(null);
   const [isAddingClass, setIsAddingClass] = useState(false);
+  const [addClassStep, setAddClassStep] = useState<"pick" | "details">("pick");
+  const [selectedClassType, setSelectedClassType] = useState<{ source: "regular" | "special" | "event"; name: string; description: string; image_url: string | null; image_position: string | null; level: string } | null>(null);
   const [viewingClass, setViewingClass] = useState<ClassRow | null>(null);
   const [viewingClassMode, setViewingClassMode] = useState<"specific" | "general">("specific");
   const [editingClassInfo, setEditingClassInfo] = useState<ClassRow | null>(null);
   const [editingClassInfoOriginalName, setEditingClassInfoOriginalName] = useState<string>("");
-  const [newClass, setNewClass] = useState({ day: "ראשון", time: "", end_time: "" as string | null, name: "", teacher: "", description: "", image_url: null as string | null, is_recurring: true, specific_date: null as string | null, level: "all" });
+  const [newClass, setNewClass] = useState({ day: "ראשון", time: "", end_time: "" as string | null, name: "", teacher: "", description: "", image_url: null as string | null, is_recurring: true, specific_date: null as string | null, level: "all", image_position: "50% 50%" });
   const [showClassInfoFocal, setShowClassInfoFocal] = useState(false);
   const [showSpecialClasses, setShowSpecialClasses] = useState(false);
   const [editingSpecialClass, setEditingSpecialClass] = useState<SpecialClass | null>(null);
