@@ -102,7 +102,7 @@ const About = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="md:col-span-2 text-center mt-4 md:mt-8"
+              className="md:col-start-2 text-center mt-4 md:mt-4"
             >
               <div className="inline-block relative">
                 <div className="absolute -right-4 -top-3 w-8 h-8 rounded-full bg-primary/10" />
