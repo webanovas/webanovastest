@@ -847,6 +847,123 @@ const Schedule = () => {
                   <Button variant="outline" onClick={() => setIsAddingClass(false)} className="rounded-full w-full">ביטול</Button>
                 </div>
               </motion.div>
+            ) : addClassStep === "new-type" ? (
+              <motion.div
+                key="new-type"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.2 }}
+                className="bg-card max-h-[85vh] overflow-y-auto"
+              >
+                <div className="bg-gradient-to-b from-primary/8 to-primary/3 px-6 py-5 border-b border-border/30">
+                  <h2 className="font-heading text-xl font-bold text-foreground">שיעור כללי חדש</h2>
+                  <p className="text-sm text-muted-foreground mt-1">הגדירי סוג שיעור חדש עם שם, תמונה ותיאור</p>
+                </div>
+                <div className="p-5 space-y-5">
+                  <FormSection icon={BookOpen} title="שם השיעור">
+                    <Input
+                      value={newClassType.name}
+                      onChange={(e) => setNewClassType({ ...newClassType, name: e.target.value })}
+                      placeholder="למשל: פילאטיס, יוגה עם גלגל..."
+                      className="rounded-xl border-0 bg-card h-11 shadow-sm"
+                    />
+                  </FormSection>
+
+                  <FormSection icon={ImageIcon} title="תמונה">
+                    <div className="flex items-center gap-3">
+                      {newClassType.image_url ? (
+                        <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+                          <img src={newClassType.image_url} alt="" className="w-full h-full object-cover" style={{ objectPosition: newClassType.image_position }} />
+                        </div>
+                      ) : (
+                        <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <BookOpen className="h-6 w-6 text-primary/40" />
+                        </div>
+                      )}
+                      <ImageUpload
+                        currentUrl={newClassType.image_url}
+                        onUpload={(url) => setNewClassType({ ...newClassType, image_url: url })}
+                        folder="classes"
+                        className="relative static"
+                      />
+                      {newClassType.image_url && (
+                        <button onClick={() => setShowNewClassTypeFocal(true)} className="bg-background/90 backdrop-blur-sm rounded-full p-2 shadow-md border border-border hover:bg-background">
+                          <Move className="h-4 w-4 text-foreground" />
+                        </button>
+                      )}
+                    </div>
+                    <FocalPointPicker
+                      src={newClassType.image_url || ""}
+                      alt="preview"
+                      objectPosition={newClassType.image_position}
+                      onSave={(pos) => setNewClassType({ ...newClassType, image_position: pos })}
+                      open={showNewClassTypeFocal}
+                      onOpenChange={setShowNewClassTypeFocal}
+                    />
+                  </FormSection>
+
+                  <FormSection icon={Flame} title="רמת השיעור">
+                    <div className="flex gap-1.5">
+                      {(Object.keys(LEVELS) as LevelKey[]).map((key) => {
+                        const l = LEVELS[key];
+                        const Icon = l.icon;
+                        const isSelected = newClassType.level === key;
+                        return (
+                          <button
+                            key={key}
+                            onClick={() => setNewClassType({ ...newClassType, level: key })}
+                            className={cn(
+                              "flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-200 border flex flex-col items-center gap-1",
+                              isSelected ? cn("border-current shadow-md", l.color, l.bg) : "bg-card text-muted-foreground border-border/50 hover:border-primary/30"
+                            )}
+                          >
+                            <Icon className="h-3.5 w-3.5" />
+                            {l.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </FormSection>
+
+                  <FormSection icon={BookOpen} title="תיאור">
+                    <Textarea
+                      value={newClassType.description}
+                      onChange={(e) => setNewClassType({ ...newClassType, description: e.target.value })}
+                      placeholder="תיאור השיעור..."
+                      rows={4}
+                      className="rounded-xl border-0 bg-card shadow-sm resize-none"
+                    />
+                  </FormSection>
+
+                  <div className="flex gap-2 pt-2">
+                    <Button onClick={() => {
+                      if (!newClassType.name) { toast.error("שם השיעור חובה"); return; }
+                      setSelectedClassType({
+                        source: "regular",
+                        name: newClassType.name,
+                        description: newClassType.description,
+                        image_url: newClassType.image_url,
+                        image_position: newClassType.image_position,
+                        level: newClassType.level,
+                      });
+                      setNewClass(prev => ({
+                        ...prev,
+                        name: newClassType.name,
+                        description: newClassType.description,
+                        image_url: newClassType.image_url,
+                        image_position: newClassType.image_position,
+                        level: newClassType.level,
+                        is_recurring: true,
+                      }));
+                      setAddClassStep("details");
+                    }} className="rounded-full flex-1 gap-2">
+                      <Check className="h-4 w-4" />המשך לקביעת זמן
+                    </Button>
+                    <Button variant="outline" onClick={() => setAddClassStep("pick")} className="rounded-full">חזרה</Button>
+                  </div>
+                </div>
+              </motion.div>
             ) : (
               <motion.div
                 key="details"
