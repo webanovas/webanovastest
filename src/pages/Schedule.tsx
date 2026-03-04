@@ -63,6 +63,7 @@ const Schedule = () => {
   const [editingClass, setEditingClass] = useState<ClassRow | null>(null);
   const [isAddingClass, setIsAddingClass] = useState(false);
   const [viewingClass, setViewingClass] = useState<ClassRow | null>(null);
+  const [viewingClassMode, setViewingClassMode] = useState<"specific" | "general">("specific");
   const [editingClassInfo, setEditingClassInfo] = useState<ClassRow | null>(null);
   const [editingClassInfoOriginalName, setEditingClassInfoOriginalName] = useState<string>("");
   const [newClass, setNewClass] = useState({ day: "ראשון", time: "", end_time: "" as string | null, name: "", teacher: "", description: "", image_url: null as string | null, is_recurring: true, specific_date: null as string | null });
@@ -278,7 +279,7 @@ const Schedule = () => {
                         <div className="flex-1 p-3">
                           <div className="flex items-center gap-1.5 mb-1">
                             <button
-                              onClick={(e) => { e.stopPropagation(); if (!isEditMode) setViewingClass(cls); }}
+                              onClick={(e) => { e.stopPropagation(); if (!isEditMode) { setViewingClassMode("specific"); setViewingClass(cls); } }}
                               className="font-heading font-semibold text-base leading-tight text-foreground underline decoration-foreground/20 underline-offset-2 hover:decoration-primary hover:text-primary transition-colors text-right"
                             >
                               {cls.name}
@@ -346,7 +347,7 @@ const Schedule = () => {
                               <div className="p-3">
                                 <div className="flex items-center gap-1.5 mb-1">
                                   <button
-                                    onClick={(e) => { e.stopPropagation(); if (!isEditMode) setViewingClass(cls); }}
+                                    onClick={(e) => { e.stopPropagation(); if (!isEditMode) { setViewingClassMode("specific"); setViewingClass(cls); } }}
                                     className="font-heading font-semibold text-sm leading-tight text-foreground underline decoration-foreground/20 underline-offset-2 hover:decoration-primary hover:text-primary transition-colors text-right"
                                   >
                                     {cls.name}
@@ -399,7 +400,7 @@ const Schedule = () => {
                         "rounded-2xl border-0 overflow-hidden shadow-md cursor-pointer group h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
                         isEditMode && "ring-2 ring-transparent hover:ring-primary/30 relative"
                       )}
-                      onClick={() => { if (isEditMode) { setEditingClassInfo({ ...cls }); setEditingClassInfoOriginalName(cls.name); } else { setViewingClass(cls); } }}
+                      onClick={() => { if (isEditMode) { setEditingClassInfo({ ...cls }); setEditingClassInfoOriginalName(cls.name); } else { setViewingClassMode("general"); setViewingClass(cls); } }}
                     >
                       {isEditMode && (
                         <div className="absolute top-3 left-3 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -513,13 +514,13 @@ const Schedule = () => {
       {isMobile ? (
         <Drawer open={!!viewingClass} onOpenChange={(open) => !open && setViewingClass(null)}>
           <DrawerContent className="max-h-[85vh]" dir="rtl">
-            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} allClasses={classes} />}
+            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} allClasses={classes} initialMode={viewingClassMode} />}
           </DrawerContent>
         </Drawer>
       ) : (
         <Dialog open={!!viewingClass} onOpenChange={(open) => !open && setViewingClass(null)}>
           <DialogContent className="max-w-lg p-0 overflow-hidden [&>button]:hidden" dir="rtl">
-            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} allClasses={classes} />}
+            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} allClasses={classes} initialMode={viewingClassMode} />}
           </DialogContent>
         </Dialog>
       )}
@@ -528,76 +529,89 @@ const Schedule = () => {
 };
 
 /* ──── Class View Content (shared between Drawer & Dialog) ──── */
-function ClassViewContent({ cls, onClose, allClasses }: { cls: ClassRow; onClose: () => void; allClasses?: ClassRow[] }) {
-  const [showGeneralInfo, setShowGeneralInfo] = useState(false);
+function ClassViewContent({ cls, onClose, allClasses, initialMode = "specific" }: { cls: ClassRow; onClose: () => void; allClasses?: ClassRow[]; initialMode?: "specific" | "general" }) {
+  const [mode, setMode] = useState<"specific" | "general">(initialMode);
 
-  // Find the "general" class info (first instance with same name, which holds shared description/image)
   const generalClass = allClasses?.find(c => c.name === cls.name) || cls;
 
-  if (showGeneralInfo) {
-    return (
-      <div className="bg-card">
-        {generalClass.image_url && (
-          <div className="aspect-[16/9] overflow-hidden">
-            <img src={generalClass.image_url} alt={generalClass.name} className="w-full h-full object-cover" />
-          </div>
-        )}
-        <div className="p-6 space-y-4">
-          <div className="flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-primary" />
-            <h2 className="font-heading text-2xl font-bold">{generalClass.name}</h2>
-          </div>
-          {generalClass.description && (
-            <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{generalClass.description}</p>
-          )}
-          <div className="flex gap-2 pt-2">
-            <Button variant="outline" size="sm" className="rounded-full" onClick={() => setShowGeneralInfo(false)}>
-              ← חזרה לפרטי השיעור
-            </Button>
-            <Button variant="outline" size="sm" className="rounded-full" onClick={onClose}>
-              סגירה
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="bg-card">
-      <div className="p-6 space-y-4">
-        <h2 className="font-heading text-2xl font-bold">{cls.name}</h2>
-        <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-          <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
-            <Clock className="h-3.5 w-3.5 text-primary" />
-            {cls.time}{cls.end_time ? ` - ${cls.end_time}` : ""}
-          </span>
-          <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
-            <CalendarDays className="h-3.5 w-3.5 text-primary" />
-            יום {cls.day}
-          </span>
-          <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
-            <User className="h-3.5 w-3.5 text-primary" />
-            {cls.teacher}
-          </span>
-        </div>
-        {cls.description && (
-          <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{cls.description}</p>
-        )}
-        <div className="flex flex-col gap-2 pt-3">
-          <Button
-            onClick={() => setShowGeneralInfo(true)}
-            className="rounded-full gap-2 w-full bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20"
-            variant="ghost"
+    <div className="bg-card overflow-hidden">
+      <AnimatePresence mode="wait">
+        {mode === "general" ? (
+          <motion.div
+            key="general"
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -40 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
           >
-            <BookOpen className="h-4 w-4" />
-            מה זה {cls.name}?
-          </Button>
-          <Button variant="outline" size="sm" className="rounded-full w-full md:w-auto" onClick={onClose}>
-            סגירה
-          </Button>
-        </div>
-      </div>
+            {generalClass.image_url && (
+              <div className="aspect-[16/9] overflow-hidden">
+                <img src={generalClass.image_url} alt={generalClass.name} className="w-full h-full object-cover" />
+              </div>
+            )}
+            <div className="p-6 space-y-4">
+              <div className="flex items-center gap-2">
+                <BookOpen className="h-5 w-5 text-primary" />
+                <h2 className="font-heading text-2xl font-bold">{generalClass.name}</h2>
+              </div>
+              {generalClass.description && (
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{generalClass.description}</p>
+              )}
+              <div className="flex gap-2 pt-2">
+                <Button variant="outline" size="sm" className="rounded-full gap-1.5" onClick={() => setMode("specific")}>
+                  ← פרטי השיעור
+                </Button>
+                <Button variant="outline" size="sm" className="rounded-full" onClick={onClose}>
+                  סגירה
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="specific"
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 40 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+          >
+            <div className="p-6 space-y-4">
+              <h2 className="font-heading text-2xl font-bold">{cls.name}</h2>
+              <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
+                <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
+                  <Clock className="h-3.5 w-3.5 text-primary" />
+                  {cls.time}{cls.end_time ? ` - ${cls.end_time}` : ""}
+                </span>
+                <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
+                  <CalendarDays className="h-3.5 w-3.5 text-primary" />
+                  יום {cls.day}
+                </span>
+                <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
+                  <User className="h-3.5 w-3.5 text-primary" />
+                  {cls.teacher}
+                </span>
+              </div>
+              {cls.description && (
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{cls.description}</p>
+              )}
+              <div className="flex flex-col gap-2 pt-3">
+                <Button
+                  onClick={() => setMode("general")}
+                  className="rounded-full gap-2 w-full bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20"
+                  variant="ghost"
+                >
+                  <BookOpen className="h-4 w-4" />
+                  מה זה {cls.name}?
+                </Button>
+                <Button variant="outline" size="sm" className="rounded-full w-full md:w-auto" onClick={onClose}>
+                  סגירה
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
