@@ -1350,8 +1350,8 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
           </div>
         </FormSection>
 
-        {/* Show image/level/name only for events or when not hidden */}
-        {!hideClassTypeFields && (
+        {/* Show image/level/name when not hidden OR when switched to one-time */}
+        {(!hideClassTypeFields || value.is_recurring === false) && (
           <>
             <FormSection icon={ImageIcon} title="תמונת השיעור">
               <div className="flex items-center gap-3">
@@ -1417,12 +1417,12 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
           </>
         )}
 
-        <FormSection icon={BookOpen} title={isEvent ? "פרטי האירוע" : "פרטי השיעור"}>
-          {!hideClassTypeFields && (
+        <FormSection icon={BookOpen} title={isEvent || value.is_recurring === false ? "פרטי האירוע" : "פרטי השיעור"}>
+          {(!hideClassTypeFields || value.is_recurring === false) && (
             <Input
               value={value.name}
               onChange={(e) => onChange({ ...value, name: e.target.value })}
-              placeholder={isEvent ? "שם האירוע" : "שם השיעור"}
+              placeholder={isEvent || value.is_recurring === false ? "שם האירוע" : "שם השיעור"}
               className="rounded-xl border-0 bg-card h-11 shadow-sm"
             />
           )}
@@ -1432,7 +1432,7 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
             placeholder="שם המורה"
             className="rounded-xl border-0 bg-card h-11 shadow-sm"
           />
-          {isEvent && (
+          {(isEvent || value.is_recurring === false) && (
             <Textarea
               value={value.description}
               onChange={(e) => onChange({ ...value, description: e.target.value })}
