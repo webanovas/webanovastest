@@ -92,7 +92,7 @@ const Schedule = () => {
   const [selectedDay, setSelectedDay] = useState(days[0]);
   const [editingClass, setEditingClass] = useState<ClassRow | null>(null);
   const [isAddingClass, setIsAddingClass] = useState(false);
-  const [addClassStep, setAddClassStep] = useState<"pick" | "details">("pick");
+  const [addClassStep, setAddClassStep] = useState<"pick" | "details" | "new-type">("pick");
   const [selectedClassType, setSelectedClassType] = useState<{ source: "regular" | "special" | "event"; name: string; description: string; image_url: string | null; image_position: string | null; level: string } | null>(null);
   const [viewingClass, setViewingClass] = useState<ClassRow | null>(null);
   const [viewingClassMode, setViewingClassMode] = useState<"specific" | "general">("specific");
@@ -106,6 +106,8 @@ const Schedule = () => {
   const [viewingSpecialClass, setViewingSpecialClass] = useState<SpecialClass | null>(null);
   const [newSpecialClass, setNewSpecialClass] = useState({ name: "", description: "", image_url: null as string | null, image_position: "50% 50%" });
   const [showSpecialClassFocal, setShowSpecialClassFocal] = useState(false);
+  const [newClassType, setNewClassType] = useState({ name: "", description: "", image_url: null as string | null, image_position: "50% 50%", level: "all" });
+  const [showNewClassTypeFocal, setShowNewClassTypeFocal] = useState(false);
 
   // Auto-adopt description/image when renaming to an existing class or special class name
   useEffect(() => {
@@ -560,6 +562,21 @@ const Schedule = () => {
                     </Card>
                   </motion.div>
                 ))}
+                {isEditMode && (
+                  <motion.div variants={fadeUp}>
+                    <Card
+                      className="rounded-2xl border-2 border-dashed border-border/50 hover:border-primary/50 cursor-pointer h-full transition-all duration-300 hover:shadow-lg flex flex-col items-center justify-center min-h-[250px]"
+                      onClick={() => {
+                        setNewClassType({ name: "", description: "", image_url: null, image_position: "50% 50%", level: "all" });
+                        setAddClassStep("new-type");
+                        setIsAddingClass(true);
+                      }}
+                    >
+                      <Plus className="h-10 w-10 text-muted-foreground/50 mb-2" />
+                      <p className="font-heading font-semibold text-muted-foreground">הוסף סוג שיעור חדש</p>
+                    </Card>
+                  </motion.div>
+                )}
               </motion.div>
             );
           })()}
@@ -660,6 +677,8 @@ const Schedule = () => {
               onSave={() => saveClass(editingClass)}
               onDelete={() => deleteClass(editingClass.id)}
               onCancel={() => setEditingClass(null)}
+              allClasses={classes}
+              specialClasses={specialClasses}
             />
           )}
         </DialogContent>
@@ -667,7 +686,7 @@ const Schedule = () => {
 
       {/* Class Add - Two Step Flow */}
       <Dialog open={isAddingClass} onOpenChange={(open) => { if (!open) { setIsAddingClass(false); setSelectedClassType(null); setAddClassStep("pick"); } }}>
-        <DialogContent className={cn("p-0 overflow-hidden [&>button]:hidden", addClassStep === "pick" ? "max-w-2xl" : "max-w-md")} dir="rtl">
+        <DialogContent className={cn("p-0 overflow-hidden [&>button]:hidden", addClassStep === "pick" ? "max-w-2xl" : addClassStep === "new-type" ? "max-w-md" : "max-w-md")} dir="rtl">
           <AnimatePresence mode="wait">
             {addClassStep === "pick" ? (
               <motion.div
@@ -738,6 +757,17 @@ const Schedule = () => {
                               </div>
                             </button>
                           ))}
+                          {/* Add new general class type */}
+                          <button
+                            onClick={() => {
+                              setNewClassType({ name: "", description: "", image_url: null, image_position: "50% 50%", level: "all" });
+                              setAddClassStep("new-type");
+                            }}
+                            className="rounded-xl border-2 border-dashed border-border/40 hover:border-primary/50 flex flex-col items-center justify-center gap-1.5 text-muted-foreground hover:text-primary transition-all duration-200 min-h-[120px]"
+                          >
+                            <Plus className="h-6 w-6" />
+                            <span className="text-xs font-medium">שיעור חדש</span>
+                          </button>
                         </div>
                       </div>
                     );
@@ -832,6 +862,123 @@ const Schedule = () => {
 
                 <div className="p-4 border-t border-border/30">
                   <Button variant="outline" onClick={() => setIsAddingClass(false)} className="rounded-full w-full">ביטול</Button>
+                </div>
+              </motion.div>
+            ) : addClassStep === "new-type" ? (
+              <motion.div
+                key="new-type"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.2 }}
+                className="bg-card max-h-[85vh] overflow-y-auto"
+              >
+                <div className="bg-gradient-to-b from-primary/8 to-primary/3 px-6 py-5 border-b border-border/30">
+                  <h2 className="font-heading text-xl font-bold text-foreground">שיעור כללי חדש</h2>
+                  <p className="text-sm text-muted-foreground mt-1">הגדירי סוג שיעור חדש עם שם, תמונה ותיאור</p>
+                </div>
+                <div className="p-5 space-y-5">
+                  <FormSection icon={BookOpen} title="שם השיעור">
+                    <Input
+                      value={newClassType.name}
+                      onChange={(e) => setNewClassType({ ...newClassType, name: e.target.value })}
+                      placeholder="למשל: פילאטיס, יוגה עם גלגל..."
+                      className="rounded-xl border-0 bg-card h-11 shadow-sm"
+                    />
+                  </FormSection>
+
+                  <FormSection icon={ImageIcon} title="תמונה">
+                    <div className="flex items-center gap-3">
+                      {newClassType.image_url ? (
+                        <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+                          <img src={newClassType.image_url} alt="" className="w-full h-full object-cover" style={{ objectPosition: newClassType.image_position }} />
+                        </div>
+                      ) : (
+                        <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <BookOpen className="h-6 w-6 text-primary/40" />
+                        </div>
+                      )}
+                      <ImageUpload
+                        currentUrl={newClassType.image_url}
+                        onUpload={(url) => setNewClassType({ ...newClassType, image_url: url })}
+                        folder="classes"
+                        className="relative static"
+                      />
+                      {newClassType.image_url && (
+                        <button onClick={() => setShowNewClassTypeFocal(true)} className="bg-background/90 backdrop-blur-sm rounded-full p-2 shadow-md border border-border hover:bg-background">
+                          <Move className="h-4 w-4 text-foreground" />
+                        </button>
+                      )}
+                    </div>
+                    <FocalPointPicker
+                      src={newClassType.image_url || ""}
+                      alt="preview"
+                      objectPosition={newClassType.image_position}
+                      onSave={(pos) => setNewClassType({ ...newClassType, image_position: pos })}
+                      open={showNewClassTypeFocal}
+                      onOpenChange={setShowNewClassTypeFocal}
+                    />
+                  </FormSection>
+
+                  <FormSection icon={Flame} title="רמת השיעור">
+                    <div className="flex gap-1.5">
+                      {(Object.keys(LEVELS) as LevelKey[]).map((key) => {
+                        const l = LEVELS[key];
+                        const Icon = l.icon;
+                        const isSelected = newClassType.level === key;
+                        return (
+                          <button
+                            key={key}
+                            onClick={() => setNewClassType({ ...newClassType, level: key })}
+                            className={cn(
+                              "flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-200 border flex flex-col items-center gap-1",
+                              isSelected ? cn("border-current shadow-md", l.color, l.bg) : "bg-card text-muted-foreground border-border/50 hover:border-primary/30"
+                            )}
+                          >
+                            <Icon className="h-3.5 w-3.5" />
+                            {l.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </FormSection>
+
+                  <FormSection icon={BookOpen} title="תיאור">
+                    <Textarea
+                      value={newClassType.description}
+                      onChange={(e) => setNewClassType({ ...newClassType, description: e.target.value })}
+                      placeholder="תיאור השיעור..."
+                      rows={4}
+                      className="rounded-xl border-0 bg-card shadow-sm resize-none"
+                    />
+                  </FormSection>
+
+                  <div className="flex gap-2 pt-2">
+                    <Button onClick={() => {
+                      if (!newClassType.name) { toast.error("שם השיעור חובה"); return; }
+                      setSelectedClassType({
+                        source: "regular",
+                        name: newClassType.name,
+                        description: newClassType.description,
+                        image_url: newClassType.image_url,
+                        image_position: newClassType.image_position,
+                        level: newClassType.level,
+                      });
+                      setNewClass(prev => ({
+                        ...prev,
+                        name: newClassType.name,
+                        description: newClassType.description,
+                        image_url: newClassType.image_url,
+                        image_position: newClassType.image_position,
+                        level: newClassType.level,
+                        is_recurring: true,
+                      }));
+                      setAddClassStep("details");
+                    }} className="rounded-full flex-1 gap-2">
+                      <Check className="h-4 w-4" />המשך לקביעת זמן
+                    </Button>
+                    <Button variant="outline" onClick={() => setAddClassStep("pick")} className="rounded-full">חזרה</Button>
+                  </div>
                 </div>
               </motion.div>
             ) : (
@@ -1300,12 +1447,25 @@ function parseDateStr(str: string): Date | undefined {
 }
 
 /* WYSIWYG Class Editor */
-function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew = false, hideClassTypeFields = false, isEvent = false }: {
+function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew = false, hideClassTypeFields = false, isEvent = false, allClasses, specialClasses }: {
   value: any; onChange: (v: any) => void; onSave: () => void;
   onDelete?: () => void; onCancel: () => void; isNew?: boolean;
   hideClassTypeFields?: boolean; isEvent?: boolean;
+  allClasses?: ClassRow[]; specialClasses?: SpecialClass[];
 }) {
   const [showFocalPicker, setShowFocalPicker] = useState(false);
+  const [showTypePicker, setShowTypePicker] = useState(false);
+
+  // Build unique class types for the switcher
+  const classTypes = useMemo(() => {
+    if (!allClasses) return [];
+    const unique = allClasses.reduce<ClassRow[]>((acc, cls) => {
+      if (!acc.find(c => c.name === cls.name)) acc.push(cls);
+      return acc;
+    }, []);
+    return unique;
+  }, [allClasses]);
+
   return (
      <div className="bg-card max-h-[85vh] overflow-y-auto">
        <div className="bg-gradient-to-b from-primary/8 to-primary/3 px-5 py-4 border-b border-border/30">
@@ -1335,6 +1495,103 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
       </div>
 
       <div className="p-5 space-y-5">
+        {/* Class Type Switcher - only when editing existing class */}
+        {allClasses && !isNew && (
+          <FormSection icon={BookOpen} title="סוג השיעור">
+            <Popover open={showTypePicker} onOpenChange={setShowTypePicker}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-between text-right rounded-xl h-11 border-border/50"
+                >
+                  <div className="flex items-center gap-2">
+                    <LevelBadge level={value.level || "all"} compact />
+                    <span className="font-heading font-semibold">{value.name || "בחר סוג שיעור"}</span>
+                  </div>
+                  <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-72 p-2 max-h-[300px] overflow-y-auto" align="start" dir="rtl">
+                <p className="text-[10px] font-heading font-semibold text-foreground/50 uppercase tracking-wider px-2 py-1.5">שיעורים כלליים</p>
+                {classTypes.map((cls) => (
+                  <button
+                    key={cls.id}
+                    onClick={() => {
+                      onChange({
+                        ...value,
+                        name: cls.name,
+                        description: cls.description,
+                        image_url: cls.image_url,
+                        image_position: cls.image_position || "50% 50%",
+                        level: (cls as any).level || "all",
+                      });
+                      setShowTypePicker(false);
+                    }}
+                    className={cn(
+                      "w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-right transition-colors",
+                      value.name === cls.name ? "bg-primary/10 text-primary" : "hover:bg-muted"
+                    )}
+                  >
+                    {cls.image_url ? (
+                      <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
+                        <img src={cls.image_url} alt="" className="w-full h-full object-cover" style={{ objectPosition: cls.image_position || "50% 50%" }} />
+                      </div>
+                    ) : (
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <BookOpen className="h-4 w-4 text-primary/40" />
+                      </div>
+                    )}
+                    <div className="flex items-center gap-1 flex-1 min-w-0">
+                      <LevelBadge level={(cls as any).level || "all"} compact />
+                      <span className="font-heading font-medium text-sm truncate">{cls.name}</span>
+                    </div>
+                    {value.name === cls.name && <Check className="h-4 w-4 text-primary flex-shrink-0" />}
+                  </button>
+                ))}
+                {specialClasses && specialClasses.filter(sc => sc.is_active).length > 0 && (
+                  <>
+                    <p className="text-[10px] font-heading font-semibold text-foreground/50 uppercase tracking-wider px-2 py-1.5 mt-2 border-t border-border/30 pt-2.5">שיעורים מיוחדים</p>
+                    {specialClasses.filter(sc => sc.is_active).map((sc) => (
+                      <button
+                        key={sc.id}
+                        onClick={() => {
+                          onChange({
+                            ...value,
+                            name: sc.name,
+                            description: sc.description,
+                            image_url: sc.image_url,
+                            image_position: sc.image_position || "50% 50%",
+                          });
+                          setShowTypePicker(false);
+                        }}
+                        className={cn(
+                          "w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-right transition-colors",
+                          value.name === sc.name ? "bg-primary/10 text-primary" : "hover:bg-muted"
+                        )}
+                      >
+                        {sc.image_url ? (
+                          <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
+                            <img src={sc.image_url} alt="" className="w-full h-full object-cover" style={{ objectPosition: sc.image_position || "50% 50%" }} />
+                          </div>
+                        ) : (
+                          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <Star className="h-4 w-4 text-primary/40" />
+                          </div>
+                        )}
+                        <div className="flex items-center gap-1 flex-1 min-w-0">
+                          <Star className="h-3 w-3 text-primary flex-shrink-0" />
+                          <span className="font-heading font-medium text-sm truncate">{sc.name}</span>
+                        </div>
+                        {value.name === sc.name && <Check className="h-4 w-4 text-primary flex-shrink-0" />}
+                      </button>
+                    ))}
+                  </>
+                )}
+              </PopoverContent>
+            </Popover>
+          </FormSection>
+        )}
+
         <RecurringToggle value={value} onChange={onChange} />
 
         <FormSection icon={Clock} title="שעות">
