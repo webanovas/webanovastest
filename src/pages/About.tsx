@@ -75,40 +75,6 @@ const About = () => {
       {/* About the Studio + Shira */}
       <section className="py-14 md:py-28">
         <div className="container mx-auto px-4 max-w-6xl">
-          {/* Studio part */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
-              <motion.div variants={fadeUp}>
-                <E section="studio-label" fallback="הסטודיו" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
-              </motion.div>
-              <motion.div variants={fadeUp}>
-                <E section="studio-title" fallback="המקום שלנו" as="h2" className="font-heading text-3xl md:text-4xl font-bold mb-5" />
-              </motion.div>
-              <motion.div variants={fadeUp}>
-                <E section="shira-bio-2" fallback="הסטודיו מציע מרחב חם ומזמין, עם קבוצות קטנות שמאפשרות תשומת לב אישית לכל מתרגל ומתרגלת." as="p" className="text-muted-foreground leading-relaxed mb-4 text-lg" multiline />
-              </motion.div>
-              <motion.div variants={fadeUp}>
-                <E section="studio-desc" fallback="יוגה במושבה הוא סטודיו בוטיק בכיכר המושבה בהוד השרון, המציע מגוון שיעורים וסדנאות לכל הרמות." as="p" className="text-muted-foreground leading-relaxed" multiline />
-              </motion.div>
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative">
-              <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[4/3]">
-                <EditableImage
-                  src={getImage("studio-main-image", studioInterior)}
-                  alt="הסטודיו"
-                  className="w-full h-full object-cover"
-                  folder="about"
-                  onUpload={isEditMode ? (url) => saveText("studio-main-image", url) : undefined}
-                  objectPosition={getText("studio-main-image-pos", "50% 50%")}
-                  onPositionChange={isEditMode ? (pos) => saveText("studio-main-image-pos", pos) : undefined}
-                />
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Divider */}
-          <div className="my-14 md:my-24 border-t border-border/30" />
 
           {/* Shira part - reversed layout on desktop */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
