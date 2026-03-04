@@ -662,6 +662,8 @@ const Schedule = () => {
               onSave={() => saveClass(editingClass)}
               onDelete={() => deleteClass(editingClass.id)}
               onCancel={() => setEditingClass(null)}
+              allClasses={classes}
+              specialClasses={specialClasses}
             />
           )}
         </DialogContent>
