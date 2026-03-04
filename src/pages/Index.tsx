@@ -210,7 +210,7 @@ const Index = () => {
             ))}
           </div>
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-yoga-dark/90 via-yoga-dark/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-yoga-dark/95 via-yoga-dark/50 to-yoga-dark/10" />
 
         {/* Admin: edit carousel images button */}
         {isEditMode && (
