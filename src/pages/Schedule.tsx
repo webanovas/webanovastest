@@ -165,7 +165,8 @@ const Schedule = () => {
     },
   });
 
-  const dayClasses = classes.filter((c) => c.day === selectedDay).sort((a, b) => a.time.localeCompare(b.time));
+  const scheduleClasses = classes.filter(c => c.day !== "_type");
+  const dayClasses = scheduleClasses.filter((c) => c.day === selectedDay).sort((a, b) => a.time.localeCompare(b.time));
 
   const saveClass = async (cls: any) => {
     const oldData = classes.find(c => c.id === cls.id);
