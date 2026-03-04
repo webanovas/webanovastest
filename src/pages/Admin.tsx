@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
-import { LogOut, Plus, Trash2, CalendarDays, Clock, MapPin, User, BookOpen, Quote, FileText, Repeat, CalendarIcon } from "lucide-react";
+import { LogOut, Plus, Trash2, CalendarDays, Clock, MapPin, User, BookOpen, Quote, FileText, Repeat, CalendarIcon, Flame, Leaf, Mountain, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
