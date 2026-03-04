@@ -339,12 +339,29 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
     <div className="bg-card rounded-3xl overflow-hidden">
       {/* Image preview with upload */}
       <div className="aspect-video overflow-hidden relative">
-        <img src={value.image_url || workshopImg1} alt="preview" className="w-full h-full object-cover" />
+        <img src={value.image_url || workshopImg1} alt="preview" className="w-full h-full object-cover" style={{ objectPosition: value.image_position || "50% 50%" }} />
         <ImageUpload
           currentUrl={value.image_url}
           onUpload={(url) => onChange({ ...value, image_url: url })}
           folder="workshops"
           className="bottom-20 left-4"
+        />
+        {value.image_url && (
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowFocalPicker(true); }}
+            className="absolute bottom-20 left-16 z-50 bg-background/90 backdrop-blur-sm rounded-full p-2 shadow-md border border-border hover:bg-background"
+            title="מיקום מוקד התמונה"
+          >
+            <Move className="h-4 w-4 text-foreground" />
+          </button>
+        )}
+        <FocalPointPicker
+          src={value.image_url || workshopImg1}
+          alt="preview"
+          objectPosition={value.image_position || "50% 50%"}
+          onSave={(pos) => onChange({ ...value, image_position: pos })}
+          open={showFocalPicker}
+          onOpenChange={setShowFocalPicker}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
         <div className="absolute bottom-4 right-4 left-4">
