@@ -21,7 +21,10 @@ export function usePageContent(page: string) {
   });
 
   const getText = (section: string, fallback: string) => {
-    return contentMap[section] || fallback;
+    if (section in contentMap) {
+      return contentMap[section]; // return even if empty (explicitly cleared)
+    }
+    return fallback;
   };
 
   const saveText = async (section: string, value: string) => {

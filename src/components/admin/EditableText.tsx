@@ -37,7 +37,8 @@ const EditableText = ({
   }, [editing]);
 
   if (!isEditMode) {
-    return <Tag className={className}>{value || placeholder}</Tag>;
+    if (!value) return null;
+    return <Tag className={className}>{value}</Tag>;
   }
 
   if (editing) {
