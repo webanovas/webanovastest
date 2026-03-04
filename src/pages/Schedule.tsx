@@ -1350,81 +1350,97 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
           </div>
         </FormSection>
 
-        <FormSection icon={ImageIcon} title="תמונת השיעור">
-          <div className="flex items-center gap-3">
-            {value.image_url ? (
-              <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
-                <img src={value.image_url} alt="" className="w-full h-full object-cover" style={{ objectPosition: value.image_position || "50% 50%" }} />
+        {/* Show image/level/name only for events or when not hidden */}
+        {!hideClassTypeFields && (
+          <>
+            <FormSection icon={ImageIcon} title="תמונת השיעור">
+              <div className="flex items-center gap-3">
+                {value.image_url ? (
+                  <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+                    <img src={value.image_url} alt="" className="w-full h-full object-cover" style={{ objectPosition: value.image_position || "50% 50%" }} />
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <BookOpen className="h-6 w-6 text-primary/40" />
+                  </div>
+                )}
+                <ImageUpload
+                  currentUrl={value.image_url}
+                  onUpload={(url) => onChange({ ...value, image_url: url })}
+                  folder="classes"
+                  className="relative static"
+                />
+                {value.image_url && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setShowFocalPicker(true); }}
+                    className="bg-background/90 backdrop-blur-sm rounded-full p-2 shadow-md border border-border hover:bg-background"
+                    title="מיקום מוקד התמונה"
+                  >
+                    <Move className="h-4 w-4 text-foreground" />
+                  </button>
+                )}
               </div>
-            ) : (
-              <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <BookOpen className="h-6 w-6 text-primary/40" />
+              <FocalPointPicker
+                src={value.image_url || ""}
+                alt="preview"
+                objectPosition={value.image_position || "50% 50%"}
+                onSave={(pos) => onChange({ ...value, image_position: pos })}
+                open={showFocalPicker}
+                onOpenChange={setShowFocalPicker}
+              />
+            </FormSection>
+
+            <FormSection icon={Flame} title="רמת השיעור">
+              <div className="flex gap-1.5">
+                {(Object.keys(LEVELS) as LevelKey[]).map((key) => {
+                  const l = LEVELS[key];
+                  const Icon = l.icon;
+                  const isSelected = (value.level || "all") === key;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => onChange({ ...value, level: key })}
+                      className={cn(
+                        "flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-200 border flex flex-col items-center gap-1",
+                        isSelected
+                          ? cn("border-current shadow-md", l.color, l.bg)
+                          : "bg-card text-muted-foreground border-border/50 hover:border-primary/30"
+                      )}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      {l.label}
+                    </button>
+                  );
+                })}
               </div>
-            )}
-            <ImageUpload
-              currentUrl={value.image_url}
-              onUpload={(url) => onChange({ ...value, image_url: url })}
-              folder="classes"
-              className="relative static"
+            </FormSection>
+          </>
+        )}
+
+        <FormSection icon={BookOpen} title={isEvent ? "פרטי האירוע" : "פרטי השיעור"}>
+          {!hideClassTypeFields && (
+            <Input
+              value={value.name}
+              onChange={(e) => onChange({ ...value, name: e.target.value })}
+              placeholder={isEvent ? "שם האירוע" : "שם השיעור"}
+              className="rounded-xl border-0 bg-card h-11 shadow-sm"
             />
-            {value.image_url && (
-              <button
-                onClick={(e) => { e.stopPropagation(); setShowFocalPicker(true); }}
-                className="bg-background/90 backdrop-blur-sm rounded-full p-2 shadow-md border border-border hover:bg-background"
-                title="מיקום מוקד התמונה"
-              >
-                <Move className="h-4 w-4 text-foreground" />
-              </button>
-            )}
-          </div>
-          <FocalPointPicker
-            src={value.image_url || ""}
-            alt="preview"
-            objectPosition={value.image_position || "50% 50%"}
-            onSave={(pos) => onChange({ ...value, image_position: pos })}
-            open={showFocalPicker}
-            onOpenChange={setShowFocalPicker}
-          />
-        </FormSection>
-
-        <FormSection icon={Flame} title="רמת השיעור">
-          <div className="flex gap-1.5">
-            {(Object.keys(LEVELS) as LevelKey[]).map((key) => {
-              const l = LEVELS[key];
-              const Icon = l.icon;
-              const isSelected = (value.level || "all") === key;
-              return (
-                <button
-                  key={key}
-                  onClick={() => onChange({ ...value, level: key })}
-                  className={cn(
-                    "flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-200 border flex flex-col items-center gap-1",
-                    isSelected
-                      ? cn("border-current shadow-md", l.color, l.bg)
-                      : "bg-card text-muted-foreground border-border/50 hover:border-primary/30"
-                  )}
-                >
-                  <Icon className="h-3.5 w-3.5" />
-                  {l.label}
-                </button>
-              );
-            })}
-          </div>
-        </FormSection>
-
-        <FormSection icon={BookOpen} title="פרטי השיעור">
-          <Input
-            value={value.name}
-            onChange={(e) => onChange({ ...value, name: e.target.value })}
-            placeholder="שם השיעור"
-            className="rounded-xl border-0 bg-card h-11 shadow-sm"
-          />
+          )}
           <Input
             value={value.teacher}
             onChange={(e) => onChange({ ...value, teacher: e.target.value })}
             placeholder="שם המורה"
             className="rounded-xl border-0 bg-card h-11 shadow-sm"
           />
+          {isEvent && (
+            <Textarea
+              value={value.description}
+              onChange={(e) => onChange({ ...value, description: e.target.value })}
+              placeholder="הסבר על האירוע..."
+              rows={3}
+              className="rounded-xl border-0 bg-card shadow-sm resize-none"
+            />
+          )}
         </FormSection>
 
         <div className="flex gap-2 justify-between pt-3 border-t border-border/30">
