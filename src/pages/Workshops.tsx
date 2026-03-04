@@ -216,12 +216,12 @@ const Workshops = () => {
                         )}
                         onClick={() => isEditMode && setEditing({ ...w })}
                       >
-                        <div className="aspect-video overflow-hidden">
+                        <div className="aspect-square max-w-[200px] mx-auto mt-4 rounded-2xl overflow-hidden">
                           <img src={w.image_url || workshopImages[i % workshopImages.length]} alt={w.title} className="w-full h-full object-cover" />
                         </div>
                         <CardContent className="p-5">
                           <span className="font-heading font-medium text-sm">{w.title}</span>
-                          <span className="text-xs text-muted-foreground block mt-1">{w.date}</span>
+                          <p className="text-xs text-muted-foreground mt-2 leading-relaxed line-clamp-3">{w.description}</p>
                         </CardContent>
                       </Card>
                     ))}
