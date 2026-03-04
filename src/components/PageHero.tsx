@@ -23,6 +23,9 @@ interface PageHeroProps {
   titleSection?: string;
   subtitleSection?: string;
   labelSection?: string;
+  onImageUpload?: (url: string) => void;
+  onImagePositionChange?: (pos: string) => void;
+  imageFolder?: string;
 }
 
 const PageHero = ({ title, subtitle, label, image, imagePosition, page, titleSection, subtitleSection, labelSection }: PageHeroProps) => {
