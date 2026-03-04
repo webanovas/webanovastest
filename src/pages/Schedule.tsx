@@ -513,13 +513,13 @@ const Schedule = () => {
       {isMobile ? (
         <Drawer open={!!viewingClass} onOpenChange={(open) => !open && setViewingClass(null)}>
           <DrawerContent className="max-h-[85vh]" dir="rtl">
-            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} />}
+            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} allClasses={classes} />}
           </DrawerContent>
         </Drawer>
       ) : (
         <Dialog open={!!viewingClass} onOpenChange={(open) => !open && setViewingClass(null)}>
           <DialogContent className="max-w-lg p-0 overflow-hidden [&>button]:hidden" dir="rtl">
-            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} />}
+            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} allClasses={classes} />}
           </DialogContent>
         </Dialog>
       )}
@@ -528,20 +528,71 @@ const Schedule = () => {
 };
 
 /* ──── Class View Content (shared between Drawer & Dialog) ──── */
-function ClassViewContent({ cls, onClose }: { cls: ClassRow; onClose: () => void }) {
+function ClassViewContent({ cls, onClose, allClasses }: { cls: ClassRow; onClose: () => void; allClasses?: ClassRow[] }) {
+  const [showGeneralInfo, setShowGeneralInfo] = useState(false);
+
+  // Find the "general" class info (first instance with same name, which holds shared description/image)
+  const generalClass = allClasses?.find(c => c.name === cls.name) || cls;
+
+  if (showGeneralInfo) {
+    return (
+      <div className="bg-card">
+        {generalClass.image_url && (
+          <div className="aspect-[16/9] overflow-hidden">
+            <img src={generalClass.image_url} alt={generalClass.name} className="w-full h-full object-cover" />
+          </div>
+        )}
+        <div className="p-6 space-y-4">
+          <div className="flex items-center gap-2">
+            <BookOpen className="h-5 w-5 text-primary" />
+            <h2 className="font-heading text-2xl font-bold">{generalClass.name}</h2>
+          </div>
+          {generalClass.description && (
+            <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{generalClass.description}</p>
+          )}
+          <div className="flex gap-2 pt-2">
+            <Button variant="outline" size="sm" className="rounded-full" onClick={() => setShowGeneralInfo(false)}>
+              ← חזרה לפרטי השיעור
+            </Button>
+            <Button variant="outline" size="sm" className="rounded-full" onClick={onClose}>
+              סגירה
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-card">
-      {cls.image_url && (
-        <div className="aspect-[16/9] overflow-hidden">
-          <img src={cls.image_url} alt={cls.name} className="w-full h-full object-cover" />
-        </div>
-      )}
       <div className="p-6 space-y-4">
         <h2 className="font-heading text-2xl font-bold">{cls.name}</h2>
+        <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
+          <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
+            <Clock className="h-3.5 w-3.5 text-primary" />
+            {cls.time}{cls.end_time ? ` - ${cls.end_time}` : ""}
+          </span>
+          <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
+            <CalendarDays className="h-3.5 w-3.5 text-primary" />
+            יום {cls.day}
+          </span>
+          <span className="flex items-center gap-1.5 bg-muted/50 px-3 py-1.5 rounded-full">
+            <User className="h-3.5 w-3.5 text-primary" />
+            {cls.teacher}
+          </span>
+        </div>
         {cls.description && (
           <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{cls.description}</p>
         )}
-        <div className="pt-2">
+        <div className="flex flex-col gap-2 pt-3">
+          <Button
+            onClick={() => setShowGeneralInfo(true)}
+            className="rounded-full gap-2 w-full bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20"
+            variant="ghost"
+          >
+            <BookOpen className="h-4 w-4" />
+            הסבר כללי על {cls.name}
+          </Button>
           <Button variant="outline" size="sm" className="rounded-full w-full md:w-auto" onClick={onClose}>
             סגירה
           </Button>
