@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send, Phone, Mail, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,17 @@ const FloatingContact = () => {
   const [form, setForm] = useState({ name: "", phone: "", message: "" });
   const [sending, setSending] = useState(false);
   const { isAdmin } = useAdminMode();
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  useEffect(() => {
+    const check = () => {
+      const hasDialog = !!document.querySelector('[role="dialog"]');
+      setDialogOpen(hasDialog);
+    };
+    const observer = new MutationObserver(check);
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,6 +47,8 @@ const FloatingContact = () => {
       setSending(false);
     }
   };
+
+  if (dialogOpen && !isOpen) return null;
 
   return (
     <>
