@@ -241,7 +241,20 @@ const Schedule = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
             <ScheduleE section="schedule-label" fallback="שבועי" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
-            <ScheduleE section="schedule-title" fallback="לוח שיעורים" as="h2" className="font-heading text-3xl md:text-4xl font-bold" />
+             <ScheduleE section="schedule-title" fallback="לוח שיעורים" as="h2" className="font-heading text-3xl md:text-4xl font-bold" />
+            {/* Level Legend */}
+            <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
+              {(Object.keys(LEVELS) as LevelKey[]).map((key) => {
+                const l = LEVELS[key];
+                const Icon = l.icon;
+                return (
+                  <span key={key} className={cn("inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full", l.bg, l.color)}>
+                    <Icon className="h-3.5 w-3.5" />
+                    {l.label}
+                  </span>
+                );
+              })}
+            </div>
           </div>
 
           {isEditMode && (
