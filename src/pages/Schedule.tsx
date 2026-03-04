@@ -448,7 +448,7 @@ const Schedule = () => {
               className="grid grid-cols-7 gap-3 min-w-[900px]"
             >
               {days.map((day) => {
-                const dayItems = classes.filter((c) => c.day === day).sort((a, b) => a.time.localeCompare(b.time));
+                const dayItems = scheduleClasses.filter((c) => c.day === day).sort((a, b) => a.time.localeCompare(b.time));
                 return (
                   <motion.div key={day} variants={fadeUp} className="flex flex-col">
                     <div className="text-center mb-3 pb-3 border-b-2 border-primary/20">
