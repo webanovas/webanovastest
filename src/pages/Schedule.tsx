@@ -1432,12 +1432,25 @@ function parseDateStr(str: string): Date | undefined {
 }
 
 /* WYSIWYG Class Editor */
-function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew = false, hideClassTypeFields = false, isEvent = false }: {
+function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew = false, hideClassTypeFields = false, isEvent = false, allClasses, specialClasses }: {
   value: any; onChange: (v: any) => void; onSave: () => void;
   onDelete?: () => void; onCancel: () => void; isNew?: boolean;
   hideClassTypeFields?: boolean; isEvent?: boolean;
+  allClasses?: ClassRow[]; specialClasses?: SpecialClass[];
 }) {
   const [showFocalPicker, setShowFocalPicker] = useState(false);
+  const [showTypePicker, setShowTypePicker] = useState(false);
+
+  // Build unique class types for the switcher
+  const classTypes = useMemo(() => {
+    if (!allClasses) return [];
+    const unique = allClasses.reduce<ClassRow[]>((acc, cls) => {
+      if (!acc.find(c => c.name === cls.name)) acc.push(cls);
+      return acc;
+    }, []);
+    return unique;
+  }, [allClasses]);
+
   return (
      <div className="bg-card max-h-[85vh] overflow-y-auto">
        <div className="bg-gradient-to-b from-primary/8 to-primary/3 px-5 py-4 border-b border-border/30">
