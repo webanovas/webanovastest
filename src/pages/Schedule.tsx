@@ -514,7 +514,7 @@ const Schedule = () => {
       {isMobile ? (
         <Drawer open={!!viewingClass} onOpenChange={(open) => !open && setViewingClass(null)}>
           <DrawerContent className="max-h-[85vh]" dir="rtl">
-            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} allClasses={classes} />}
+            {viewingClass && <ClassViewContent cls={viewingClass} onClose={() => setViewingClass(null)} allClasses={classes} initialMode={viewingClassMode} />}
           </DrawerContent>
         </Drawer>
       ) : (
