@@ -270,7 +270,7 @@ const Index = () => {
                   </div>
                 ))}
               </div>
-            {/* Subtle gradient blending into the dark side */}
+            </div>
             <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-yoga-dark to-transparent z-10" />
           </div>
         </div>
