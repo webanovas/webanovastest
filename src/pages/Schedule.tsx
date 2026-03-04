@@ -425,8 +425,12 @@ const Schedule = () => {
                           <img src={cls.image_url} alt={cls.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" style={{ objectPosition: (cls as any).image_position || "50% 50%" }} />
                         </div>
                       ) : (
-                        <div className="aspect-[16/9] bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 flex items-center justify-center">
-                          <BookOpen className="h-12 w-12 text-primary/25" />
+                        <div className="aspect-[16/9] bg-gradient-to-br from-primary/5 via-accent/5 to-muted/20 flex items-center justify-center">
+                          <img
+                            src={POSE_ILLUSTRATIONS[uniqueClasses.indexOf(cls) % POSE_ILLUSTRATIONS.length]}
+                            alt=""
+                            className="h-24 w-24 opacity-60"
+                          />
                         </div>
                       )}
                       <CardContent className="p-5" dir="rtl">
