@@ -138,6 +138,14 @@ const Schedule = () => {
     },
   });
 
+  const { data: specialClasses = [] } = useQuery({
+    queryKey: ["special_classes"],
+    queryFn: async () => {
+      const { data } = await supabase.from("special_classes" as any).select("*").order("sort_order");
+      return (data ?? []) as SpecialClass[];
+    },
+  });
+
   const dayClasses = classes.filter((c) => c.day === selectedDay).sort((a, b) => a.time.localeCompare(b.time));
 
   const saveClass = async (cls: any) => {
