@@ -1,33 +1,39 @@
 
 
-## Redesign Focal Point Picker - Mobile-Style Crop Preview
+## Send Contact Form Emails via Resend
 
-The current picker shows the full image with a crosshair dot and separate small preview strips below. The user wants it redesigned to work like mobile photo editors: the full image is shown dimmed/dark, with a bright "crop window" rectangle floating over it that shows exactly what will be visible. Dragging moves the visible area around.
+Both contact forms (floating button + contact page) will send emails directly to shira.pelleg@gmail.com when submitted, with WhatsApp as a secondary option.
 
-### How It Will Work
+### Changes
 
-The image is displayed at full width. Over it, a dark overlay covers everything. A "window" cut out of the overlay shows the bright, unmasked portion — this is the visible crop area. The user drags to reposition which part of the image is visible through the window.
+**1. Store the Resend API key securely**
+- Save `RESEND_API_KEY` (`re_bKgWG7Xx_8bF6DBCdisKjA7KtSXgGyaVT`) as a backend secret
 
-Three aspect ratio options (wide 16:9, square 1:1, tall 3:4) let the user switch the crop shape to preview different contexts. The crop window stays centered on screen; dragging moves the image behind it (or equivalently, moves the focal point).
+**2. Create backend function: `send-contact-email`**
+- New file: `supabase/functions/send-contact-email/index.ts`
+- Accepts POST with `{ name, phone, message }` (all optional except name+phone)
+- Sends a nicely formatted email to `shira.pelleg@gmail.com` from `onboarding@resend.dev`
+- Public endpoint (no JWT required -- it's a contact form)
+- Proper CORS headers included
 
-### Technical Approach
+**3. Update `supabase/config.toml`**
+- Add `[functions.send-contact-email]` with `verify_jwt = false`
 
-**Single file change: `src/components/admin/FocalPointPicker.tsx`**
+**4. Update Floating Contact (`FloatingContact.tsx`)**
+- Replace the current `mailto:` form submission with a call to the backend function
+- Add a loading/sending state on the submit button
+- Show success toast on completion, error toast on failure
+- Keep the WhatsApp link as a secondary option (already exists below the form)
 
-1. **Replace the current UI** with a mobile-style crop view:
-   - Full image rendered inside a container
-   - CSS overlay using `clip-path` or 4 semi-transparent dark `div` panels around a bright center rectangle
-   - The center rectangle represents the crop — its aspect ratio changes based on the selected preview mode (16:9, 1:1, 3:4)
-   - The bright rectangle shows the actual image underneath (no dimming), while everything outside is darkened with ~60% black overlay
+**5. Update Contact Page (`Contact.tsx`)**
+- Wire the contact page form to also call the same backend function
+- Add form state management (name, email, phone, message)
+- Add loading state and success/error feedback
+- The WhatsApp button already exists as a secondary option -- no change needed there
 
-2. **Aspect ratio selector**: Three toggle buttons at the top (wide / square / tall) to switch the crop preview shape
-
-3. **Drag interaction**: User clicks/drags on the image to move the focal point. The crop rectangle stays centered in the container. As the focal point moves, the bright window shifts to show what will be visible at that position — giving an accurate real-time preview
-
-4. **Implementation detail**: 
-   - Use CSS `clip-path: inset()` on a bright copy of the image layered on top of a dimmed copy
-   - Calculate the inset values based on the focal point position and the selected aspect ratio relative to the image's natural aspect ratio
-   - The crop rectangle size is determined by fitting the selected aspect ratio inside the image bounds
-
-5. **Keep**: sticky bottom bar with save/reset/cancel buttons
+### How it will work for visitors
+1. User fills out the form (name, phone, optional message)
+2. Clicks the send button -- email is sent silently in the background
+3. Success message appears: "ההודעה נשלחה בהצלחה"
+4. Alternatively, they can click the WhatsApp button to message directly
 
