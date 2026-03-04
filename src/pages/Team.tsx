@@ -159,7 +159,7 @@ const Team = () => {
 
   const saveTeacher = async (t: TeacherRow) => {
     const { error } = await supabase.from("teachers").update({
-      name: t.name, role: t.role, description: t.description, image_url: t.image_url,
+      name: t.name, role: t.role, description: t.description, image_url: t.image_url, image_position: (t as any).image_position || "50% 50%",
     }).eq("id", t.id);
     if (error) { toast.error("שגיאה: " + error.message); }
     else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["teachers"] }); }
