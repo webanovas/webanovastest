@@ -246,11 +246,47 @@ const Schedule = () => {
               {(Object.keys(LEVELS) as LevelKey[]).map((key) => {
                 const l = LEVELS[key];
                 const Icon = l.icon;
-                return (
-                  <span key={key} className={cn("inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full", l.bg, l.color)}>
+                const desc = getText(`level-${key}`, "");
+                const hasPopover = isEditMode || !!desc;
+                
+                const badge = (
+                  <span className={cn("inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full", l.bg, l.color, hasPopover && "cursor-pointer transition-transform hover:scale-105")}>
                     <Icon className="h-3.5 w-3.5" />
                     {l.label}
                   </span>
+                );
+
+                if (!hasPopover) return <span key={key}>{badge}</span>;
+
+                return (
+                  <Popover key={key}>
+                    <PopoverTrigger asChild>
+                      <button>{badge}</button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 text-right" side="bottom">
+                      {isEditMode ? (
+                        <div className="space-y-2">
+                          <p className={cn("font-semibold text-sm flex items-center gap-1", l.color)}>
+                            <Icon className="h-4 w-4" /> {l.label}
+                          </p>
+                          <textarea
+                            placeholder="הוסף תיאור לרמה..."
+                            className="w-full min-h-[60px] text-sm rounded-md border border-input bg-background px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring resize-y"
+                            defaultValue={desc}
+                            key={`level-${key}-${desc}`}
+                            onBlur={(e) => saveText(`level-${key}`, e.target.value)}
+                          />
+                        </div>
+                      ) : (
+                        <div className="space-y-1">
+                          <p className={cn("font-semibold text-sm flex items-center gap-1", l.color)}>
+                            <Icon className="h-4 w-4" /> {l.label}
+                          </p>
+                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{desc}</p>
+                        </div>
+                      )}
+                    </PopoverContent>
+                  </Popover>
                 );
               })}
             </div>
