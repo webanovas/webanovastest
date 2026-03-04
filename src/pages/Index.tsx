@@ -199,7 +199,7 @@ const Index = () => {
   return (
     <Layout>
       {/* Hero with image carousel */}
-      <section className="relative min-h-[85vh] md:min-h-screen flex items-end overflow-hidden">
+      <section className="relative min-h-[85vh] md:min-h-screen flex items-end overflow-hidden" dir="rtl">
         {/* Image carousel background */}
         <div className="absolute inset-0" ref={heroEmblaRef}>
           <div className="flex h-full">
