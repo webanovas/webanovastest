@@ -189,6 +189,7 @@ const Schedule = () => {
       day: newClass.day, time: newClass.time, end_time: newClass.end_time || null, name: newClass.name,
       teacher: newClass.teacher, description: newClass.description, image_url: newClass.image_url || null,
       is_recurring: newClass.is_recurring, specific_date: newClass.specific_date, level: (newClass as any).level || "all",
+      image_position: newClass.image_position || "50% 50%",
     } as any).select().single();
     if (error) { console.error("Add error:", error); toast.error("שגיאה: " + error.message); }
     else {
@@ -198,7 +199,8 @@ const Schedule = () => {
         setRedoStack([]);
       }
       queryClient.invalidateQueries({ queryKey: ["classes"] });
-      setNewClass({ day: "ראשון", time: "", end_time: "", name: "", teacher: "", description: "", image_url: null, is_recurring: true, specific_date: null, level: "all" } as any);
+      setNewClass({ day: "ראשון", time: "", end_time: "", name: "", teacher: "", description: "", image_url: null, is_recurring: true, specific_date: null, level: "all", image_position: "50% 50%" });
+      setSelectedClassType(null);
       setIsAddingClass(false);
     }
   };
