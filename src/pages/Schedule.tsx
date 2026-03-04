@@ -740,6 +740,17 @@ const Schedule = () => {
                               </div>
                             </button>
                           ))}
+                          {/* Add new general class type */}
+                          <button
+                            onClick={() => {
+                              setNewClassType({ name: "", description: "", image_url: null, image_position: "50% 50%", level: "all" });
+                              setAddClassStep("new-type");
+                            }}
+                            className="rounded-xl border-2 border-dashed border-border/40 hover:border-primary/50 flex flex-col items-center justify-center gap-1.5 text-muted-foreground hover:text-primary transition-all duration-200 min-h-[120px]"
+                          >
+                            <Plus className="h-6 w-6" />
+                            <span className="text-xs font-medium">שיעור חדש</span>
+                          </button>
                         </div>
                       </div>
                     );
