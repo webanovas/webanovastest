@@ -519,7 +519,7 @@ const Schedule = () => {
                   // Update all classes with same name
                   const { error } = await supabase
                     .from("classes")
-                    .update({ name: editingClassInfo.name, description: editingClassInfo.description, image_url: editingClassInfo.image_url || null })
+                    .update({ name: editingClassInfo.name, description: editingClassInfo.description, image_url: editingClassInfo.image_url || null, image_position: (editingClassInfo as any).image_position || "50% 50%" })
                     .eq("name", editingClassInfoOriginalName);
                   if (error) { toast.error("שגיאה: " + error.message); }
                   else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["classes"] }); }
