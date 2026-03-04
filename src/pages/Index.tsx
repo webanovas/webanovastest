@@ -296,7 +296,7 @@ const Index = () => {
               <E section="hero-subtitle" fallback="מקום של שקט, נשימה וחיבור. בואו לתרגל במרחב חם ומזמין עם שירה פלג וצוות המורים שלנו." as="p"
                 className="text-base md:text-xl text-primary-foreground/90 leading-relaxed mb-8 md:mb-10 max-w-lg" multiline />
             </motion.div>
-            <motion.div variants={fadeUp} className="flex flex-wrap gap-4 justify-start">
+            <motion.div variants={fadeUp} className="flex flex-wrap gap-4 justify-center md:justify-start">
               <Button size="lg" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base shadow-xl shadow-primary/30" asChild={!isEditMode}>
                 {isEditMode ? (
                   <span><E section="hero-btn-schedule" fallback="לוח שיעורים" /></span>
