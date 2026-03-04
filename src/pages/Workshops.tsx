@@ -281,7 +281,7 @@ function WorkshopCard({ workshop: w, isEditMode, onEdit, imgSrc }: { workshop: W
         </div>
       )}
       <div className="w-full sm:w-56 md:w-64 shrink-0 aspect-square sm:aspect-auto overflow-hidden">
-        <img src={imgSrc} alt={w.title} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" />
+        <img src={imgSrc} alt={w.title} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" style={{ objectPosition: (w as any).image_position || "50% 50%" }} />
       </div>
       <CardContent className="pt-6 pb-6 flex flex-col justify-center flex-1">
         <h3 className="font-heading font-semibold text-xl mb-3">{w.title}</h3>
