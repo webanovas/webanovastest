@@ -199,7 +199,7 @@ const Index = () => {
   return (
     <Layout>
       {/* Hero with image carousel */}
-      <section className="relative min-h-[85vh] md:min-h-screen flex items-end overflow-hidden">
+      <section className="relative min-h-[85vh] md:min-h-screen flex items-end overflow-hidden" dir="rtl">
         {/* Image carousel background */}
         <div className="absolute inset-0" ref={heroEmblaRef}>
           <div className="flex h-full">
@@ -210,7 +210,7 @@ const Index = () => {
             ))}
           </div>
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-yoga-dark/95 via-yoga-dark/50 to-yoga-dark/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-yoga-dark via-yoga-dark/70 via-[45%] to-transparent" />
 
         {/* Admin: edit carousel images button */}
         {isEditMode && (
