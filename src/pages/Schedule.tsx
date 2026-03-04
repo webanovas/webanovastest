@@ -518,6 +518,18 @@ const Schedule = () => {
           <div className="text-center mb-12">
             <ScheduleE section="classes-label" fallback="השיעורים" as="span" className="text-primary font-medium text-sm tracking-wider uppercase mb-3 block" />
             <ScheduleE section="classes-title" fallback="הכירו את השיעורים שלנו" as="h2" className="font-heading text-3xl md:text-4xl font-bold" />
+            {isEditMode && (
+              <Button
+                size="sm"
+                onClick={() => {
+                  setNewClassType({ name: "", description: "", image_url: null, image_position: "50% 50%", level: "all" });
+                  setIsAddingClassTypeStandalone(true);
+                }}
+                className="rounded-full gap-2 mt-4"
+              >
+                <Plus className="h-4 w-4" />הוסף סוג שיעור חדש
+              </Button>
+            )}
           </div>
 
           {(() => {
