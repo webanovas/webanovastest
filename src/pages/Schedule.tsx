@@ -141,7 +141,7 @@ const Schedule = () => {
   const { data: specialClasses = [] } = useQuery({
     queryKey: ["special_classes"],
     queryFn: async () => {
-      const { data } = await supabase.from("special_classes" as any).select("*").order("sort_order");
+      const { data } = await supabase.from("special_classes" as any).select("*").order("sort_order") as any;
       return (data ?? []) as SpecialClass[];
     },
   });
