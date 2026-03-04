@@ -555,6 +555,7 @@ const Schedule = () => {
 /* ──── Class View Content (shared between Drawer & Dialog) ──── */
 function ClassViewContent({ cls, onClose, allClasses, initialMode = "specific" }: { cls: ClassRow; onClose: () => void; allClasses?: ClassRow[]; initialMode?: "specific" | "general" }) {
   const [mode, setMode] = useState<"specific" | "general">(initialMode);
+  const cameFromSpecific = initialMode === "specific";
 
   const generalClass = allClasses?.find(c => c.name === cls.name) || cls;
 
