@@ -330,6 +330,7 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
   onDelete?: () => void; onCancel: () => void; isNew?: boolean;
 }) {
   const [dateOpen, setDateOpen] = useState(false);
+  const [showFocalPicker, setShowFocalPicker] = useState(false);
   if (!value) return null;
 
   const parsedDate = value.date ? parseHebrewDate(value.date) : undefined;
