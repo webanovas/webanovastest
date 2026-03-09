@@ -67,5 +67,5 @@ export function usePageContent(page: string) {
     }
   };
 
-  return { getText, saveText, isLoading };
+  return { getText, getLoadedText, saveText, isLoading };
 }
