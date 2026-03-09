@@ -174,13 +174,15 @@ const Index = () => {
     return () => { emblaApi.off("select", onSelect); };
   }, [emblaApi, onSelect]);
 
-  const E = ({ section, fallback, as, className, multiline }: { section: string; fallback: string; as?: "h1"|"h2"|"h3"|"p"|"span"|"div"; className?: string; multiline?: boolean }) => {
+  // Stable editable text helper – returns JSX directly (not a component)
+  // to avoid re-mounting EditableText on every parent re-render.
+  const e = (section: string, fallback: string, as?: "h1"|"h2"|"h3"|"p"|"span"|"div", className?: string, multiline?: boolean) => {
     const val = getText(section, fallback);
     if (!isEditMode) {
       const Tag = as || "span";
       return <Tag className={className}>{val}</Tag>;
     }
-    return <EditableText value={val} onSave={(v) => saveText(section, v)} as={as} className={className} multiline={multiline} />;
+    return <EditableText key={section} value={val} onSave={(v) => saveText(section, v)} as={as} className={className} multiline={multiline} />;
   };
 
   // Helper: wrap Link buttons so they don't navigate in edit mode
