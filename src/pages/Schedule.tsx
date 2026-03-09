@@ -86,7 +86,7 @@ const Schedule = () => {
       const Tag = as || "span";
       return <Tag className={className}>{val}</Tag>;
     }
-    return <EditableText value={val} onSave={(v) => saveText(section, v)} as={as} className={className} multiline={multiline} />;
+    return <EditableText value={val} onSave={(v) => saveText(section, v)} as={as} className={className} multiline={multiline} persistKey={`schedule:${section}`} />;
   };
   const navigate = useNavigate();
   const [selectedDay, setSelectedDay] = useState(days[0]);
