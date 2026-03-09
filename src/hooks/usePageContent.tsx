@@ -1,12 +1,25 @@
+import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export function usePageContent(page: string) {
   const queryClient = useQueryClient();
+  const localCacheKey = `page_content_${page}`;
+
+  const readLocalCache = () => {
+    if (typeof window === "undefined") return undefined;
+    try {
+      const raw = window.localStorage.getItem(localCacheKey);
+      return raw ? (JSON.parse(raw) as Record<string, string>) : undefined;
+    } catch {
+      return undefined;
+    }
+  };
 
   const { data: contentMap = {}, isLoading } = useQuery({
     queryKey: ["page_content", page],
+    initialData: readLocalCache,
     queryFn: async () => {
       const { data } = await supabase
         .from("page_content")
@@ -20,20 +33,28 @@ export function usePageContent(page: string) {
     },
   });
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(localCacheKey, JSON.stringify(contentMap));
+    } catch {
+      // ignore storage write failures
+    }
+  }, [contentMap, localCacheKey]);
+
   const getText = (section: string, fallback: string) => {
-    if (isLoading) return fallback; // While loading, use fallback (won't cause flash for text)
     if (section in contentMap) {
       return contentMap[section]; // return even if empty (explicitly cleared)
     }
     return fallback;
   };
 
-  // Same as getText but returns null while loading (useful for images to prevent flash)
+  // Same as getText but returns null while loading and no cached value (useful for images)
   const getLoadedText = (section: string, fallback: string) => {
-    if (isLoading) return null;
     if (section in contentMap) {
       return contentMap[section];
     }
+    if (isLoading) return null;
     return fallback;
   };
 
