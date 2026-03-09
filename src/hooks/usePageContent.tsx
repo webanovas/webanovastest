@@ -21,8 +21,18 @@ export function usePageContent(page: string) {
   });
 
   const getText = (section: string, fallback: string) => {
+    if (isLoading) return fallback; // While loading, use fallback (won't cause flash for text)
     if (section in contentMap) {
       return contentMap[section]; // return even if empty (explicitly cleared)
+    }
+    return fallback;
+  };
+
+  // Same as getText but returns null while loading (useful for images to prevent flash)
+  const getLoadedText = (section: string, fallback: string) => {
+    if (isLoading) return null;
+    if (section in contentMap) {
+      return contentMap[section];
     }
     return fallback;
   };
