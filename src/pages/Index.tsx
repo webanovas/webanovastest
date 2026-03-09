@@ -397,6 +397,27 @@ const Index = () => {
         </div>
       </section>
 
+      {/* What is Yoga */}
+      <section className="py-14 md:py-28">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={stagger}
+            className="max-w-3xl mx-auto text-center"
+          >
+            <motion.div variants={fadeUp}>
+              <E section="yoga-intro-text" fallback={`בשיעור עם קבוצה חדשה, אשאל תמיד ״מי יודע מה פירוש המילה יוגה?״.\n\nהעיסוק ביוגה, הפך עם השנים לנפוץ ופופולארי מאוד. בימינו למשמע המילה יוגה, גם ילדים רכים בשנים נכנסים לתנוחת לוטוס (כמין ישיבה מזרחית), עוצמים את עיניהם ומזמזמים אום.\n\nלמרות שרבים מכירים את היוגה לא ברור להם מה היא בדיוק.\n\nהתשובה היא פשוטה ומורכבת כאחד וקיימות הרבה פרשנויות והגדרות המנסות להסביר את משמעות היוגה לאדם.\n\nהיוגה היא עולם ומלואו. דרך חיים ופילוסופיה שמקורה בהודו העתיקה ומטרתה לעזור לאדם לחיות בשלווה, איזון ואושר. בליבה של היוגה עומד קשר הגומלין בין הגוף לתודעה, והפרקטיקה של היוגה מכילה גם תרגול פיסי. לדוגמא: תנוחות ותרגילי נשימה וגם תרגול מנטלי כגון מדיטציה. פירוש המילה יוגה Yoga הוא איחוד, חיבור לכדי אחד. החיבור הוא, בין השאר, של תנועה פיסית עם עולם התודעה והרוח. כך, התרגול הפיסי ביוגה אינו רק הפעלה מכנית של הגוף אלא מסע של התבוננות וחקירה פנימית המוביל לאיזון וריפוי.`}
+                as="p"
+                className="text-muted-foreground leading-relaxed text-base md:text-lg whitespace-pre-line"
+                multiline
+              />
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Benefits */}
       <section className="py-14 md:py-36 relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
