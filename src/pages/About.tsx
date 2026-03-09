@@ -44,7 +44,7 @@ const valueDefaults = [
 
 const About = () => {
   const { isEditMode } = useAdminMode();
-  const { getText, saveText } = usePageContent("about");
+  const { getText, getLoadedText, saveText } = usePageContent("about");
 
   const E = ({ section, fallback, as, className, multiline }: { section: string; fallback: string; as?: "h1"|"h2"|"h3"|"p"|"span"|"div"; className?: string; multiline?: boolean }) => {
     const val = getText(section, fallback);
@@ -56,7 +56,8 @@ const About = () => {
   };
 
   const getImage = (section: string, fallback: string) => {
-    const saved = getText(section, "");
+    const saved = getLoadedText(section, "");
+    if (saved === null) return fallback;
     return saved || fallback;
   };
 
