@@ -5,7 +5,7 @@ import { toast } from "sonner";
 export function usePageContent(page: string) {
   const queryClient = useQueryClient();
 
-  const { data: contentMap = {} } = useQuery({
+  const { data: contentMap = {}, isLoading } = useQuery({
     queryKey: ["page_content", page],
     queryFn: async () => {
       const { data } = await supabase
