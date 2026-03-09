@@ -12,6 +12,13 @@ interface EditableTextProps {
   placeholder?: string;
 }
 
+type PersistedEditState = {
+  editing: boolean;
+  draft: string;
+};
+
+const editStateStore = new Map<string, PersistedEditState>();
+
 const EditableText = ({
   value,
   onSave,
@@ -21,19 +28,28 @@ const EditableText = ({
   placeholder = "הוסף טקסט...",
 }: EditableTextProps) => {
   const { isEditMode } = useAdminMode();
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(value);
+  const fieldId = useId();
+  const persisted = editStateStore.get(fieldId);
+  const [editing, setEditing] = useState<boolean>(persisted?.editing ?? false);
+  const [draft, setDraft] = useState<string>(persisted?.draft ?? value);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
-  const editingRef = useRef(false);
-
-  // Keep ref in sync so we can restore after remount
-  useEffect(() => {
-    editingRef.current = editing;
-  }, [editing]);
 
   useEffect(() => {
-    setDraft(value);
-  }, [value]);
+    editStateStore.set(fieldId, { editing, draft });
+  }, [fieldId, editing, draft]);
+
+  useEffect(() => {
+    if (!editing) {
+      setDraft(value);
+    }
+  }, [value, editing]);
+
+  useEffect(() => {
+    if (!isEditMode) {
+      setEditing(false);
+      setDraft(value);
+    }
+  }, [isEditMode, value]);
 
   useEffect(() => {
     if (editing && inputRef.current) {
