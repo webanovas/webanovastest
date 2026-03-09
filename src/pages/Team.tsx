@@ -208,12 +208,6 @@ const Team = () => {
 
       <section className="py-14 md:py-36">
         <div className="container mx-auto px-4">
-          {/* Mobile intro text */}
-          <div className="md:hidden text-center mb-10 px-2">
-            <E section="team-mobile-intro" fallback="המורים והמורות שלנו מלווים אתכם בתרגול מתוך מקצועיות, רגישות ואהבה אמיתית ליוגה" as="p"
-              className="text-muted-foreground leading-relaxed text-base" />
-          </div>
-
           <div className="text-center mb-12">
             {isEditMode && (
               <Button size="sm" onClick={() => setIsAddingTeacher(true)} className="mt-4 rounded-full gap-2">
@@ -236,6 +230,11 @@ const Team = () => {
                     )}
                     onClick={() => isEditMode && setEditingTeacher({ ...t })}
                   >
+                    {/* Mobile: name above image */}
+                    <div className="md:hidden pt-5 pb-3 px-4">
+                      <h3 className="font-heading font-semibold text-lg">{t.name}</h3>
+                      <p className="text-primary text-sm font-medium">{t.role}</p>
+                    </div>
                     <div className="aspect-[3/4] overflow-hidden relative">
                       <img src={t.image_url || teacherImg} alt={t.name} className="w-full h-full object-cover" style={{ objectPosition: (t as any).image_position || "50% 50%" }} />
                       {isEditMode && (
@@ -245,8 +244,9 @@ const Team = () => {
                       )}
                     </div>
                     <CardContent className="pt-6 pb-8 flex flex-col items-center gap-2">
-                      <h3 className="font-heading font-semibold text-lg">{t.name}</h3>
-                      <p className="text-primary text-sm font-medium">{t.role}</p>
+                      {/* Desktop: name below image */}
+                      <h3 className="hidden md:block font-heading font-semibold text-lg">{t.name}</h3>
+                      <p className="hidden md:block text-primary text-sm font-medium">{t.role}</p>
                       <p className="text-muted-foreground text-sm">{t.description}</p>
                     </CardContent>
                   </Card>
