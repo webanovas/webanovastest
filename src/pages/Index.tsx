@@ -123,8 +123,9 @@ const Index = () => {
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const fileRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Get hero images from page_content or use defaults
+  // Get hero images from page_content or use defaults (only after content loaded)
   const heroImages = defaultHeroImages.map((defaultSrc, i) => {
+    if (isContentLoading) return defaultSrc; // don't flash — will re-render once loaded
     const saved = getText(`hero-image-${i}`, "");
     return saved || defaultSrc;
   });
