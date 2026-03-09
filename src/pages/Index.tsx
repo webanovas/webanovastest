@@ -180,7 +180,7 @@ const Index = () => {
       const Tag = as || "span";
       return <Tag className={className}>{val}</Tag>;
     }
-    return <EditableText key={section} value={val} onSave={(v) => saveText(section, v)} as={as} className={className} multiline={multiline} />;
+    return <EditableText value={val} onSave={(v) => saveText(section, v)} as={as} className={className} multiline={multiline} persistKey={`home:${section}`} />;
   };
 
   // Helper: wrap Link buttons so they don't navigate in edit mode

@@ -95,7 +95,7 @@ const Workshops = () => {
       const Tag = as || "span";
       return <Tag className={className}>{val}</Tag>;
     }
-    return <EditableText value={val} onSave={(v) => saveText(section, v)} as={as} className={className} />;
+    return <EditableText value={val} onSave={(v) => saveText(section, v)} as={as} className={className} persistKey={`workshops:${section}`} />;
   };
   const [editing, setEditing] = useState<WorkshopRow | null>(null);
   const [isAdding, setIsAdding] = useState(false);

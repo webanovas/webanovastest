@@ -70,6 +70,7 @@ const PageHero = ({ title, subtitle, label, image, imagePosition, page, titleSec
                   value={resolvedLabel}
                   onSave={(v) => saveText(labelSection, v)}
                   as="span"
+                  persistKey={`${page}:${labelSection}`}
                   className={`font-medium text-xs md:text-sm tracking-wider uppercase mb-2 md:mb-3 block ${image ? "text-primary-foreground/80" : "text-primary"}`}
                 />
               ) : (
@@ -85,6 +86,7 @@ const PageHero = ({ title, subtitle, label, image, imagePosition, page, titleSec
                 value={resolvedTitle}
                 onSave={(v) => saveText(titleSection, v)}
                 as="h1"
+                persistKey={`${page}:${titleSection}`}
                 className={`font-heading text-3xl md:text-6xl font-extrabold mb-3 md:mb-4 tracking-tight ${image ? "text-primary-foreground" : ""}`}
               />
             ) : (
@@ -100,6 +102,7 @@ const PageHero = ({ title, subtitle, label, image, imagePosition, page, titleSec
                   value={resolvedSubtitle}
                   onSave={(v) => saveText(subtitleSection, v)}
                   as="p"
+                  persistKey={`${page}:${subtitleSection}`}
                   className={`text-base md:text-lg max-w-xl ${image ? "text-primary-foreground/70" : "text-muted-foreground"}`}
                 />
               ) : (
