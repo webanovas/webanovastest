@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useAdminMode } from "@/hooks/useAdminMode";
 import { Pencil, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -32,9 +32,29 @@ const EditableText = ({
   useEffect(() => {
     if (editing && inputRef.current) {
       inputRef.current.focus();
-      inputRef.current.select();
+      // Only select for short text inputs
+      if (!multiline) {
+        inputRef.current.select();
+      } else {
+        // Move cursor to end for textareas
+        const el = inputRef.current as HTMLTextAreaElement;
+        el.selectionStart = el.selectionEnd = el.value.length;
+      }
     }
-  }, [editing]);
+  }, [editing, multiline]);
+
+  // Auto-resize textarea
+  const autoResize = useCallback((el: HTMLTextAreaElement | null) => {
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = el.scrollHeight + "px";
+  }, []);
+
+  useEffect(() => {
+    if (editing && multiline && inputRef.current) {
+      autoResize(inputRef.current as HTMLTextAreaElement);
+    }
+  }, [editing, multiline, draft, autoResize]);
 
   if (!isEditMode) {
     if (!value) return null;
@@ -43,20 +63,23 @@ const EditableText = ({
 
   if (editing) {
     return (
-      <div className="relative inline-flex items-center gap-1.5 w-full" onClick={(e) => e.stopPropagation()}>
+      <div className="relative w-full" onClick={(e) => e.stopPropagation()}>
         {multiline ? (
           <textarea
             ref={inputRef as React.RefObject<HTMLTextAreaElement>}
             value={draft}
-            onChange={(e) => setDraft(e.target.value)}
+            onChange={(e) => {
+              setDraft(e.target.value);
+              autoResize(e.target);
+            }}
             onKeyDown={(e) => {
               if (e.key === "Escape") { setDraft(value); setEditing(false); }
             }}
             className={cn(
-              "w-full bg-primary/5 border-2 border-primary/40 rounded-lg px-3 py-2 text-inherit focus:outline-none focus:ring-2 focus:ring-primary/40 min-h-[60px] resize-y",
-              className
+              "w-full bg-primary/5 border-2 border-primary/40 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y min-h-[120px]",
+              "text-base leading-relaxed font-body text-foreground"
             )}
-            rows={3}
+            dir="rtl"
           />
         ) : (
           <input
@@ -73,18 +96,22 @@ const EditableText = ({
             )}
           />
         )}
-        <button
-          onClick={() => { onSave(draft); setEditing(false); }}
-          className="p-1.5 rounded-full bg-primary text-primary-foreground hover:bg-primary/80 transition-colors flex-shrink-0"
-        >
-          <Check className="h-3.5 w-3.5" />
-        </button>
-        <button
-          onClick={() => { setDraft(value); setEditing(false); }}
-          className="p-1.5 rounded-full bg-muted text-muted-foreground hover:bg-muted/80 transition-colors flex-shrink-0"
-        >
-          <X className="h-3.5 w-3.5" />
-        </button>
+        <div className="flex gap-1.5 justify-end mt-2">
+          <button
+            onClick={() => { onSave(draft); setEditing(false); }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary text-primary-foreground hover:bg-primary/80 transition-colors text-sm font-medium"
+          >
+            <Check className="h-3.5 w-3.5" />
+            שמירה
+          </button>
+          <button
+            onClick={() => { setDraft(value); setEditing(false); }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted text-muted-foreground hover:bg-muted/80 transition-colors text-sm"
+          >
+            <X className="h-3.5 w-3.5" />
+            ביטול
+          </button>
+        </div>
       </div>
     );
   }
