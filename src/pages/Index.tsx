@@ -102,7 +102,7 @@ const HeroFocalEditor = ({ src, index, objectPosition, onSave }: { src: string; 
 
 const Index = () => {
   const { isEditMode } = useAdminMode();
-  const { getText, saveText, isLoading: isContentLoading } = usePageContent("home");
+  const { getText, getLoadedText, saveText, isLoading: isContentLoading } = usePageContent("home");
 
   const { data: testimonials = [] } = useQuery({
     queryKey: ["testimonials-home"],
