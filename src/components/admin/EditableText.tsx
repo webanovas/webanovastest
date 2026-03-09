@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useId } from "react";
 import { useAdminMode } from "@/hooks/useAdminMode";
 import { Pencil, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -24,6 +24,12 @@ const EditableText = ({
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
+  const editingRef = useRef(false);
+
+  // Keep ref in sync so we can restore after remount
+  useEffect(() => {
+    editingRef.current = editing;
+  }, [editing]);
 
   useEffect(() => {
     setDraft(value);
@@ -32,11 +38,9 @@ const EditableText = ({
   useEffect(() => {
     if (editing && inputRef.current) {
       inputRef.current.focus();
-      // Only select for short text inputs
       if (!multiline) {
         inputRef.current.select();
       } else {
-        // Move cursor to end for textareas
         const el = inputRef.current as HTMLTextAreaElement;
         el.selectionStart = el.selectionEnd = el.value.length;
       }
@@ -63,7 +67,12 @@ const EditableText = ({
 
   if (editing) {
     return (
-      <div className="relative w-full" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="relative w-full"
+        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
+      >
         {multiline ? (
           <textarea
             ref={inputRef as React.RefObject<HTMLTextAreaElement>}
@@ -74,6 +83,10 @@ const EditableText = ({
             }}
             onKeyDown={(e) => {
               if (e.key === "Escape") { setDraft(value); setEditing(false); }
+            }}
+            onBlur={(e) => {
+              // Don't close if clicking save/cancel buttons
+              if (e.relatedTarget?.closest('[data-edit-actions]')) return;
             }}
             className={cn(
               "w-full bg-primary/5 border-2 border-primary/40 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y min-h-[120px]",
@@ -96,7 +109,7 @@ const EditableText = ({
             )}
           />
         )}
-        <div className="flex gap-1.5 justify-end mt-2">
+        <div className="flex gap-1.5 justify-end mt-2" data-edit-actions>
           <button
             onClick={() => { onSave(draft); setEditing(false); }}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary text-primary-foreground hover:bg-primary/80 transition-colors text-sm font-medium"
@@ -124,7 +137,9 @@ const EditableText = ({
         "hover:outline hover:outline-2 hover:outline-primary/40 hover:outline-offset-4",
         "hover:bg-primary/5"
       )}
-      onClick={(e: React.MouseEvent) => { e.stopPropagation(); setEditing(true); }}
+      onClick={(e: React.MouseEvent) => { e.stopPropagation(); e.preventDefault(); setEditing(true); }}
+      onMouseDown={(e: React.MouseEvent) => e.stopPropagation()}
+      onPointerDown={(e: React.PointerEvent) => e.stopPropagation()}
     >
       {value || <span className="text-muted-foreground italic">{placeholder}</span>}
       <span className="absolute -top-2 -left-2 bg-primary text-primary-foreground rounded-full p-1 opacity-0 group-hover/edit:opacity-100 transition-opacity shadow-lg">
