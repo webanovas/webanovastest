@@ -191,9 +191,10 @@ const Index = () => {
     return <Link to={to} {...props}>{children}</Link>;
   };
 
-  // Get section images from page_content or use defaults
+  // Get section images from page_content or use defaults (wait for load)
   const getImage = (section: string, fallback: string) => {
-    const saved = getText(section, "");
+    const saved = getLoadedText(section, "");
+    if (saved === null) return fallback;
     return saved || fallback;
   };
 
