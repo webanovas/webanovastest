@@ -208,6 +208,12 @@ const Team = () => {
 
       <section className="py-14 md:py-36">
         <div className="container mx-auto px-4">
+          {/* Mobile intro text */}
+          <div className="md:hidden text-center mb-10 px-2">
+            <E section="team-mobile-intro" fallback="המורים והמורות שלנו מלווים אתכם בתרגול מתוך מקצועיות, רגישות ואהבה אמיתית ליוגה" as="p"
+              className="text-muted-foreground leading-relaxed text-base" />
+          </div>
+
           <div className="text-center mb-12">
             {isEditMode && (
               <Button size="sm" onClick={() => setIsAddingTeacher(true)} className="mt-4 rounded-full gap-2">
