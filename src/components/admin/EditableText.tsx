@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback, useId } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useAdminMode } from "@/hooks/useAdminMode";
 import { Pencil, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,7 @@ interface EditableTextProps {
   className?: string;
   multiline?: boolean;
   placeholder?: string;
+  persistKey?: string;
 }
 
 type PersistedEditState = {
@@ -26,17 +27,18 @@ const EditableText = ({
   className,
   multiline = false,
   placeholder = "הוסף טקסט...",
+  persistKey,
 }: EditableTextProps) => {
   const { isEditMode } = useAdminMode();
-  const fieldId = useId();
-  const persisted = editStateStore.get(fieldId);
+  const persisted = persistKey ? editStateStore.get(persistKey) : undefined;
   const [editing, setEditing] = useState<boolean>(persisted?.editing ?? false);
   const [draft, setDraft] = useState<string>(persisted?.draft ?? value);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    editStateStore.set(fieldId, { editing, draft });
-  }, [fieldId, editing, draft]);
+    if (!persistKey) return;
+    editStateStore.set(persistKey, { editing, draft });
+  }, [persistKey, editing, draft]);
 
   useEffect(() => {
     if (!editing) {
