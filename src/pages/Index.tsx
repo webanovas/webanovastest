@@ -102,7 +102,7 @@ const HeroFocalEditor = ({ src, index, objectPosition, onSave }: { src: string; 
 
 const Index = () => {
   const { isEditMode } = useAdminMode();
-  const { getText, saveText } = usePageContent("home");
+  const { getText, getLoadedText, saveText, isLoading: isContentLoading } = usePageContent("home");
 
   const { data: testimonials = [] } = useQuery({
     queryKey: ["testimonials-home"],
@@ -123,9 +123,10 @@ const Index = () => {
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const fileRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Get hero images from page_content or use defaults
+  // Get hero images from page_content or use defaults (wait for content to load)
   const heroImages = defaultHeroImages.map((defaultSrc, i) => {
-    const saved = getText(`hero-image-${i}`, "");
+    const saved = getLoadedText(`hero-image-${i}`, "");
+    if (saved === null) return defaultSrc; // still loading, but won't flash since we hide until loaded
     return saved || defaultSrc;
   });
 
@@ -190,9 +191,10 @@ const Index = () => {
     return <Link to={to} {...props}>{children}</Link>;
   };
 
-  // Get section images from page_content or use defaults
+  // Get section images from page_content or use defaults (wait for load)
   const getImage = (section: string, fallback: string) => {
-    const saved = getText(section, "");
+    const saved = getLoadedText(section, "");
+    if (saved === null) return fallback;
     return saved || fallback;
   };
 
@@ -201,7 +203,7 @@ const Index = () => {
       {/* Hero with image carousel */}
       <section className="relative min-h-[85vh] md:min-h-screen flex items-end overflow-hidden">
         {/* Image carousel background */}
-        <div className="absolute inset-0" ref={heroEmblaRef}>
+        <div className={`absolute inset-0 transition-opacity duration-500 ${isContentLoading ? 'opacity-0' : 'opacity-100'}`} ref={heroEmblaRef}>
           <div className="flex h-full">
             {heroImages.map((src, i) => (
               <div key={i} className="flex-none w-full h-full min-w-0 relative">
