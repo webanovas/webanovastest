@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -31,15 +31,22 @@ export function usePageContent(page: string) {
       });
       return map;
     },
+    staleTime: 30000, // Don't refetch for 30s
   });
 
+  // Debounced localStorage write
+  const writeTimer = useRef<ReturnType<typeof setTimeout>>();
   useEffect(() => {
     if (typeof window === "undefined") return;
-    try {
-      window.localStorage.setItem(localCacheKey, JSON.stringify(contentMap));
-    } catch {
-      // ignore storage write failures
-    }
+    clearTimeout(writeTimer.current);
+    writeTimer.current = setTimeout(() => {
+      try {
+        window.localStorage.setItem(localCacheKey, JSON.stringify(contentMap));
+      } catch {
+        // ignore storage write failures
+      }
+    }, 1000);
+    return () => clearTimeout(writeTimer.current);
   }, [contentMap, localCacheKey]);
 
   const getText = (section: string, fallback: string) => {
