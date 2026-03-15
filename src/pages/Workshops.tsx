@@ -119,6 +119,8 @@ const Workshops = () => {
       description: w.description, is_active: w.is_active, image_url: w.image_url,
       image_position: (w as any).image_position || "50% 50%",
       payment_url: (w as any).payment_url || null,
+      short_description: (w as any).short_description || "",
+      target_audience: (w as any).target_audience || "",
     }).eq("id", w.id);
     if (error) { console.error("Save error:", error); toast.error("שגיאה: " + error.message); }
     else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["workshops"] }); }
