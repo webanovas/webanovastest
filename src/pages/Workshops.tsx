@@ -302,7 +302,7 @@ const Workshops = () => {
 };
 
 /* ──── Workshop Detail View (public) ──── */
-function WorkshopDetailView({ workshop: w, imgSrc, onClose }: { workshop: WorkshopRow; imgSrc: string; onClose: () => void }) {
+function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { workshop: WorkshopRow; imgSrc: string; onClose: () => void; isPast?: boolean }) {
   const workshopName = w.title;
   const whatsappMessage = encodeURIComponent(`היי שירה, אשמח לשמוע פרטים על הסדנה "${workshopName}" 🙏`);
   const whatsappUrl = `https://wa.me/972542131254?text=${whatsappMessage}`;
