@@ -165,6 +165,14 @@ const Schedule = () => {
     },
   });
 
+  const { data: teachers = [] } = useQuery({
+    queryKey: ["teachers"],
+    queryFn: async () => {
+      const { data } = await supabase.from("teachers").select("*").order("sort_order");
+      return data ?? [];
+    },
+  });
+
   const scheduleClasses = classes.filter(c => c.day !== "_type");
   const dayClasses = scheduleClasses.filter((c) => c.day === selectedDay).sort((a, b) => a.time.localeCompare(b.time));
 
@@ -424,7 +432,7 @@ const Schedule = () => {
                             )}
                           </div>
                           <button
-                            onClick={(e) => { e.stopPropagation(); if (!isEditMode) navigate(`/team?teacher=${encodeURIComponent(cls.teacher)}`); }}
+                            onClick={(e) => { e.stopPropagation(); if (!isEditMode) { const isTeamMember = teachers.some(t => t.name === cls.teacher); navigate(isTeamMember ? `/team?teacher=${encodeURIComponent(cls.teacher)}` : '/team'); } }}
                             className="text-sm text-muted-foreground flex items-center gap-1 hover:text-primary transition-colors"
                           >
                             <User className="h-3.5 w-3.5" /><span className="underline decoration-muted-foreground/30 underline-offset-2 hover:decoration-primary">{cls.teacher}</span>
@@ -493,7 +501,7 @@ const Schedule = () => {
                                   )}
                                 </div>
                                 <button
-                                  onClick={(e) => { e.stopPropagation(); if (!isEditMode) navigate(`/team?teacher=${encodeURIComponent(cls.teacher)}`); }}
+                                  onClick={(e) => { e.stopPropagation(); if (!isEditMode) { const isTeamMember = teachers.some(t => t.name === cls.teacher); navigate(isTeamMember ? `/team?teacher=${encodeURIComponent(cls.teacher)}` : '/team'); } }}
                                   className="text-xs text-muted-foreground flex items-center gap-1 hover:text-primary transition-colors"
                                 >
                                   <User className="h-3 w-3" /><span className="underline decoration-muted-foreground/30 underline-offset-2 hover:decoration-primary">{cls.teacher}</span>
@@ -692,6 +700,7 @@ const Schedule = () => {
               onCancel={() => setEditingClass(null)}
               allClasses={classes}
               specialClasses={specialClasses}
+              teachers={teachers}
             />
           )}
         </DialogContent>
@@ -1010,6 +1019,7 @@ const Schedule = () => {
                   isNew
                   hideClassTypeFields={selectedClassType?.source !== "event"}
                   isEvent={selectedClassType?.source === "event"}
+                  teachers={teachers}
                 />
               </motion.div>
             )}
@@ -1608,14 +1618,20 @@ function parseDateStr(str: string): Date | undefined {
 }
 
 /* WYSIWYG Class Editor */
-function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew = false, hideClassTypeFields = false, isEvent = false, allClasses, specialClasses }: {
+function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew = false, hideClassTypeFields = false, isEvent = false, allClasses, specialClasses, teachers = [] }: {
   value: any; onChange: (v: any) => void; onSave: () => void;
   onDelete?: () => void; onCancel: () => void; isNew?: boolean;
   hideClassTypeFields?: boolean; isEvent?: boolean;
   allClasses?: ClassRow[]; specialClasses?: SpecialClass[];
+  teachers?: Tables<"teachers">[];
 }) {
   const [showFocalPicker, setShowFocalPicker] = useState(false);
   const [showTypePicker, setShowTypePicker] = useState(false);
+  const [showTeacherPicker, setShowTeacherPicker] = useState(false);
+  const [isCustomTeacher, setIsCustomTeacher] = useState(() => {
+    if (!value.teacher) return false;
+    return !teachers.some(t => t.name === value.teacher);
+  });
 
   // Build unique class types for the switcher
   const classTypes = useMemo(() => {
@@ -1844,12 +1860,86 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
               className="rounded-xl border-0 bg-card h-11 shadow-sm"
             />
           )}
-          <Input
-            value={value.teacher}
-            onChange={(e) => onChange({ ...value, teacher: e.target.value })}
-            placeholder="שם המורה"
-            className="rounded-xl border-0 bg-card h-11 shadow-sm"
-          />
+          {!isCustomTeacher ? (
+            <Popover open={showTeacherPicker} onOpenChange={setShowTeacherPicker}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-between text-right rounded-xl h-11 border-0 bg-card shadow-sm"
+                >
+                  <div className="flex items-center gap-2">
+                    <User className="h-3.5 w-3.5 text-primary" />
+                    <span className={value.teacher ? "font-medium" : "text-muted-foreground"}>{value.teacher || "בחר מורה"}</span>
+                  </div>
+                  <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64 p-2 max-h-[300px] overflow-y-auto" align="start" dir="rtl">
+                <p className="text-[10px] font-heading font-semibold text-foreground/50 uppercase tracking-wider px-2 py-1.5">מורים מהצוות</p>
+                {teachers.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => {
+                      onChange({ ...value, teacher: t.name });
+                      setShowTeacherPicker(false);
+                    }}
+                    className={cn(
+                      "w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-right transition-colors",
+                      value.teacher === t.name ? "bg-primary/10 text-primary" : "hover:bg-muted"
+                    )}
+                  >
+                    {t.image_url ? (
+                      <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+                        <img src={t.image_url} alt="" className="w-full h-full object-cover" style={{ objectPosition: t.image_position || "50% 50%" }} />
+                      </div>
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <User className="h-4 w-4 text-primary" />
+                      </div>
+                    )}
+                    <div className="flex flex-col items-start">
+                      <span className="text-sm font-medium">{t.name}</span>
+                      {t.role && <span className="text-[10px] text-muted-foreground">{t.role}</span>}
+                    </div>
+                    {value.teacher === t.name && <Check className="h-4 w-4 text-primary mr-auto" />}
+                  </button>
+                ))}
+                <div className="border-t border-border/30 mt-1 pt-1">
+                  <button
+                    onClick={() => {
+                      setIsCustomTeacher(true);
+                      onChange({ ...value, teacher: "" });
+                      setShowTeacherPicker(false);
+                    }}
+                    className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-right transition-colors hover:bg-muted text-muted-foreground"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                      <Pencil className="h-3.5 w-3.5" />
+                    </div>
+                    <span className="text-sm">מורה אחר/ת...</span>
+                  </button>
+                </div>
+              </PopoverContent>
+            </Popover>
+          ) : (
+            <div className="flex gap-2">
+              <Input
+                value={value.teacher}
+                onChange={(e) => onChange({ ...value, teacher: e.target.value })}
+                placeholder="שם המורה"
+                className="rounded-xl border-0 bg-card h-11 shadow-sm flex-1"
+              />
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-11 w-11 rounded-xl border-0 bg-card shadow-sm shrink-0"
+                onClick={() => { setIsCustomTeacher(false); onChange({ ...value, teacher: "" }); }}
+                title="בחר מהצוות"
+              >
+                <User className="h-4 w-4 text-primary" />
+              </Button>
+            </div>
+          )}
           {(isEvent || value.is_recurring === false) && (
             <Textarea
               value={value.description}
