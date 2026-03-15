@@ -896,7 +896,7 @@ const Schedule = () => {
                 className="bg-card max-h-[85vh] overflow-y-auto"
               >
                 <div className="bg-gradient-to-b from-primary/8 to-primary/3 px-6 py-5 border-b border-border/30">
-                  <h2 className="font-heading text-xl font-bold text-foreground">שיעור כללי חדש</h2>
+                  <h2 className="font-heading text-xl font-bold text-foreground">סוג שיעור חדש</h2>
                   <p className="text-sm text-muted-foreground mt-1">הגדירי סוג שיעור חדש עם שם, תמונה ותיאור</p>
                 </div>
                 <div className="p-5 space-y-5">
