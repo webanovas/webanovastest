@@ -369,8 +369,13 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Decorative separator */}
+      <div className="flex justify-center py-4 md:py-6">
+        <div className="w-16 h-[1px] bg-primary/30"></div>
+      </div>
+
       {/* What is Yoga */}
-      <section className="pb-14 md:pb-28">
+      <section className="pb-14 md:pb-28 bg-accent/20 pt-10 md:pt-16 rounded-t-[2rem] md:rounded-t-[3rem]">
         <div className="container mx-auto px-4">
           <motion.div
             initial="hidden"
