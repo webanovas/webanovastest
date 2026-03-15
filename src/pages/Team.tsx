@@ -145,7 +145,7 @@ const Team = () => {
     }
   }, [highlightTeacher, teachers]);
   const teacherCards = useMemo(() => teachers.map((teacher) => ({
-    ...teacher,
+    teacher,
     shortDescription:
       teacher.description && teacher.description.length > MAX_CARD_DESCRIPTION
         ? `${teacher.description.slice(0, MAX_CARD_DESCRIPTION).trim()}…`
