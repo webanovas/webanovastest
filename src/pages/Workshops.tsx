@@ -375,37 +375,39 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
           </div>
         )}
 
-        {/* Divider */}
-        <div className="h-px bg-border/50" />
+        {/* Action buttons (only for active workshops) */}
+        {!isPast && (
+          <>
+            <div className="h-px bg-border/50" />
+            <div className="flex flex-col gap-3">
+              {paymentUrl ? (
+                <Button className="w-full rounded-full h-12 text-base gap-2 shadow-lg shadow-primary/20" asChild>
+                  <a href={paymentUrl} target="_blank" rel="noopener noreferrer">
+                    <CreditCard className="h-4 w-4" />
+                    לתשלום והרשמה
+                  </a>
+                </Button>
+              ) : (
+                <Button className="w-full rounded-full h-12 text-base gap-2 shadow-lg shadow-primary/20" onClick={() => window.open(whatsappUrl, "_blank")}>
+                  <CreditCard className="h-4 w-4" />
+                  הרשמה
+                </Button>
+              )}
 
-        {/* Action buttons */}
-        <div className="flex flex-col gap-3">
-          {paymentUrl ? (
-            <Button className="w-full rounded-full h-12 text-base gap-2 shadow-lg shadow-primary/20" asChild>
-              <a href={paymentUrl} target="_blank" rel="noopener noreferrer">
-                <CreditCard className="h-4 w-4" />
-                לתשלום והרשמה
-              </a>
-            </Button>
-          ) : (
-            <Button className="w-full rounded-full h-12 text-base gap-2 shadow-lg shadow-primary/20" onClick={() => window.open(whatsappUrl, "_blank")}>
-              <CreditCard className="h-4 w-4" />
-              הרשמה
-            </Button>
-          )}
-
-          <div className="flex justify-center gap-4">
-            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1">
-              <MessageCircle className="h-3.5 w-3.5" />
-              וואטסאפ
-            </a>
-            <span className="text-muted-foreground/30 text-xs leading-6">|</span>
-            <a href={emailUrl} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1">
-              <ExternalLink className="h-3.5 w-3.5" />
-              אימייל
-            </a>
-          </div>
-        </div>
+              <div className="flex justify-center gap-4">
+                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1">
+                  <MessageCircle className="h-3.5 w-3.5" />
+                  וואטסאפ
+                </a>
+                <span className="text-muted-foreground/30 text-xs leading-6">|</span>
+                <a href={emailUrl} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1">
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  אימייל
+                </a>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
