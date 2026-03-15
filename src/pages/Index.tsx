@@ -450,8 +450,8 @@ const Index = () => {
           objectPosition={getText("cta-bg-image-pos", "50% 50%")}
           onPositionChange={isEditMode ? (pos) => saveText("cta-bg-image-pos", pos) : undefined}
         />
-        <div className="absolute inset-0 bg-yoga-dark/50 flex items-center justify-center pointer-events-none">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center px-4 pointer-events-auto">
+        <div className="absolute inset-0 bg-yoga-dark/50 flex items-end justify-end pointer-events-none">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-right px-8 md:px-16 pb-12 md:pb-16 pointer-events-auto max-w-2xl">
             <E section="cta-title" fallback="התחילו לנשום" as="h2"
               className="font-heading text-3xl md:text-6xl font-bold text-primary-foreground mb-4" />
             <E section="cta-subtitle" fallback="הצטרפו למשפחת יוגה במושבה ותגלו מרחב חדש של שקט ורוגע" as="p"
