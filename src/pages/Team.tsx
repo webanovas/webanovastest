@@ -219,9 +219,9 @@ const Team = () => {
           {teachers.length === 0 && !isEditMode ? (
             <p className="text-center text-muted-foreground">המורים יעודכנו בקרוב</p>
           ) : (
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              {teachers.map((t) => (
-                <motion.div key={t.id} variants={fadeUp} ref={(el) => { teacherRefs.current[t.name] = el; }}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+              {teacherCards.map((t) => (
+                <div key={t.id} ref={(el) => { teacherRefs.current[t.name] = el; }}>
                   <Card
                     className={cn(
                       "text-center h-full rounded-3xl border-0 overflow-hidden hover-lift shadow-lg transition-all duration-500",
@@ -247,12 +247,12 @@ const Team = () => {
                       {/* Desktop: name below image */}
                       <h3 className="hidden md:block font-heading font-semibold text-lg">{t.name}</h3>
                       <p className="hidden md:block text-primary text-sm font-medium">{t.role}</p>
-                      <p className="text-muted-foreground text-sm">{t.description}</p>
+                      <p className="text-muted-foreground text-sm">{t.shortDescription}</p>
                     </CardContent>
                   </Card>
-                </motion.div>
+                </div>
               ))}
-            </motion.div>
+            </div>
           )}
         </div>
       </section>

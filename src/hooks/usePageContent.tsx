@@ -31,7 +31,9 @@ export function usePageContent(page: string) {
       });
       return map;
     },
-    staleTime: 30000, // Don't refetch for 30s
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
   // Debounced localStorage write
