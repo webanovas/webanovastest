@@ -65,11 +65,15 @@ const EditableText = ({
     }
   }, [editing, multiline]);
 
-  // Auto-resize textarea
+  // Auto-resize textarea – preserve cursor position
   const autoResize = useCallback((el: HTMLTextAreaElement | null) => {
     if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
     el.style.height = "auto";
     el.style.height = el.scrollHeight + "px";
+    el.selectionStart = start;
+    el.selectionEnd = end;
   }, []);
 
   useEffect(() => {
