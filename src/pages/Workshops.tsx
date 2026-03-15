@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar as CalendarIcon, Clock, MapPin, Plus, Pencil, Check, Trash2, CalendarDays, FileText, Move, MessageCircle, Phone, ExternalLink, CreditCard, Link as LinkIcon } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, MapPin, Plus, Pencil, Check, Trash2, CalendarDays, FileText, Move, MessageCircle, Phone, ExternalLink, CreditCard, Link as LinkIcon, Users, AlignLeft } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminMode } from "@/hooks/useAdminMode";
@@ -100,7 +100,7 @@ const Workshops = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [activeTab, setActiveTab] = useState<"upcoming" | "past">("upcoming");
   const [viewingWorkshop, setViewingWorkshop] = useState<WorkshopRow | null>(null);
-  const [newItem, setNewItem] = useState({ title: "", date: "", time: "", location: "", description: "", is_active: true, payment_url: "" });
+  const [newItem, setNewItem] = useState({ title: "", date: "", time: "", location: "", description: "", short_description: "", target_audience: "", is_active: true, payment_url: "" });
 
   const { data: workshops = [] } = useQuery({
     queryKey: ["workshops"],
@@ -119,6 +119,8 @@ const Workshops = () => {
       description: w.description, is_active: w.is_active, image_url: w.image_url,
       image_position: (w as any).image_position || "50% 50%",
       payment_url: (w as any).payment_url || null,
+      short_description: (w as any).short_description || "",
+      target_audience: (w as any).target_audience || "",
     }).eq("id", w.id);
     if (error) { console.error("Save error:", error); toast.error("שגיאה: " + error.message); }
     else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["workshops"] }); }
@@ -131,11 +133,13 @@ const Workshops = () => {
       title: newItem.title, date: newItem.date, description: newItem.description,
       time: newItem.time || null, location: newItem.location || null, is_active: newItem.is_active,
       payment_url: newItem.payment_url || null,
+      short_description: newItem.short_description || "",
+      target_audience: newItem.target_audience || "",
     });
     if (error) { console.error("Add error:", error); toast.error("שגיאה: " + error.message); }
     else {
       toast.success("נוסף"); queryClient.invalidateQueries({ queryKey: ["workshops"] });
-      setNewItem({ title: "", date: "", time: "", location: "", description: "", is_active: true, payment_url: "" }); setIsAdding(false);
+      setNewItem({ title: "", date: "", time: "", location: "", description: "", short_description: "", target_audience: "", is_active: true, payment_url: "" }); setIsAdding(false);
     }
   };
 
@@ -185,7 +189,7 @@ const Workshops = () => {
 
           {isEditMode && (
             <div className="text-center mb-8">
-              <Button size="sm" onClick={() => { setNewItem({ title: "", date: "", time: "", location: "", description: "", is_active: activeTab === "upcoming", payment_url: "" }); setIsAdding(true); }} className="rounded-full gap-2">
+              <Button size="sm" onClick={() => { setNewItem({ title: "", date: "", time: "", location: "", description: "", short_description: "", target_audience: "", is_active: activeTab === "upcoming", payment_url: "" }); setIsAdding(true); }} className="rounded-full gap-2">
                 <Plus className="h-4 w-4" />הוסף סדנה
               </Button>
             </div>
@@ -349,6 +353,17 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose }: { workshop: Worksh
           <p className="text-foreground/80 leading-relaxed whitespace-pre-line">{w.description}</p>
         )}
 
+        {/* Target audience */}
+        {(w as any).target_audience && (
+          <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10">
+            <div className="flex items-center gap-2 mb-2">
+              <Users className="h-4 w-4 text-primary" />
+              <span className="font-heading font-semibold text-sm text-foreground">למי מתאים?</span>
+            </div>
+            <p className="text-sm text-foreground/70 leading-relaxed whitespace-pre-line">{(w as any).target_audience}</p>
+          </div>
+        )}
+
         {/* Divider */}
         <div className="h-px bg-border/50" />
 
@@ -404,8 +419,12 @@ function WorkshopCard({ workshop: w, isEditMode, onEdit, onView, imgSrc }: { wor
         <img src={imgSrc} alt={w.title} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" style={{ objectPosition: (w as any).image_position || "50% 50%" }} loading="lazy" />
       </div>
       <CardContent className="pt-6 pb-6 flex flex-col justify-center flex-1">
-        <h3 className="font-heading font-semibold text-xl mb-3">{w.title}</h3>
-        <p className="text-sm text-muted-foreground mb-5 leading-relaxed line-clamp-3">{w.description}</p>
+        <h3 className="font-heading font-semibold text-xl mb-2">{w.title}</h3>
+        {(w as any).short_description ? (
+          <p className="text-sm text-foreground/70 mb-4 leading-relaxed">{(w as any).short_description}</p>
+        ) : (
+          <p className="text-sm text-muted-foreground mb-5 leading-relaxed line-clamp-3">{w.description}</p>
+        )}
 
         <div className="flex flex-wrap gap-4 mb-5 text-sm">
           <div className="flex items-center gap-2">
@@ -491,14 +510,35 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
       </div>
 
       <div className="p-5 space-y-5">
+        {/* Short description */}
+        <FormSection icon={AlignLeft} title="תיאור קצר (מוצג בכרטיס)">
+          <Input
+            value={value.short_description || ""}
+            onChange={(e) => onChange({ ...value, short_description: e.target.value })}
+            placeholder="משפט קצר שמתאר את הסדנה..."
+            className="rounded-xl border-0 bg-card h-11 shadow-sm"
+          />
+        </FormSection>
+
         {/* Description */}
-        <FormSection icon={FileText} title="תיאור">
+        <FormSection icon={FileText} title="תיאור מלא">
           <Textarea
             value={value.description || ""}
             onChange={(e) => onChange({ ...value, description: e.target.value })}
-            placeholder="תיאור הסדנה..."
+            placeholder="תיאור מפורט של הסדנה..."
             className="rounded-xl border-0 bg-card resize-none shadow-sm"
             rows={3}
+          />
+        </FormSection>
+
+        {/* Target audience */}
+        <FormSection icon={Users} title="למי מתאים?">
+          <Textarea
+            value={value.target_audience || ""}
+            onChange={(e) => onChange({ ...value, target_audience: e.target.value })}
+            placeholder="למי הסדנה מתאימה? (למשל: מתחילים, מתקדמים, כולם...)"
+            className="rounded-xl border-0 bg-card resize-none shadow-sm"
+            rows={2}
           />
         </FormSection>
 
