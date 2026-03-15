@@ -447,7 +447,7 @@ const Index = () => {
           className="absolute inset-0 w-full h-full object-cover"
           folder="cta"
           onUpload={isEditMode ? (url) => saveText("cta-bg-image", url) : undefined}
-          objectPosition={getText("cta-bg-image-pos", "50% 50%")}
+          objectPosition={getText("cta-bg-image-pos", "30% 30%")}
           onPositionChange={isEditMode ? (pos) => saveText("cta-bg-image-pos", pos) : undefined}
         />
         {/* Smart gradient: darkens bottom on mobile, right side on desktop */}
