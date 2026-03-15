@@ -408,8 +408,12 @@ function WorkshopCard({ workshop: w, isEditMode, onEdit, onView, imgSrc }: { wor
         <img src={imgSrc} alt={w.title} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" style={{ objectPosition: (w as any).image_position || "50% 50%" }} loading="lazy" />
       </div>
       <CardContent className="pt-6 pb-6 flex flex-col justify-center flex-1">
-        <h3 className="font-heading font-semibold text-xl mb-3">{w.title}</h3>
-        <p className="text-sm text-muted-foreground mb-5 leading-relaxed line-clamp-3">{w.description}</p>
+        <h3 className="font-heading font-semibold text-xl mb-2">{w.title}</h3>
+        {(w as any).short_description ? (
+          <p className="text-sm text-foreground/70 mb-4 leading-relaxed">{(w as any).short_description}</p>
+        ) : (
+          <p className="text-sm text-muted-foreground mb-5 leading-relaxed line-clamp-3">{w.description}</p>
+        )}
 
         <div className="flex flex-wrap gap-4 mb-5 text-sm">
           <div className="flex items-center gap-2">
