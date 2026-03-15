@@ -244,10 +244,13 @@ const Workshops = () => {
                             {w.title}
                           </h3>
                         </div>
-                        <CardContent className="p-5 space-y-2">
+                        <CardContent className="p-5 space-y-3">
                           <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
                             {(w as any).short_description || w.description}
                           </p>
+                          <Button variant="outline" size="sm" className="rounded-full px-6 text-xs" onClick={(e) => { e.stopPropagation(); setViewingWorkshop(w); }}>
+                            פרטים
+                          </Button>
                         </CardContent>
                       </Card>
                     ))}
