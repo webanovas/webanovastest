@@ -244,10 +244,13 @@ const Workshops = () => {
                             {w.title}
                           </h3>
                         </div>
-                        <CardContent className="p-5 space-y-2">
+                        <CardContent className="p-5 space-y-3">
                           <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
                             {(w as any).short_description || w.description}
                           </p>
+                          <Button variant="outline" size="sm" className="rounded-full px-6 text-xs" onClick={(e) => { e.stopPropagation(); setViewingWorkshop(w); }}>
+                            פרטים
+                          </Button>
                         </CardContent>
                       </Card>
                     ))}
@@ -332,33 +335,35 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
 
       {/* Details */}
       <div className="p-6 space-y-5">
-        {/* Meta info */}
-        <div className="flex flex-wrap gap-4 text-sm">
-          {w.date && (
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <CalendarIcon className="h-4 w-4 text-primary" />
+        {/* Meta info (only for active workshops) */}
+        {!isPast && (
+          <div className="flex flex-wrap gap-4 text-sm">
+            {w.date && (
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <CalendarIcon className="h-4 w-4 text-primary" />
+                </div>
+                <span className="font-medium">{w.date}</span>
               </div>
-              <span className="font-medium">{w.date}</span>
-            </div>
-          )}
-          {w.time && (
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <Clock className="h-4 w-4 text-primary" />
+            )}
+            {w.time && (
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Clock className="h-4 w-4 text-primary" />
+                </div>
+                <span className="font-medium">{w.time}</span>
               </div>
-              <span className="font-medium">{w.time}</span>
-            </div>
-          )}
-          {w.location && (
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <MapPin className="h-4 w-4 text-primary" />
+            )}
+            {w.location && (
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <MapPin className="h-4 w-4 text-primary" />
+                </div>
+                <span className="font-medium">{w.location}</span>
               </div>
-              <span className="font-medium">{w.location}</span>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
         {/* Description */}
         {w.description && (
