@@ -1689,7 +1689,7 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-72 p-2 max-h-[300px] overflow-y-auto" align="start" dir="rtl">
-                <p className="text-[10px] font-heading font-semibold text-foreground/50 uppercase tracking-wider px-2 py-1.5">שיעורים כלליים</p>
+                <p className="text-[10px] font-heading font-semibold text-foreground/50 uppercase tracking-wider px-2 py-1.5">שיעורים</p>
                 {classTypes.map((cls) => (
                   <button
                     key={cls.id}
