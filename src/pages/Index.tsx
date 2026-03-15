@@ -370,7 +370,7 @@ const Index = () => {
       </section>
 
       {/* What is Yoga */}
-      <section className="py-14 md:py-28">
+      <section className="pb-14 md:pb-28">
         <div className="container mx-auto px-4">
           <motion.div
             initial="hidden"
