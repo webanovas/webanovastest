@@ -1,38 +1,39 @@
 
 
-# שיפור מקטע ה-CTA "התחילו לנשום"
+## Send Contact Form Emails via Resend
 
-## הבעיה
-הטקסט מכסה את הפנים של האישה בתמונה. צריך פתרון שמשלב הזזת התמונה וגם הוספת שכבת טקסט עדינה.
+Both contact forms (floating button + contact page) will send emails directly to shira.pelleg@gmail.com when submitted, with WhatsApp as a secondary option.
 
-## הפתרון
+### Changes
 
-### 1. שינוי מיקום התמונה (object-position)
-נזיז את ה-focal point של התמונה שמאלה/למעלה כך שהפנים יהיו בצד השמאלי של התמונה, והטקסט בימין לא יכסה אותן.
+**1. Store the Resend API key securely**
+- Save `RESEND_API_KEY` (`re_bKgWG7Xx_8bF6DBCdisKjA7KtSXgGyaVT`) as a backend secret
 
-### 2. הוספת שכבת גרדיאנט חכמה
-במקום overlay אחיד (`bg-yoga-dark/40`), ניצור גרדיאנט שמכהה רק את הצד הימני (RTL) — שם נמצא הטקסט — ומשאיר את הצד השמאלי (שם הפנים) שקוף יותר:
+**2. Create backend function: `send-contact-email`**
+- New file: `supabase/functions/send-contact-email/index.ts`
+- Accepts POST with `{ name, phone, message }` (all optional except name+phone)
+- Sends a nicely formatted email to `shira.pelleg@gmail.com` from `onboarding@resend.dev`
+- Public endpoint (no JWT required -- it's a contact form)
+- Proper CORS headers included
 
-```text
-┌──────────────────────────────┐
-│  פנים      │    טקסט         │
-│  (שקוף)    │  (כהה יותר)     │
-│            │  + blur עדין    │
-└──────────────────────────────┘
-```
+**3. Update `supabase/config.toml`**
+- Add `[functions.send-contact-email]` with `verify_jwt = false`
 
-### 3. הוספת backdrop-blur עדין מאחורי הטקסט
-נוסיף `backdrop-blur-sm` ו-`bg-yoga-dark/30` ו-`rounded-2xl` ו-`p-6/p-8` למיכל הטקסט כדי ליצור "כרטיס זכוכית" עדין שמשפר קריאות בלי לכסות את כל התמונה.
+**4. Update Floating Contact (`FloatingContact.tsx`)**
+- Replace the current `mailto:` form submission with a call to the backend function
+- Add a loading/sending state on the submit button
+- Show success toast on completion, error toast on failure
+- Keep the WhatsApp link as a secondary option (already exists below the form)
 
-### 4. התאמות רספונסיביות
-- **מובייל (390px)**: הטקסט בתחתית (`items-end`) עם padding קטן, הגרדיאנט מכהה את התחתית
-- **דסקטופ**: הטקסט מרכז-ימין, הגרדיאנט מכהה את הימין
+**5. Update Contact Page (`Contact.tsx`)**
+- Wire the contact page form to also call the same backend function
+- Add form state management (name, email, phone, message)
+- Add loading state and success/error feedback
+- The WhatsApp button already exists as a secondary option -- no change needed there
 
-## שינויים טכניים
-
-**`src/pages/Index.tsx`** (שורות 443-467):
-- שינוי ה-overlay מ-`bg-yoga-dark/40` לגרדיאנט: במובייל `from-transparent via-transparent to-yoga-dark/60` (מלמעלה למטה), בדסקטופ `from-yoga-dark/50 to-transparent` (מימין לשמאל)
-- הוספת `backdrop-blur-sm bg-yoga-dark/20 rounded-2xl p-6 md:p-8` למיכל הטקסט הפנימי
-- מובייל: `items-end pb-6`, דסקטופ: `md:items-center md:pb-0`
-- עדכון ה-`cta-bg-image-pos` בדאטאבייס ל-`30% 30%` כדי להזיז את הפנים שמאלה
+### How it will work for visitors
+1. User fills out the form (name, phone, optional message)
+2. Clicks the send button -- email is sent silently in the background
+3. Success message appears: "ההודעה נשלחה בהצלחה"
+4. Alternatively, they can click the WhatsApp button to message directly
 
