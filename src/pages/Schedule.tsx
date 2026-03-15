@@ -1616,14 +1616,20 @@ function parseDateStr(str: string): Date | undefined {
 }
 
 /* WYSIWYG Class Editor */
-function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew = false, hideClassTypeFields = false, isEvent = false, allClasses, specialClasses }: {
+function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew = false, hideClassTypeFields = false, isEvent = false, allClasses, specialClasses, teachers = [] }: {
   value: any; onChange: (v: any) => void; onSave: () => void;
   onDelete?: () => void; onCancel: () => void; isNew?: boolean;
   hideClassTypeFields?: boolean; isEvent?: boolean;
   allClasses?: ClassRow[]; specialClasses?: SpecialClass[];
+  teachers?: Tables<"teachers">[];
 }) {
   const [showFocalPicker, setShowFocalPicker] = useState(false);
   const [showTypePicker, setShowTypePicker] = useState(false);
+  const [showTeacherPicker, setShowTeacherPicker] = useState(false);
+  const [isCustomTeacher, setIsCustomTeacher] = useState(() => {
+    if (!value.teacher) return false;
+    return !teachers.some(t => t.name === value.teacher);
+  });
 
   // Build unique class types for the switcher
   const classTypes = useMemo(() => {
