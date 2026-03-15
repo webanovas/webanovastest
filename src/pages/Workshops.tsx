@@ -267,6 +267,7 @@ const Workshops = () => {
               workshop={viewingWorkshop}
               imgSrc={viewingWorkshop.image_url || workshopImages[0]}
               onClose={() => setViewingWorkshop(null)}
+              isPast={!viewingWorkshop.is_active}
             />
           )}
         </DialogContent>
