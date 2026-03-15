@@ -700,6 +700,7 @@ const Schedule = () => {
               onCancel={() => setEditingClass(null)}
               allClasses={classes}
               specialClasses={specialClasses}
+              teachers={teachers}
             />
           )}
         </DialogContent>
