@@ -226,10 +226,10 @@ const Workshops = () => {
                       <Card
                         key={w.id}
                         className={cn(
-                          "rounded-3xl border-0 overflow-hidden shadow-md group",
-                          isEditMode && "cursor-pointer hover:ring-2 hover:ring-primary/30"
+                          "rounded-3xl border-0 overflow-hidden shadow-md group cursor-pointer",
+                          isEditMode && "hover:ring-2 hover:ring-primary/30"
                         )}
-                        onClick={() => isEditMode && setEditing({ ...w })}
+                        onClick={() => isEditMode ? setEditing({ ...w }) : setViewingWorkshop(w)}
                       >
                         <div className="aspect-[4/3] overflow-hidden relative">
                           <img
