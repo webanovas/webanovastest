@@ -23,14 +23,7 @@ import teacherImg from "@/assets/teacher-placeholder.jpg";
 
 type TeacherRow = Tables<"teachers">;
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-};
-
-const stagger = {
-  visible: { transition: { staggerChildren: 0.15 } },
-};
+const MAX_CARD_DESCRIPTION = 180;
 
 /* ──── Form Section ──── */
 function FormSection({ icon: Icon, title, children }: { icon: any; title: string; children: React.ReactNode }) {
