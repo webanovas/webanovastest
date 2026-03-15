@@ -450,8 +450,15 @@ const Index = () => {
           objectPosition={getText("cta-bg-image-pos", "50% 50%")}
           onPositionChange={isEditMode ? (pos) => saveText("cta-bg-image-pos", pos) : undefined}
         />
-        <div className="absolute inset-0 bg-yoga-dark/40 flex items-end md:items-center pointer-events-none" dir="rtl">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-right px-8 md:px-16 pb-4 md:pb-0 pointer-events-auto max-w-xl">
+        {/* Smart gradient: darkens bottom on mobile, right side on desktop */}
+        <div className="absolute inset-0 bg-gradient-to-t from-yoga-dark/60 via-yoga-dark/20 to-transparent md:bg-gradient-to-l md:from-transparent md:via-transparent md:to-yoga-dark/50" />
+        <div className="absolute inset-0 flex items-end md:items-center justify-end pointer-events-none" dir="rtl">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            viewport={{ once: true }} 
+            className="text-right mx-6 md:mx-16 mb-6 md:mb-0 pointer-events-auto max-w-xl backdrop-blur-sm bg-yoga-dark/20 rounded-2xl p-6 md:p-8"
+          >
             <E section="cta-title" fallback="התחילו לנשום" as="h2"
               className="font-heading text-3xl md:text-6xl font-bold text-primary-foreground mb-3 drop-shadow-lg" />
             <E section="cta-subtitle" fallback="הצטרפו למשפחת יוגה במושבה ותגלו מרחב חדש של שקט ורוגע" as="p"
