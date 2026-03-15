@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { useAdminMode } from "@/hooks/useAdminMode";
 import ImageUpload from "./ImageUpload";
 import FocalPointPicker from "./FocalPointPicker";
@@ -16,7 +16,7 @@ interface EditableImageProps {
   onPositionChange?: (position: string) => void;
 }
 
-const EditableImage = ({ src, alt, className, folder = "images", onUpload, objectPosition, onPositionChange }: EditableImageProps) => {
+const EditableImage = memo(({ src, alt, className, folder = "images", onUpload, objectPosition, onPositionChange }: EditableImageProps) => {
   const { isEditMode } = useAdminMode();
   const [showFocalPicker, setShowFocalPicker] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -24,7 +24,7 @@ const EditableImage = ({ src, alt, className, folder = "images", onUpload, objec
   const posStyle = objectPosition ? { objectPosition } : undefined;
 
   if (!isEditMode || !onUpload) {
-    return <img src={src} alt={alt} className={className} style={posStyle} />;
+    return <img src={src} alt={alt} className={className} style={posStyle} loading="lazy" />;
   }
 
   const isAbsolute = className?.includes("absolute");
@@ -54,7 +54,7 @@ const EditableImage = ({ src, alt, className, folder = "images", onUpload, objec
 
   return (
     <div className={wrapperClass}>
-      <img src={src} alt={alt} className={imgClass} style={posStyle} />
+      <img src={src} alt={alt} className={imgClass} style={posStyle} loading="lazy" />
       <ImageUpload
         currentUrl={src}
         onUpload={handleUpload}
@@ -92,6 +92,8 @@ const EditableImage = ({ src, alt, className, folder = "images", onUpload, objec
       )}
     </div>
   );
-};
+});
+
+EditableImage.displayName = "EditableImage";
 
 export default EditableImage;

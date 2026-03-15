@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, X, Send, Phone, Mail, Sparkles, Loader2 } from "lucide-react";
+import { MessageCircle, X, Send, Phone, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,17 +13,6 @@ const FloatingContact = () => {
   const [form, setForm] = useState({ name: "", phone: "", message: "" });
   const [sending, setSending] = useState(false);
   const { isAdmin } = useAdminMode();
-  const [dialogOpen, setDialogOpen] = useState(false);
-
-  useEffect(() => {
-    const check = () => {
-      const hasDialog = !!document.querySelector('[role="dialog"]');
-      setDialogOpen(hasDialog);
-    };
-    const observer = new MutationObserver(check);
-    observer.observe(document.body, { childList: true, subtree: true });
-    return () => observer.disconnect();
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,8 +36,6 @@ const FloatingContact = () => {
       setSending(false);
     }
   };
-
-  if (dialogOpen && !isOpen) return null;
 
   return (
     <>
@@ -161,7 +148,7 @@ const FloatingContact = () => {
         )}
       </AnimatePresence>
 
-      {/* FAB as pill button with persistent label */}
+      {/* FAB */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
         className={`fixed left-4 sm:left-6 z-[70] flex items-center gap-2 text-yoga-dark shadow-lg hover:shadow-xl transition-shadow rounded-full px-5 h-12 border border-[hsl(170,25%,70%)]/30 ${isAdmin ? "bottom-20" : "bottom-6"}`}

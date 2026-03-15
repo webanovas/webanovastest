@@ -207,7 +207,7 @@ const Index = () => {
           <div className="flex h-full">
             {heroImages.map((src, i) => (
               <div key={i} className="flex-none w-full h-full min-w-0 relative">
-                <img src={src} alt={`יוגה במושבה ${i + 1}`} className="w-full h-full object-cover" style={{ objectPosition: getText(`hero-image-${i}-pos`, "50% 50%") }} />
+                <img src={src} alt={`יוגה במושבה ${i + 1}`} className="w-full h-full object-cover" style={{ objectPosition: getText(`hero-image-${i}-pos`, "50% 50%") }} loading={i === 0 ? "eager" : "lazy"} />
               </div>
             ))}
           </div>
