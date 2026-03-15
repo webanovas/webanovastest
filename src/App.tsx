@@ -47,25 +47,27 @@ const App = () => {
             <Toaster />
             <Sonner />
             {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
-            <BrowserRouter>
-              <ScrollToTop />
-              <Suspense fallback={<div className="min-h-screen bg-background" />}>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/team" element={<Team />} />
-                  <Route path="/schedule" element={<Schedule />} />
-                  <Route path="/workshops" element={<Workshops />} />
-                  <Route path="/testimonials" element={<Testimonials />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/admin-login" element={<AdminLogin />} />
-                  <Route path="/admin" element={<Admin />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Suspense>
-              <AdminToolbar />
-            </BrowserRouter>
+            <MotionConfig reducedMotion="always">
+              <BrowserRouter>
+                <ScrollToTop />
+                <Suspense fallback={<div className="min-h-screen bg-background" />}>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/team" element={<Team />} />
+                    <Route path="/schedule" element={<Schedule />} />
+                    <Route path="/workshops" element={<Workshops />} />
+                    <Route path="/testimonials" element={<Testimonials />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/admin-login" element={<AdminLogin />} />
+                    <Route path="/admin" element={<Admin />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Suspense>
+                <AdminToolbar />
+              </BrowserRouter>
+            </MotionConfig>
           </AdminModeProvider>
         </AuthProvider>
       </TooltipProvider>
