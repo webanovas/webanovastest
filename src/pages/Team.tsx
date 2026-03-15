@@ -220,23 +220,23 @@ const Team = () => {
             <p className="text-center text-muted-foreground">המורים יעודכנו בקרוב</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              {teacherCards.map((t) => (
-                <div key={t.id} ref={(el) => { teacherRefs.current[t.name] = el; }}>
+              {teacherCards.map(({ teacher, shortDescription }) => (
+                <div key={teacher.id} ref={(el) => { teacherRefs.current[teacher.name] = el; }}>
                   <Card
                     className={cn(
                       "text-center h-full rounded-3xl border-0 overflow-hidden hover-lift shadow-lg transition-all duration-500",
                       isEditMode && "cursor-pointer ring-2 ring-transparent hover:ring-primary/30",
-                      highlightTeacher === t.name && "ring-2 ring-primary shadow-xl shadow-primary/20"
+                      highlightTeacher === teacher.name && "ring-2 ring-primary shadow-xl shadow-primary/20"
                     )}
-                    onClick={() => isEditMode && setEditingTeacher({ ...t })}
+                    onClick={() => isEditMode && setEditingTeacher({ ...teacher })}
                   >
                     {/* Mobile: name above image */}
                     <div className="md:hidden pt-5 pb-3 px-4">
-                      <h3 className="font-heading font-semibold text-lg">{t.name}</h3>
-                      <p className="text-primary text-sm font-medium">{t.role}</p>
+                      <h3 className="font-heading font-semibold text-lg">{teacher.name}</h3>
+                      <p className="text-primary text-sm font-medium">{teacher.role}</p>
                     </div>
                     <div className="aspect-[3/4] overflow-hidden relative">
-                      <img src={t.image_url || teacherImg} alt={t.name} className="w-full h-full object-cover" style={{ objectPosition: (t as any).image_position || "50% 50%" }} loading="lazy" />
+                      <img src={teacher.image_url || teacherImg} alt={teacher.name} className="w-full h-full object-cover" style={{ objectPosition: (teacher as any).image_position || "50% 50%" }} loading="lazy" />
                       {isEditMode && (
                         <div className="absolute top-3 left-3 bg-card/90 backdrop-blur-sm rounded-full p-1.5">
                           <Pencil className="h-3.5 w-3.5 text-primary" />
@@ -245,9 +245,9 @@ const Team = () => {
                     </div>
                     <CardContent className="pt-6 pb-8 flex flex-col items-center gap-2">
                       {/* Desktop: name below image */}
-                      <h3 className="hidden md:block font-heading font-semibold text-lg">{t.name}</h3>
-                      <p className="hidden md:block text-primary text-sm font-medium">{t.role}</p>
-                      <p className="text-muted-foreground text-sm">{t.shortDescription}</p>
+                      <h3 className="hidden md:block font-heading font-semibold text-lg">{teacher.name}</h3>
+                      <p className="hidden md:block text-primary text-sm font-medium">{teacher.role}</p>
+                      <p className="text-muted-foreground text-sm">{shortDescription}</p>
                     </CardContent>
                   </Card>
                 </div>
