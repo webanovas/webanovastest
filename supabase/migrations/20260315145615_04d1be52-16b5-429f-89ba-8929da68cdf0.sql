@@ -1,0 +1,1 @@
+ALTER TABLE public.workshops ADD COLUMN payment_url text DEFAULT NULL;
