@@ -56,12 +56,14 @@ const EditableText = ({
   useEffect(() => {
     if (editing && inputRef.current) {
       inputRef.current.focus();
-      // Place cursor at end only on initial open, not on every keystroke
-      const len = inputRef.current.value.length;
-      inputRef.current.setSelectionRange(len, len);
+      if (!multiline) {
+        inputRef.current.select();
+      } else {
+        const el = inputRef.current as HTMLTextAreaElement;
+        el.selectionStart = el.selectionEnd = el.value.length;
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editing]);
+  }, [editing, multiline]);
 
   // Auto-resize textarea
   const autoResize = useCallback((el: HTMLTextAreaElement | null) => {
