@@ -354,48 +354,33 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose }: { workshop: Worksh
 
         {/* Action buttons */}
         <div className="flex flex-col gap-3">
-          {paymentUrl && (
-            <Button
-              className="w-full rounded-full h-12 text-base gap-2 shadow-lg shadow-primary/20"
-              asChild
-            >
-              <a href={paymentUrl} target="_blank" rel="noopener noreferrer">
+          <Button
+            className="w-full rounded-full h-12 text-base gap-2 shadow-lg shadow-primary/20"
+            {...(paymentUrl ? { asChild: true } : { onClick: () => window.open(whatsappUrl, "_blank") })}
+          >
+            {paymentUrl ? (
+              <a href={paymentUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
                 לתשלום והרשמה
               </a>
-            </Button>
-          )}
+            ) : (
+              <>
+                <CreditCard className="h-4 w-4" />
+                הרשמה
+              </>
+            )}
+          </Button>
 
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              className="flex-1 rounded-full h-11 gap-2 text-sm"
-              asChild
-            >
-              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="h-4 w-4" />
-                וואטסאפ
-              </a>
-            </Button>
-            <Button
-              variant="outline"
-              className="flex-1 rounded-full h-11 gap-2 text-sm"
-              asChild
-            >
-              <a href={emailUrl}>
-                <Phone className="h-4 w-4" />
-                אימייל
-              </a>
-            </Button>
-            <Button
-              variant="outline"
-              className="rounded-full h-11 w-11 p-0"
-              asChild
-            >
-              <a href="tel:0542131254" aria-label="התקשרו">
-                <Phone className="h-4 w-4" />
-              </a>
-            </Button>
+          <div className="flex justify-center gap-4">
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1">
+              <MessageCircle className="h-3.5 w-3.5" />
+              וואטסאפ
+            </a>
+            <span className="text-muted-foreground/30 text-xs leading-6">|</span>
+            <a href={emailUrl} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1">
+              <ExternalLink className="h-3.5 w-3.5" />
+              אימייל
+            </a>
           </div>
         </div>
       </div>
