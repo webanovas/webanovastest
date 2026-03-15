@@ -432,7 +432,7 @@ const Schedule = () => {
                             )}
                           </div>
                           <button
-                            onClick={(e) => { e.stopPropagation(); if (!isEditMode) navigate(`/team?teacher=${encodeURIComponent(cls.teacher)}`); }}
+                            onClick={(e) => { e.stopPropagation(); if (!isEditMode) { const isTeamMember = teachers.some(t => t.name === cls.teacher); navigate(isTeamMember ? `/team?teacher=${encodeURIComponent(cls.teacher)}` : '/team'); } }}
                             className="text-sm text-muted-foreground flex items-center gap-1 hover:text-primary transition-colors"
                           >
                             <User className="h-3.5 w-3.5" /><span className="underline decoration-muted-foreground/30 underline-offset-2 hover:decoration-primary">{cls.teacher}</span>
