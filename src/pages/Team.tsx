@@ -144,6 +144,14 @@ const Team = () => {
       }, 300);
     }
   }, [highlightTeacher, teachers]);
+  const teacherCards = useMemo(() => teachers.map((teacher) => ({
+    ...teacher,
+    shortDescription:
+      teacher.description && teacher.description.length > MAX_CARD_DESCRIPTION
+        ? `${teacher.description.slice(0, MAX_CARD_DESCRIPTION).trim()}…`
+        : teacher.description,
+  })), [teachers]);
+
   const [editingTeacher, setEditingTeacher] = useState<TeacherRow | null>(null);
 
   const [isAddingTeacher, setIsAddingTeacher] = useState(false);
