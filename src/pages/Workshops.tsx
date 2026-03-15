@@ -226,10 +226,10 @@ const Workshops = () => {
                       <Card
                         key={w.id}
                         className={cn(
-                          "rounded-3xl border-0 overflow-hidden shadow-md group",
-                          isEditMode && "cursor-pointer hover:ring-2 hover:ring-primary/30"
+                          "rounded-3xl border-0 overflow-hidden shadow-md group cursor-pointer",
+                          isEditMode && "hover:ring-2 hover:ring-primary/30"
                         )}
-                        onClick={() => isEditMode && setEditing({ ...w })}
+                        onClick={() => isEditMode ? setEditing({ ...w }) : setViewingWorkshop(w)}
                       >
                         <div className="aspect-[4/3] overflow-hidden relative">
                           <img
@@ -245,13 +245,9 @@ const Workshops = () => {
                           </h3>
                         </div>
                         <CardContent className="p-5 space-y-2">
-                          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">{w.description}</p>
-                          {(w as any).target_audience && (
-                            <div className="flex items-start gap-2 pt-1">
-                              <Users className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
-                              <p className="text-xs text-foreground/60 leading-relaxed">{(w as any).target_audience}</p>
-                            </div>
-                          )}
+                          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
+                            {(w as any).short_description || w.description}
+                          </p>
                         </CardContent>
                       </Card>
                     ))}
@@ -271,6 +267,7 @@ const Workshops = () => {
               workshop={viewingWorkshop}
               imgSrc={viewingWorkshop.image_url || workshopImages[0]}
               onClose={() => setViewingWorkshop(null)}
+              isPast={!viewingWorkshop.is_active}
             />
           )}
         </DialogContent>
@@ -306,7 +303,7 @@ const Workshops = () => {
 };
 
 /* ──── Workshop Detail View (public) ──── */
-function WorkshopDetailView({ workshop: w, imgSrc, onClose }: { workshop: WorkshopRow; imgSrc: string; onClose: () => void }) {
+function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { workshop: WorkshopRow; imgSrc: string; onClose: () => void; isPast?: boolean }) {
   const workshopName = w.title;
   const whatsappMessage = encodeURIComponent(`היי שירה, אשמח לשמוע פרטים על הסדנה "${workshopName}" 🙏`);
   const whatsappUrl = `https://wa.me/972542131254?text=${whatsappMessage}`;
@@ -379,37 +376,39 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose }: { workshop: Worksh
           </div>
         )}
 
-        {/* Divider */}
-        <div className="h-px bg-border/50" />
+        {/* Action buttons (only for active workshops) */}
+        {!isPast && (
+          <>
+            <div className="h-px bg-border/50" />
+            <div className="flex flex-col gap-3">
+              {paymentUrl ? (
+                <Button className="w-full rounded-full h-12 text-base gap-2 shadow-lg shadow-primary/20" asChild>
+                  <a href={paymentUrl} target="_blank" rel="noopener noreferrer">
+                    <CreditCard className="h-4 w-4" />
+                    לתשלום והרשמה
+                  </a>
+                </Button>
+              ) : (
+                <Button className="w-full rounded-full h-12 text-base gap-2 shadow-lg shadow-primary/20" onClick={() => window.open(whatsappUrl, "_blank")}>
+                  <CreditCard className="h-4 w-4" />
+                  הרשמה
+                </Button>
+              )}
 
-        {/* Action buttons */}
-        <div className="flex flex-col gap-3">
-          {paymentUrl ? (
-            <Button className="w-full rounded-full h-12 text-base gap-2 shadow-lg shadow-primary/20" asChild>
-              <a href={paymentUrl} target="_blank" rel="noopener noreferrer">
-                <CreditCard className="h-4 w-4" />
-                לתשלום והרשמה
-              </a>
-            </Button>
-          ) : (
-            <Button className="w-full rounded-full h-12 text-base gap-2 shadow-lg shadow-primary/20" onClick={() => window.open(whatsappUrl, "_blank")}>
-              <CreditCard className="h-4 w-4" />
-              הרשמה
-            </Button>
-          )}
-
-          <div className="flex justify-center gap-4">
-            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1">
-              <MessageCircle className="h-3.5 w-3.5" />
-              וואטסאפ
-            </a>
-            <span className="text-muted-foreground/30 text-xs leading-6">|</span>
-            <a href={emailUrl} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1">
-              <ExternalLink className="h-3.5 w-3.5" />
-              אימייל
-            </a>
-          </div>
-        </div>
+              <div className="flex justify-center gap-4">
+                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1">
+                  <MessageCircle className="h-3.5 w-3.5" />
+                  וואטסאפ
+                </a>
+                <span className="text-muted-foreground/30 text-xs leading-6">|</span>
+                <a href={emailUrl} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1">
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  אימייל
+                </a>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
