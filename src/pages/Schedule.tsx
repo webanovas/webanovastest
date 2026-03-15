@@ -165,6 +165,14 @@ const Schedule = () => {
     },
   });
 
+  const { data: teachers = [] } = useQuery({
+    queryKey: ["teachers"],
+    queryFn: async () => {
+      const { data } = await supabase.from("teachers").select("*").order("sort_order");
+      return data ?? [];
+    },
+  });
+
   const scheduleClasses = classes.filter(c => c.day !== "_type");
   const dayClasses = scheduleClasses.filter((c) => c.day === selectedDay).sort((a, b) => a.time.localeCompare(b.time));
 
