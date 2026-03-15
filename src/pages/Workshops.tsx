@@ -510,14 +510,35 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
       </div>
 
       <div className="p-5 space-y-5">
+        {/* Short description */}
+        <FormSection icon={AlignLeft} title="תיאור קצר (מוצג בכרטיס)">
+          <Input
+            value={value.short_description || ""}
+            onChange={(e) => onChange({ ...value, short_description: e.target.value })}
+            placeholder="משפט קצר שמתאר את הסדנה..."
+            className="rounded-xl border-0 bg-card h-11 shadow-sm"
+          />
+        </FormSection>
+
         {/* Description */}
-        <FormSection icon={FileText} title="תיאור">
+        <FormSection icon={FileText} title="תיאור מלא">
           <Textarea
             value={value.description || ""}
             onChange={(e) => onChange({ ...value, description: e.target.value })}
-            placeholder="תיאור הסדנה..."
+            placeholder="תיאור מפורט של הסדנה..."
             className="rounded-xl border-0 bg-card resize-none shadow-sm"
             rows={3}
+          />
+        </FormSection>
+
+        {/* Target audience */}
+        <FormSection icon={Users} title="למי מתאים?">
+          <Textarea
+            value={value.target_audience || ""}
+            onChange={(e) => onChange({ ...value, target_audience: e.target.value })}
+            placeholder="למי הסדנה מתאימה? (למשל: מתחילים, מתקדמים, כולם...)"
+            className="rounded-xl border-0 bg-card resize-none shadow-sm"
+            rows={2}
           />
         </FormSection>
 
