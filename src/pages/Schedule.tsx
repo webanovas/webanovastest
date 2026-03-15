@@ -896,7 +896,7 @@ const Schedule = () => {
                 className="bg-card max-h-[85vh] overflow-y-auto"
               >
                 <div className="bg-gradient-to-b from-primary/8 to-primary/3 px-6 py-5 border-b border-border/30">
-                  <h2 className="font-heading text-xl font-bold text-foreground">שיעור כללי חדש</h2>
+                  <h2 className="font-heading text-xl font-bold text-foreground">סוג שיעור חדש</h2>
                   <p className="text-sm text-muted-foreground mt-1">הגדירי סוג שיעור חדש עם שם, תמונה ותיאור</p>
                 </div>
                 <div className="p-5 space-y-5">
@@ -1312,7 +1312,7 @@ const Schedule = () => {
             className="bg-card max-h-[85vh] overflow-y-auto"
           >
             <div className="bg-gradient-to-b from-primary/8 to-primary/3 px-6 py-5 border-b border-border/30">
-              <h2 className="font-heading text-xl font-bold text-foreground">שיעור כללי חדש</h2>
+              <h2 className="font-heading text-xl font-bold text-foreground">סוג שיעור חדש</h2>
               <p className="text-sm text-muted-foreground mt-1">הגדירי סוג שיעור חדש עם שם, תמונה ותיאור</p>
             </div>
             <div className="p-5 space-y-5">
@@ -1689,7 +1689,7 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-72 p-2 max-h-[300px] overflow-y-auto" align="start" dir="rtl">
-                <p className="text-[10px] font-heading font-semibold text-foreground/50 uppercase tracking-wider px-2 py-1.5">שיעורים כלליים</p>
+                <p className="text-[10px] font-heading font-semibold text-foreground/50 uppercase tracking-wider px-2 py-1.5">שיעורים</p>
                 {classTypes.map((cls) => (
                   <button
                     key={cls.id}
