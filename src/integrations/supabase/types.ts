@@ -208,7 +208,9 @@ export type Database = {
           is_active: boolean
           location: string | null
           payment_url: string | null
+          short_description: string
           sort_order: number
+          target_audience: string
           time: string | null
           title: string
         }
@@ -222,7 +224,9 @@ export type Database = {
           is_active?: boolean
           location?: string | null
           payment_url?: string | null
+          short_description?: string
           sort_order?: number
+          target_audience?: string
           time?: string | null
           title: string
         }
@@ -236,7 +240,9 @@ export type Database = {
           is_active?: boolean
           location?: string | null
           payment_url?: string | null
+          short_description?: string
           sort_order?: number
+          target_audience?: string
           time?: string | null
           title?: string
         }
