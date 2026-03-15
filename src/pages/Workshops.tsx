@@ -6,8 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar as CalendarIcon, Clock, MapPin, Plus, Pencil, Check, Trash2, CalendarDays, BookOpen, FileText } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Calendar as CalendarIcon, Clock, MapPin, Plus, Pencil, Check, Trash2, CalendarDays, FileText, Move, MessageCircle, Phone, ExternalLink, CreditCard, Link as LinkIcon } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminMode } from "@/hooks/useAdminMode";
@@ -26,7 +25,6 @@ import workshopImg1 from "@/assets/workshop-1.jpg";
 import workshopImg2 from "@/assets/workshop-2.jpg";
 import ImageUpload from "@/components/admin/ImageUpload";
 import FocalPointPicker from "@/components/admin/FocalPointPicker";
-import { Move } from "lucide-react";
 import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
 
@@ -97,10 +95,12 @@ const Workshops = () => {
     }
     return <EditableText value={val} onSave={(v) => saveText(section, v)} as={as} className={className} persistKey={`workshops:${section}`} />;
   };
+
   const [editing, setEditing] = useState<WorkshopRow | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [activeTab, setActiveTab] = useState<"upcoming" | "past">("upcoming");
-  const [newItem, setNewItem] = useState({ title: "", date: "", time: "", location: "", description: "", is_active: true });
+  const [viewingWorkshop, setViewingWorkshop] = useState<WorkshopRow | null>(null);
+  const [newItem, setNewItem] = useState({ title: "", date: "", time: "", location: "", description: "", is_active: true, payment_url: "" });
 
   const { data: workshops = [] } = useQuery({
     queryKey: ["workshops"],
@@ -118,6 +118,7 @@ const Workshops = () => {
       title: w.title, date: w.date, time: w.time, location: w.location,
       description: w.description, is_active: w.is_active, image_url: w.image_url,
       image_position: (w as any).image_position || "50% 50%",
+      payment_url: (w as any).payment_url || null,
     }).eq("id", w.id);
     if (error) { console.error("Save error:", error); toast.error("שגיאה: " + error.message); }
     else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["workshops"] }); }
@@ -129,11 +130,12 @@ const Workshops = () => {
     const { error } = await supabase.from("workshops").insert({
       title: newItem.title, date: newItem.date, description: newItem.description,
       time: newItem.time || null, location: newItem.location || null, is_active: newItem.is_active,
+      payment_url: newItem.payment_url || null,
     });
     if (error) { console.error("Add error:", error); toast.error("שגיאה: " + error.message); }
     else {
       toast.success("נוסף"); queryClient.invalidateQueries({ queryKey: ["workshops"] });
-      setNewItem({ title: "", date: "", time: "", location: "", description: "", is_active: true }); setIsAdding(false);
+      setNewItem({ title: "", date: "", time: "", location: "", description: "", is_active: true, payment_url: "" }); setIsAdding(false);
     }
   };
 
@@ -183,7 +185,7 @@ const Workshops = () => {
 
           {isEditMode && (
             <div className="text-center mb-8">
-              <Button size="sm" onClick={() => { setNewItem({ title: "", date: "", time: "", location: "", description: "", is_active: activeTab === "upcoming" }); setIsAdding(true); }} className="rounded-full gap-2">
+              <Button size="sm" onClick={() => { setNewItem({ title: "", date: "", time: "", location: "", description: "", is_active: activeTab === "upcoming", payment_url: "" }); setIsAdding(true); }} className="rounded-full gap-2">
                 <Plus className="h-4 w-4" />הוסף סדנה
               </Button>
             </div>
@@ -198,7 +200,13 @@ const Workshops = () => {
                   <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="flex flex-col gap-8 max-w-3xl mx-auto">
                     {activeWorkshops.map((w, i) => (
                       <motion.div key={w.id} variants={fadeUp}>
-                        <WorkshopCard workshop={w} isEditMode={isEditMode} onEdit={() => setEditing({ ...w })} imgSrc={w.image_url || workshopImages[i % workshopImages.length]} />
+                        <WorkshopCard
+                          workshop={w}
+                          isEditMode={isEditMode}
+                          onEdit={() => setEditing({ ...w })}
+                          onView={() => setViewingWorkshop(w)}
+                          imgSrc={w.image_url || workshopImages[i % workshopImages.length]}
+                        />
                       </motion.div>
                     ))}
                   </motion.div>
@@ -217,10 +225,10 @@ const Workshops = () => {
                           "rounded-3xl border-0 overflow-hidden shadow-md flex flex-col sm:flex-row",
                           isEditMode && "cursor-pointer hover:ring-2 hover:ring-primary/30"
                         )}
-                        onClick={() => isEditMode && setEditing({ ...w })}
+                        onClick={() => isEditMode ? setEditing({ ...w }) : setViewingWorkshop(w)}
                       >
                         <div className="w-full sm:w-40 h-40 sm:h-auto shrink-0 overflow-hidden">
-                          <img src={w.image_url || workshopImages[i % workshopImages.length]} alt={w.title} className="w-full h-full object-cover" />
+                          <img src={w.image_url || workshopImages[i % workshopImages.length]} alt={w.title} className="w-full h-full object-cover" loading="lazy" />
                         </div>
                         <CardContent className="p-5 flex flex-col justify-center">
                           <span className="font-heading font-semibold text-base">{w.title}</span>
@@ -235,6 +243,19 @@ const Workshops = () => {
           </AnimatePresence>
         </div>
       </section>
+
+      {/* Workshop Detail Dialog (public view) */}
+      <Dialog open={!!viewingWorkshop} onOpenChange={(open) => !open && setViewingWorkshop(null)}>
+        <DialogContent className="max-w-lg p-0 overflow-hidden max-h-[85vh] overflow-y-auto" dir="rtl">
+          {viewingWorkshop && (
+            <WorkshopDetailView
+              workshop={viewingWorkshop}
+              imgSrc={viewingWorkshop.image_url || workshopImages[0]}
+              onClose={() => setViewingWorkshop(null)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Dialog */}
       <Dialog open={!!editing} onOpenChange={(open) => !open && setEditing(null)}>
@@ -265,15 +286,132 @@ const Workshops = () => {
   );
 };
 
+/* ──── Workshop Detail View (public) ──── */
+function WorkshopDetailView({ workshop: w, imgSrc, onClose }: { workshop: WorkshopRow; imgSrc: string; onClose: () => void }) {
+  const workshopName = w.title;
+  const whatsappMessage = encodeURIComponent(`היי שירה, אשמח לשמוע פרטים על הסדנה "${workshopName}" 🙏`);
+  const whatsappUrl = `https://wa.me/972542131254?text=${whatsappMessage}`;
+
+  const contactSubject = encodeURIComponent(`פנייה בנוגע לסדנה: ${workshopName}`);
+  const contactBody = encodeURIComponent(`שלום שירה,\nאשמח לקבל פרטים נוספים על הסדנה "${workshopName}".\nתודה!`);
+  const emailUrl = `mailto:shira.pelleg@gmail.com?subject=${contactSubject}&body=${contactBody}`;
+
+  const paymentUrl = (w as any).payment_url;
+
+  return (
+    <div className="bg-card rounded-3xl overflow-hidden">
+      {/* Hero image */}
+      <div className="aspect-video overflow-hidden relative">
+        <img
+          src={imgSrc}
+          alt={w.title}
+          className="w-full h-full object-cover"
+          style={{ objectPosition: (w as any).image_position || "50% 50%" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/20 to-transparent" />
+        <div className="absolute bottom-5 right-5 left-5">
+          <h2 className="font-heading font-bold text-2xl text-primary-foreground drop-shadow-lg">{w.title}</h2>
+        </div>
+      </div>
+
+      {/* Details */}
+      <div className="p-6 space-y-5">
+        {/* Meta info */}
+        <div className="flex flex-wrap gap-4 text-sm">
+          {w.date && (
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                <CalendarIcon className="h-4 w-4 text-primary" />
+              </div>
+              <span className="font-medium">{w.date}</span>
+            </div>
+          )}
+          {w.time && (
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                <Clock className="h-4 w-4 text-primary" />
+              </div>
+              <span className="font-medium">{w.time}</span>
+            </div>
+          )}
+          {w.location && (
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                <MapPin className="h-4 w-4 text-primary" />
+              </div>
+              <span className="font-medium">{w.location}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Description */}
+        {w.description && (
+          <p className="text-foreground/80 leading-relaxed whitespace-pre-line">{w.description}</p>
+        )}
+
+        {/* Divider */}
+        <div className="h-px bg-border/50" />
+
+        {/* Action buttons */}
+        <div className="flex flex-col gap-3">
+          {paymentUrl && (
+            <Button
+              className="w-full rounded-full h-12 text-base gap-2 shadow-lg shadow-primary/20"
+              asChild
+            >
+              <a href={paymentUrl} target="_blank" rel="noopener noreferrer">
+                <CreditCard className="h-4 w-4" />
+                לתשלום והרשמה
+              </a>
+            </Button>
+          )}
+
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className="flex-1 rounded-full h-11 gap-2 text-sm"
+              asChild
+            >
+              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+                <MessageCircle className="h-4 w-4" />
+                וואטסאפ
+              </a>
+            </Button>
+            <Button
+              variant="outline"
+              className="flex-1 rounded-full h-11 gap-2 text-sm"
+              asChild
+            >
+              <a href={emailUrl}>
+                <Phone className="h-4 w-4" />
+                אימייל
+              </a>
+            </Button>
+            <Button
+              variant="outline"
+              className="rounded-full h-11 w-11 p-0"
+              asChild
+            >
+              <a href="tel:0542131254" aria-label="התקשרו">
+                <Phone className="h-4 w-4" />
+              </a>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* Workshop Card */
-function WorkshopCard({ workshop: w, isEditMode, onEdit, imgSrc }: { workshop: WorkshopRow; isEditMode: boolean; onEdit: () => void; imgSrc: string }) {
+function WorkshopCard({ workshop: w, isEditMode, onEdit, onView, imgSrc }: { workshop: WorkshopRow; isEditMode: boolean; onEdit: () => void; onView: () => void; imgSrc: string }) {
   return (
     <Card
       className={cn(
-        "h-full rounded-3xl border-0 overflow-hidden hover-lift shadow-lg flex flex-col sm:flex-row",
-        isEditMode && "cursor-pointer ring-2 ring-transparent hover:ring-primary/30 relative"
+        "h-full rounded-3xl border-0 overflow-hidden hover-lift shadow-lg flex flex-col sm:flex-row cursor-pointer",
+        isEditMode && "ring-2 ring-transparent hover:ring-primary/30 relative"
       )}
-      onClick={() => isEditMode && onEdit()}
+      onClick={() => isEditMode ? onEdit() : onView()}
     >
       {isEditMode && (
         <div className="absolute top-4 left-4 z-10 bg-card/90 backdrop-blur-sm rounded-full p-1.5">
@@ -281,11 +419,11 @@ function WorkshopCard({ workshop: w, isEditMode, onEdit, imgSrc }: { workshop: W
         </div>
       )}
       <div className="w-full sm:w-56 md:w-64 shrink-0 aspect-square sm:aspect-auto overflow-hidden">
-        <img src={imgSrc} alt={w.title} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" style={{ objectPosition: (w as any).image_position || "50% 50%" }} />
+        <img src={imgSrc} alt={w.title} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" style={{ objectPosition: (w as any).image_position || "50% 50%" }} loading="lazy" />
       </div>
       <CardContent className="pt-6 pb-6 flex flex-col justify-center flex-1">
         <h3 className="font-heading font-semibold text-xl mb-3">{w.title}</h3>
-        <p className="text-sm text-muted-foreground mb-5 leading-relaxed">{w.description}</p>
+        <p className="text-sm text-muted-foreground mb-5 leading-relaxed line-clamp-3">{w.description}</p>
 
         <div className="flex flex-wrap gap-4 mb-5 text-sm">
           <div className="flex items-center gap-2">
@@ -312,12 +450,8 @@ function WorkshopCard({ workshop: w, isEditMode, onEdit, imgSrc }: { workshop: W
           )}
         </div>
 
-        <Button className="w-full sm:w-auto rounded-full h-10 px-8 shadow-lg shadow-primary/20" asChild={!isEditMode}>
-          {isEditMode ? (
-            <span>הרשמה / פרטים</span>
-          ) : (
-            <Link to="/contact">הרשמה / פרטים</Link>
-          )}
+        <Button className="w-full sm:w-auto rounded-full h-10 px-8 shadow-lg shadow-primary/20" onClick={(e) => { e.stopPropagation(); isEditMode ? onEdit() : onView(); }}>
+          פרטים והרשמה
         </Button>
       </CardContent>
     </Card>
@@ -443,6 +577,18 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
             placeholder="מיקום הסדנה"
             className="rounded-xl border-0 bg-card h-11 shadow-sm"
           />
+        </FormSection>
+
+        {/* Payment URL */}
+        <FormSection icon={LinkIcon} title="קישור לתשלום">
+          <Input
+            value={value.payment_url || ""}
+            onChange={(e) => onChange({ ...value, payment_url: e.target.value })}
+            placeholder="https://... (קישור לדף תשלום)"
+            className="rounded-xl border-0 bg-card h-11 shadow-sm text-left ltr"
+            dir="ltr"
+          />
+          <p className="text-xs text-muted-foreground px-1">הדביקי קישור לדף תשלום – יופיע ככפתור ללקוחות</p>
         </FormSection>
 
         {/* Active toggle */}
