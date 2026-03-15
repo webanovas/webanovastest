@@ -221,22 +221,37 @@ const Workshops = () => {
                 {pastWorkshops.length === 0 ? (
                   <p className="text-center text-muted-foreground py-12">אין סדנאות עבר</p>
                 ) : (
-                  <div className="max-w-3xl mx-auto flex flex-col gap-6">
+                  <div className="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {pastWorkshops.map((w, i) => (
                       <Card
                         key={w.id}
                         className={cn(
-                          "rounded-3xl border-0 overflow-hidden shadow-md flex flex-col sm:flex-row",
+                          "rounded-3xl border-0 overflow-hidden shadow-md group",
                           isEditMode && "cursor-pointer hover:ring-2 hover:ring-primary/30"
                         )}
-                        onClick={() => isEditMode ? setEditing({ ...w }) : setViewingWorkshop(w)}
+                        onClick={() => isEditMode && setEditing({ ...w })}
                       >
-                        <div className="w-full sm:w-40 h-auto shrink-0 overflow-hidden aspect-square">
-                          <img src={w.image_url || workshopImages[i % workshopImages.length]} alt={w.title} className="w-full h-full object-cover" style={{ objectPosition: (w as any).image_position || "50% 50%" }} loading="lazy" />
+                        <div className="aspect-[4/3] overflow-hidden relative">
+                          <img
+                            src={w.image_url || workshopImages[i % workshopImages.length]}
+                            alt={w.title}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            style={{ objectPosition: (w as any).image_position || "50% 50%" }}
+                            loading="lazy"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-foreground/50 to-transparent" />
+                          <h3 className="absolute bottom-4 right-4 left-4 font-heading font-bold text-lg text-primary-foreground drop-shadow-md">
+                            {w.title}
+                          </h3>
                         </div>
-                        <CardContent className="p-5 flex flex-col justify-center">
-                          <span className="font-heading font-semibold text-base">{w.title}</span>
-                          <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{w.description}</p>
+                        <CardContent className="p-5 space-y-2">
+                          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">{w.description}</p>
+                          {(w as any).target_audience && (
+                            <div className="flex items-start gap-2 pt-1">
+                              <Users className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+                              <p className="text-xs text-foreground/60 leading-relaxed">{(w as any).target_audience}</p>
+                            </div>
+                          )}
                         </CardContent>
                       </Card>
                     ))}
