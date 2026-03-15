@@ -245,13 +245,9 @@ const Workshops = () => {
                           </h3>
                         </div>
                         <CardContent className="p-5 space-y-2">
-                          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">{w.description}</p>
-                          {(w as any).target_audience && (
-                            <div className="flex items-start gap-2 pt-1">
-                              <Users className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
-                              <p className="text-xs text-foreground/60 leading-relaxed">{(w as any).target_audience}</p>
-                            </div>
-                          )}
+                          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
+                            {(w as any).short_description || w.description}
+                          </p>
                         </CardContent>
                       </Card>
                     ))}
