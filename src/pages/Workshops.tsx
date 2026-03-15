@@ -231,8 +231,8 @@ const Workshops = () => {
                         )}
                         onClick={() => isEditMode ? setEditing({ ...w }) : setViewingWorkshop(w)}
                       >
-                        <div className="w-full sm:w-40 h-40 sm:h-auto shrink-0 overflow-hidden">
-                          <img src={w.image_url || workshopImages[i % workshopImages.length]} alt={w.title} className="w-full h-full object-cover" loading="lazy" />
+                        <div className="w-full sm:w-40 h-auto shrink-0 overflow-hidden aspect-square">
+                          <img src={w.image_url || workshopImages[i % workshopImages.length]} alt={w.title} className="w-full h-full object-cover" style={{ objectPosition: (w as any).image_position || "50% 50%" }} loading="lazy" />
                         </div>
                         <CardContent className="p-5 flex flex-col justify-center">
                           <span className="font-heading font-semibold text-base">{w.title}</span>
