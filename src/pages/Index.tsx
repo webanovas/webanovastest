@@ -319,7 +319,7 @@ const Index = () => {
       </section>
 
       {/* Welcome / About */}
-      <section className="py-14 md:py-36">
+      <section className="pt-14 md:pt-36 pb-6 md:pb-16">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
