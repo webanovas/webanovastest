@@ -236,7 +236,7 @@ const Team = () => {
                       <p className="text-primary text-sm font-medium">{t.role}</p>
                     </div>
                     <div className="aspect-[3/4] overflow-hidden relative">
-                      <img src={t.image_url || teacherImg} alt={t.name} className="w-full h-full object-cover" style={{ objectPosition: (t as any).image_position || "50% 50%" }} />
+                      <img src={t.image_url || teacherImg} alt={t.name} className="w-full h-full object-cover" style={{ objectPosition: (t as any).image_position || "50% 50%" }} loading="lazy" />
                       {isEditMode && (
                         <div className="absolute top-3 left-3 bg-card/90 backdrop-blur-sm rounded-full p-1.5">
                           <Pencil className="h-3.5 w-3.5 text-primary" />
