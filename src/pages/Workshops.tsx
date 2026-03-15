@@ -133,6 +133,8 @@ const Workshops = () => {
       title: newItem.title, date: newItem.date, description: newItem.description,
       time: newItem.time || null, location: newItem.location || null, is_active: newItem.is_active,
       payment_url: newItem.payment_url || null,
+      short_description: newItem.short_description || "",
+      target_audience: newItem.target_audience || "",
     });
     if (error) { console.error("Add error:", error); toast.error("שגיאה: " + error.message); }
     else {
