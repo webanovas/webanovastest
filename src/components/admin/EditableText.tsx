@@ -80,7 +80,8 @@ const EditableText = ({
     if (editing && multiline && inputRef.current) {
       autoResize(inputRef.current as HTMLTextAreaElement);
     }
-  }, [editing, multiline, draft, autoResize]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editing, multiline]);
 
   if (!isEditMode) {
     if (!value) return null;
