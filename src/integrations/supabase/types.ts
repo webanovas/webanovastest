@@ -207,6 +207,7 @@ export type Database = {
           image_url: string | null
           is_active: boolean
           location: string | null
+          payment_url: string | null
           sort_order: number
           time: string | null
           title: string
@@ -220,6 +221,7 @@ export type Database = {
           image_url?: string | null
           is_active?: boolean
           location?: string | null
+          payment_url?: string | null
           sort_order?: number
           time?: string | null
           title: string
@@ -233,6 +235,7 @@ export type Database = {
           image_url?: string | null
           is_active?: boolean
           location?: string | null
+          payment_url?: string | null
           sort_order?: number
           time?: string | null
           title?: string
