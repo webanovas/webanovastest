@@ -353,6 +353,17 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose }: { workshop: Worksh
           <p className="text-foreground/80 leading-relaxed whitespace-pre-line">{w.description}</p>
         )}
 
+        {/* Target audience */}
+        {(w as any).target_audience && (
+          <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10">
+            <div className="flex items-center gap-2 mb-2">
+              <Users className="h-4 w-4 text-primary" />
+              <span className="font-heading font-semibold text-sm text-foreground">למי מתאים?</span>
+            </div>
+            <p className="text-sm text-foreground/70 leading-relaxed whitespace-pre-line">{(w as any).target_audience}</p>
+          </div>
+        )}
+
         {/* Divider */}
         <div className="h-px bg-border/50" />
 
