@@ -1019,6 +1019,7 @@ const Schedule = () => {
                   isNew
                   hideClassTypeFields={selectedClassType?.source !== "event"}
                   isEvent={selectedClassType?.source === "event"}
+                  teachers={teachers}
                 />
               </motion.div>
             )}
