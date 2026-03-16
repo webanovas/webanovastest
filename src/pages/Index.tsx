@@ -299,20 +299,27 @@ const Index = () => {
                 className="text-base md:text-xl text-primary-foreground/90 leading-relaxed mb-8 md:mb-10 max-w-lg" multiline />
             </motion.div>
             <motion.div variants={fadeUp} className="flex flex-wrap gap-4 justify-center md:justify-start">
-              <Button size="lg" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base shadow-xl shadow-primary/30" asChild={!isEditMode}>
-                {isEditMode ? (
-                  <span><E section="hero-btn-schedule" fallback="לוח שיעורים" /></span>
-                ) : (
-                  <Link to="/schedule"><E section="hero-btn-schedule" fallback="לוח שיעורים" /></Link>
-                )}
-              </Button>
-              <Button size="lg" variant="outline" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base border-primary-foreground/50 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:text-primary-foreground backdrop-blur-md" asChild={!isEditMode}>
-                {isEditMode ? (
-                  <span><E section="hero-btn-about" fallback="הכירו אותנו" /></span>
-                ) : (
-                  <Link to="/about"><E section="hero-btn-about" fallback="הכירו אותנו" /></Link>
-                )}
-              </Button>
+              {isEditMode ? (
+                <div className="flex flex-col gap-3">
+                  <div className="inline-flex items-center gap-2">
+                    <span className="text-xs text-primary-foreground/60 bg-primary-foreground/10 rounded-full px-3 py-1">כפתור 1:</span>
+                    <E section="hero-btn-schedule" fallback="לוח שיעורים" as="span" className="text-primary-foreground font-medium" />
+                  </div>
+                  <div className="inline-flex items-center gap-2">
+                    <span className="text-xs text-primary-foreground/60 bg-primary-foreground/10 rounded-full px-3 py-1">כפתור 2:</span>
+                    <E section="hero-btn-about" fallback="הכירו אותנו" as="span" className="text-primary-foreground font-medium" />
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <Button size="lg" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base shadow-xl shadow-primary/30" asChild>
+                    <Link to="/schedule">{getText("hero-btn-schedule", "לוח שיעורים")}</Link>
+                  </Button>
+                  <Button size="lg" variant="outline" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base border-primary-foreground/50 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:text-primary-foreground backdrop-blur-md" asChild>
+                    <Link to="/about">{getText("hero-btn-about", "הכירו אותנו")}</Link>
+                  </Button>
+                </>
+              )}
             </motion.div>
           </motion.div>
         </div>
