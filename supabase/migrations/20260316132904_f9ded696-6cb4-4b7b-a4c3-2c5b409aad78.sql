@@ -1,0 +1,1 @@
+ALTER TABLE public.workshops ADD COLUMN detail_image_position TEXT DEFAULT '50% 50%';
