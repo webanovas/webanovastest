@@ -30,7 +30,7 @@ import EditableText from "@/components/admin/EditableText";
 
 type WorkshopRow = Tables<"workshops">;
 
-const workshopImages = [workshopImg1, workshopImg2];
+const workshopImages = [WORKSHOP_FALLBACK, WORKSHOP_FALLBACK];
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
