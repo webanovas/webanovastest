@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, memo } from "react";
 import { useAdminMode } from "@/hooks/useAdminMode";
 import { Pencil, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
