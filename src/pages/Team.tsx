@@ -19,7 +19,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import ImageUpload from "@/components/admin/ImageUpload";
 import FocalPointPicker from "@/components/admin/FocalPointPicker";
 import { Move } from "lucide-react";
-import teacherImg from "@/assets/teacher-placeholder.jpg";
+import { TEACHER_FALLBACK } from "@/lib/uploadedImages";
 
 type TeacherRow = Tables<"teachers">;
 
@@ -51,7 +51,7 @@ function TeacherEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew
   return (
     <div className="bg-card">
       <div className="aspect-[4/3] overflow-hidden relative">
-        <img src={value.image_url || teacherImg} alt="preview" className="w-full h-full object-cover" style={{ objectPosition: value.image_position || "50% 50%" }} />
+        <img src={value.image_url || TEACHER_FALLBACK} alt="preview" className="w-full h-full object-cover" style={{ objectPosition: value.image_position || "50% 50%" }} />
         <ImageUpload
           currentUrl={value.image_url}
           onUpload={(url) => onChange({ ...value, image_url: url })}
@@ -68,7 +68,7 @@ function TeacherEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew
           </button>
         )}
         <FocalPointPicker
-          src={value.image_url || teacherImg}
+          src={value.image_url || TEACHER_FALLBACK}
           alt="preview"
           objectPosition={value.image_position || "50% 50%"}
           onSave={(pos) => onChange({ ...value, image_position: pos })}
@@ -236,7 +236,7 @@ const Team = () => {
                       <p className="text-primary text-sm font-medium">{teacher.role}</p>
                     </div>
                     <div className="aspect-[3/4] overflow-hidden relative">
-                      <img src={teacher.image_url || teacherImg} alt={teacher.name} className="w-full h-full object-cover" style={{ objectPosition: (teacher as any).image_position || "50% 50%" }} loading="lazy" />
+                      <img src={teacher.image_url || TEACHER_FALLBACK} alt={teacher.name} className="w-full h-full object-cover" style={{ objectPosition: (teacher as any).image_position || "50% 50%" }} loading="lazy" />
                       {isEditMode && (
                         <div className="absolute top-3 left-3 bg-card/90 backdrop-blur-sm rounded-full p-1.5">
                           <Pencil className="h-3.5 w-3.5 text-primary" />

@@ -9,13 +9,9 @@ import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
 import EditableImage from "@/components/admin/EditableImage";
 
-import teacherShira from "@/assets/teacher-shira.jpg";
-import studioInterior from "@/assets/studio-interior.jpg";
-import yogaGroup from "@/assets/yoga-group.jpg";
-import meditationHands from "@/assets/meditation-hands.jpg";
-import yogaSunset from "@/assets/yoga-sunset.jpg";
-import heroYoga from "@/assets/hero-yoga.jpg";
-import zoomYoga from "@/assets/zoom-yoga.jpg";
+import {
+  ABOUT_HERO, SHIRA_IMAGE, GALLERY_IMAGES, CTA_BG_IMAGE,
+} from "@/lib/uploadedImages";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -27,12 +23,12 @@ const stagger = {
 };
 
 const galleryDefaults = [
-  { src: studioInterior, alt: "הסטודיו" },
-  { src: yogaGroup, alt: "שיעור קבוצתי" },
-  { src: meditationHands, alt: "מדיטציה" },
-  { src: heroYoga, alt: "תרגול יוגה" },
-  { src: zoomYoga, alt: "שיעור זום" },
-  { src: yogaSunset, alt: "יוגה בשקיעה" },
+  { src: GALLERY_IMAGES[0], alt: "הסטודיו" },
+  { src: GALLERY_IMAGES[1], alt: "שיעור קבוצתי" },
+  { src: GALLERY_IMAGES[2], alt: "מדיטציה" },
+  { src: GALLERY_IMAGES[3], alt: "תרגול יוגה" },
+  { src: GALLERY_IMAGES[4], alt: "שיעור זום" },
+  { src: GALLERY_IMAGES[5], alt: "יוגה בשקיעה" },
 ];
 
 const valueIcons = [Leaf, Award, Heart];
@@ -86,7 +82,7 @@ const About = () => {
               className="rounded-3xl overflow-hidden shadow-2xl aspect-[3/4]"
             >
               <EditableImage
-                src={getImage("hero-about-image", studioInterior)}
+                src={getImage("hero-about-image", ABOUT_HERO)}
                 alt="הסטודיו"
                 className="w-full h-full object-cover"
                 folder="about"
@@ -122,7 +118,7 @@ const About = () => {
             <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative order-2 md:order-1">
               <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[3/4]">
                 <EditableImage
-                  src={getImage("shira-image", teacherShira)}
+                  src={getImage("shira-image", SHIRA_IMAGE)}
                   alt="שירה פלג"
                   className="w-full h-full object-cover"
                   folder="about"
@@ -215,7 +211,7 @@ const About = () => {
       {/* CTA Banner */}
       <section className="relative h-[40vh] md:h-[50vh] overflow-hidden">
         <EditableImage
-          src={getImage("cta-bg", yogaSunset)}
+          src={getImage("cta-bg", CTA_BG_IMAGE)}
           alt="יוגה בשקיעה"
           className="absolute inset-0 w-full h-full object-cover"
           folder="about-cta"

@@ -23,12 +23,10 @@ import Autoplay from "embla-carousel-autoplay";
 import { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 
-import heroYoga from "@/assets/hero-yoga.jpg";
-import teacherShira from "@/assets/teacher-shira.jpg";
-import studioInterior from "@/assets/studio-interior.jpg";
-import meditationHands from "@/assets/meditation-hands.jpg";
-import yogaSunset from "@/assets/yoga-sunset.jpg";
-import yogaGroup from "@/assets/yoga-group.jpg";
+import {
+  HERO_IMAGES, WELCOME_MAIN, WELCOME_SECONDARY,
+  BENEFITS_IMAGE, CTA_BG_IMAGE,
+} from "@/lib/uploadedImages";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -47,7 +45,7 @@ const benefitDefaults = [
   { title: "הפחתת מתח", desc: "שחרור מתחים ושיפור איכות השינה" },
 ];
 
-const defaultHeroImages = [heroYoga, studioInterior, yogaGroup, yogaSunset, meditationHands];
+const defaultHeroImages = HERO_IMAGES;
 
 const HeroFocalEditor = ({ src, index, objectPosition, onSave }: { src: string; index: number; objectPosition: string; onSave: (pos: string) => void }) => {
   const imgRef = useRef<HTMLDivElement>(null);
@@ -357,7 +355,7 @@ const Index = () => {
             <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="relative">
               <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[3/4]">
                 <EditableImage
-                  src={getImage("welcome-img-main", teacherShira)}
+                  src={getImage("welcome-img-main", WELCOME_MAIN)}
                   alt="שירה פלג"
                   className="w-full h-full object-cover"
                   folder="welcome"
@@ -368,7 +366,7 @@ const Index = () => {
               </div>
               <div className="absolute -bottom-8 -right-8 md:-right-12 w-40 h-40 md:w-52 md:h-52 rounded-2xl overflow-hidden shadow-xl border-4 border-background">
                 <EditableImage
-                  src={getImage("welcome-img-secondary", studioInterior)}
+                  src={getImage("welcome-img-secondary", WELCOME_SECONDARY)}
                   alt="הסטודיו"
                   className="w-full h-full object-cover"
                   folder="welcome"
@@ -418,7 +416,7 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="rounded-3xl overflow-hidden shadow-xl aspect-square">
               <EditableImage
-                src={getImage("benefits-image", meditationHands)}
+                src={getImage("benefits-image", BENEFITS_IMAGE)}
                 alt="תרגול יוגה"
                 className="w-full h-full object-cover"
                 folder="benefits"
@@ -459,7 +457,7 @@ const Index = () => {
       {/* Full-width image divider */}
       <section className="relative h-[70vh] md:h-[60vh] overflow-hidden">
         <EditableImage
-          src={getImage("cta-bg-image", yogaSunset)}
+          src={getImage("cta-bg-image", CTA_BG_IMAGE)}
           alt="יוגה"
           className="absolute inset-0 w-full h-full object-cover"
           folder="cta"

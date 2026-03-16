@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, MessageCircle, MapPin, Instagram, Send, Loader2 } from "lucide-react";
-import studioInterior from "@/assets/studio-interior.jpg";
+import { CONTACT_STUDIO } from "@/lib/uploadedImages";
 import { useAdminMode } from "@/hooks/useAdminMode";
 import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
@@ -109,7 +109,7 @@ const Contact = () => {
 
               <motion.div variants={fadeUp} className="rounded-2xl overflow-hidden shadow-md border border-border/30 aspect-video">
                 <EditableImage
-                  src={(() => { const s = getText("studio-image", ""); return s || studioInterior; })()}
+                  src={(() => { const s = getText("studio-image", ""); return s || CONTACT_STUDIO; })()}
                   alt="הסטודיו שלנו"
                   className="w-full h-full object-cover"
                   folder="contact"

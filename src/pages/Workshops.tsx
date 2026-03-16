@@ -21,8 +21,8 @@ import {
   DialogContent,
 } from "@/components/ui/dialog";
 import { ClockPicker } from "@/components/ui/clock-picker";
-import workshopImg1 from "@/assets/workshop-1.jpg";
-import workshopImg2 from "@/assets/workshop-2.jpg";
+// Workshop fallback uses first uploaded workshop image
+const WORKSHOP_FALLBACK = "https://muhfaqvpnyakhfkcfhkc.supabase.co/storage/v1/object/public/site-images/workshops/1773666905225.jpeg";
 import ImageUpload from "@/components/admin/ImageUpload";
 import FocalPointPicker from "@/components/admin/FocalPointPicker";
 import { usePageContent } from "@/hooks/usePageContent";
@@ -30,7 +30,7 @@ import EditableText from "@/components/admin/EditableText";
 
 type WorkshopRow = Tables<"workshops">;
 
-const workshopImages = [workshopImg1, workshopImg2];
+const workshopImages = [WORKSHOP_FALLBACK, WORKSHOP_FALLBACK];
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -495,7 +495,7 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
     <div className="bg-card rounded-3xl overflow-hidden">
       {/* Image preview with upload */}
       <div className="aspect-square overflow-hidden relative">
-        <img src={value.image_url || workshopImg1} alt="preview" className="w-full h-full object-cover" style={{ objectPosition: value.image_position || "50% 50%" }} />
+        <img src={value.image_url || WORKSHOP_FALLBACK} alt="preview" className="w-full h-full object-cover" style={{ objectPosition: value.image_position || "50% 50%" }} />
         <ImageUpload
           currentUrl={value.image_url}
           onUpload={(url) => onChange({ ...value, image_url: url })}
@@ -521,7 +521,7 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
           </>
         )}
         <FocalPointPicker
-          src={value.image_url || workshopImg1}
+          src={value.image_url || WORKSHOP_FALLBACK}
           alt="מיקוד כרטיס"
           objectPosition={value.image_position || "50% 50%"}
           onSave={(pos) => onChange({ ...value, image_position: pos })}
@@ -530,7 +530,7 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
           fixedAspectRatio={1}
         />
         <FocalPointPicker
-          src={value.image_url || workshopImg1}
+          src={value.image_url || WORKSHOP_FALLBACK}
           alt="מיקוד תצוגה פנימית"
           objectPosition={value.detail_image_position || "50% 50%"}
           onSave={(pos) => onChange({ ...value, detail_image_position: pos })}
