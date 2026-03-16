@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, MessageCircle, MapPin, Instagram, Send, Loader2 } from "lucide-react";
-import studioInterior from "@/assets/studio-interior.jpg";
+import { CONTACT_STUDIO } from "@/lib/uploadedImages";
 import { useAdminMode } from "@/hooks/useAdminMode";
 import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
