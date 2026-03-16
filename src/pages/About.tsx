@@ -9,30 +9,17 @@ import { usePageContent } from "@/hooks/usePageContent";
 import EditableText from "@/components/admin/EditableText";
 import EditableImage from "@/components/admin/EditableImage";
 
-import teacherShira from "@/assets/teacher-shira.jpg";
-import studioInterior from "@/assets/studio-interior.jpg";
-import yogaGroup from "@/assets/yoga-group.jpg";
-import meditationHands from "@/assets/meditation-hands.jpg";
-import yogaSunset from "@/assets/yoga-sunset.jpg";
-import heroYoga from "@/assets/hero-yoga.jpg";
-import zoomYoga from "@/assets/zoom-yoga.jpg";
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-};
-
-const stagger = {
-  visible: { transition: { staggerChildren: 0.15 } },
-};
+import {
+  ABOUT_HERO, SHIRA_IMAGE, GALLERY_IMAGES, CTA_BG_IMAGE,
+} from "@/lib/uploadedImages";
 
 const galleryDefaults = [
-  { src: studioInterior, alt: "הסטודיו" },
-  { src: yogaGroup, alt: "שיעור קבוצתי" },
-  { src: meditationHands, alt: "מדיטציה" },
-  { src: heroYoga, alt: "תרגול יוגה" },
-  { src: zoomYoga, alt: "שיעור זום" },
-  { src: yogaSunset, alt: "יוגה בשקיעה" },
+  { src: GALLERY_IMAGES[0], alt: "הסטודיו" },
+  { src: GALLERY_IMAGES[1], alt: "שיעור קבוצתי" },
+  { src: GALLERY_IMAGES[2], alt: "מדיטציה" },
+  { src: GALLERY_IMAGES[3], alt: "תרגול יוגה" },
+  { src: GALLERY_IMAGES[4], alt: "שיעור זום" },
+  { src: GALLERY_IMAGES[5], alt: "יוגה בשקיעה" },
 ];
 
 const valueIcons = [Leaf, Award, Heart];
