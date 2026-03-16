@@ -13,6 +13,15 @@ import {
   ABOUT_HERO, SHIRA_IMAGE, GALLERY_IMAGES, CTA_BG_IMAGE,
 } from "@/lib/uploadedImages";
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+};
+
+const stagger = {
+  visible: { transition: { staggerChildren: 0.15 } },
+};
+
 const galleryDefaults = [
   { src: GALLERY_IMAGES[0], alt: "הסטודיו" },
   { src: GALLERY_IMAGES[1], alt: "שיעור קבוצתי" },
