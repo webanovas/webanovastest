@@ -326,7 +326,7 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
           src={imgSrc}
           alt={w.title}
           className="w-full h-full object-cover"
-          style={{ objectPosition: (w as any).image_position || "50% 50%" }}
+          style={{ objectPosition: (w as any).detail_image_position || (w as any).image_position || "50% 50%" }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/20 to-transparent" />
         <div className="absolute bottom-5 right-5 left-5">
