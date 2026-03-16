@@ -516,7 +516,7 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
           onSave={(pos) => onChange({ ...value, image_position: pos })}
           open={showFocalPicker}
           onOpenChange={setShowFocalPicker}
-          
+          fixedAspectRatio={value.is_active ? 1 : 4 / 3}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
         <div className="absolute bottom-4 right-4 left-4">
