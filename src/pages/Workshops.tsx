@@ -320,7 +320,7 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
   return (
     <div className="bg-card rounded-3xl overflow-hidden">
       {/* Hero image */}
-      <div className="aspect-video overflow-hidden relative">
+      <div className={cn("overflow-hidden relative", isPast ? "aspect-square" : "aspect-video")}>
         <img
           src={imgSrc}
           alt={w.title}
