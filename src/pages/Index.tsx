@@ -509,10 +509,6 @@ const Index = () => {
           )}
         </div>
       </section>
-            )}
-          </motion.div>
-        </div>
-      </section>
 
       {/* Testimonials Carousel */}
       <section className="py-14 md:py-36 bg-yoga-cream">
