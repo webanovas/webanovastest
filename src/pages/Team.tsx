@@ -51,7 +51,7 @@ function TeacherEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew
   return (
     <div className="bg-card">
       <div className="aspect-[4/3] overflow-hidden relative">
-        <img src={value.image_url || teacherImg} alt="preview" className="w-full h-full object-cover" style={{ objectPosition: value.image_position || "50% 50%" }} />
+        <img src={value.image_url || TEACHER_FALLBACK} alt="preview" className="w-full h-full object-cover" style={{ objectPosition: value.image_position || "50% 50%" }} />
         <ImageUpload
           currentUrl={value.image_url}
           onUpload={(url) => onChange({ ...value, image_url: url })}
