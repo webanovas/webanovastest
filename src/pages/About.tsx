@@ -202,7 +202,7 @@ const About = () => {
       {/* CTA Banner */}
       <section className="relative h-[40vh] md:h-[50vh] overflow-hidden">
         <EditableImage
-          src={getImage("cta-bg", yogaSunset)}
+          src={getImage("cta-bg", CTA_BG_IMAGE)}
           alt="יוגה בשקיעה"
           className="absolute inset-0 w-full h-full object-cover"
           folder="about-cta"

@@ -109,7 +109,7 @@ const Contact = () => {
 
               <motion.div variants={fadeUp} className="rounded-2xl overflow-hidden shadow-md border border-border/30 aspect-video">
                 <EditableImage
-                  src={(() => { const s = getText("studio-image", ""); return s || studioInterior; })()}
+                  src={(() => { const s = getText("studio-image", ""); return s || CONTACT_STUDIO; })()}
                   alt="הסטודיו שלנו"
                   className="w-full h-full object-cover"
                   folder="contact"

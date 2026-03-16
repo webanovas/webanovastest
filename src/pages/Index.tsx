@@ -457,7 +457,7 @@ const Index = () => {
       {/* Full-width image divider */}
       <section className="relative h-[70vh] md:h-[60vh] overflow-hidden">
         <EditableImage
-          src={getImage("cta-bg-image", yogaSunset)}
+          src={getImage("cta-bg-image", CTA_BG_IMAGE)}
           alt="יוגה"
           className="absolute inset-0 w-full h-full object-cover"
           folder="cta"

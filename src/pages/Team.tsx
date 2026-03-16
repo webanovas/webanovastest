@@ -19,7 +19,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import ImageUpload from "@/components/admin/ImageUpload";
 import FocalPointPicker from "@/components/admin/FocalPointPicker";
 import { Move } from "lucide-react";
-import teacherImg from "@/assets/teacher-placeholder.jpg";
+import { TEACHER_FALLBACK } from "@/lib/uploadedImages";
 
 type TeacherRow = Tables<"teachers">;
 
