@@ -231,7 +231,7 @@ const Workshops = () => {
                         )}
                         onClick={() => isEditMode ? setEditing({ ...w }) : setViewingWorkshop(w)}
                       >
-                        <div className="aspect-[4/3] overflow-hidden relative">
+                        <div className="aspect-square overflow-hidden relative">
                           <img
                             src={w.image_url || workshopImages[i % workshopImages.length]}
                             alt={w.title}
