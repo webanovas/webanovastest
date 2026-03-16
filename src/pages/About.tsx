@@ -73,7 +73,7 @@ const About = () => {
               className="rounded-3xl overflow-hidden shadow-2xl aspect-[3/4]"
             >
               <EditableImage
-                src={getImage("hero-about-image", studioInterior)}
+                src={getImage("hero-about-image", ABOUT_HERO)}
                 alt="הסטודיו"
                 className="w-full h-full object-cover"
                 folder="about"
