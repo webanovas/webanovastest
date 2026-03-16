@@ -552,86 +552,96 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
         </FormSection>
 
         {/* Target audience */}
-        <FormSection icon={Users} title="למי מתאים?">
-          <Textarea
-            value={value.target_audience || ""}
-            onChange={(e) => onChange({ ...value, target_audience: e.target.value })}
-            placeholder="למי הסדנה מתאימה? (למשל: מתחילים, מתקדמים, כולם...)"
-            className="rounded-xl border-0 bg-card resize-none shadow-sm"
-            rows={2}
-          />
-        </FormSection>
+        {value.is_active && (
+          <FormSection icon={Users} title="למי מתאים?">
+            <Textarea
+              value={value.target_audience || ""}
+              onChange={(e) => onChange({ ...value, target_audience: e.target.value })}
+              placeholder="למי הסדנה מתאימה? (למשל: מתחילים, מתקדמים, כולם...)"
+              className="rounded-xl border-0 bg-card resize-none shadow-sm"
+              rows={2}
+            />
+          </FormSection>
+        )}
 
         {/* Date */}
-        <FormSection icon={CalendarDays} title="תאריך">
-          <Popover open={dateOpen} onOpenChange={setDateOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full justify-start text-right font-normal rounded-xl h-11 border-0 bg-card shadow-sm",
-                  !value.date && "text-muted-foreground"
-                )}
-              >
-                <CalendarDays className="h-4 w-4 ml-2 text-primary" />
-                {value.date || "בחר תאריך"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={parsedDate}
-                onSelect={(date) => {
-                  if (date) {
-                    onChange({ ...value, date: format(date, "dd.MM.yyyy") });
-                  }
-                  setDateOpen(false);
-                }}
-                initialFocus
-                className="p-3 pointer-events-auto"
-              />
-            </PopoverContent>
-          </Popover>
-        </FormSection>
+        {value.is_active && (
+          <FormSection icon={CalendarDays} title="תאריך">
+            <Popover open={dateOpen} onOpenChange={setDateOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-right font-normal rounded-xl h-11 border-0 bg-card shadow-sm",
+                    !value.date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarDays className="h-4 w-4 ml-2 text-primary" />
+                  {value.date || "בחר תאריך"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={parsedDate}
+                  onSelect={(date) => {
+                    if (date) {
+                      onChange({ ...value, date: format(date, "dd.MM.yyyy") });
+                    }
+                    setDateOpen(false);
+                  }}
+                  initialFocus
+                  className="p-3 pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+          </FormSection>
+        )}
 
         {/* Time range */}
-        <FormSection icon={Clock} title="שעות">
-          <div className="flex items-center gap-2">
-            <TimeSlotPicker
-              value={getTimeStart(value.time)}
-              onChange={(t) => onChange({ ...value, time: `${t}-${getTimeEnd(value.time) || "13:00"}` })}
-              placeholder="התחלה"
-            />
-            <span className="text-muted-foreground font-medium text-lg">–</span>
-            <TimeSlotPicker
-              value={getTimeEnd(value.time)}
-              onChange={(t) => onChange({ ...value, time: `${getTimeStart(value.time) || "10:00"}-${t}` })}
-              placeholder="סיום"
-            />
-          </div>
-        </FormSection>
+        {value.is_active && (
+          <FormSection icon={Clock} title="שעות">
+            <div className="flex items-center gap-2">
+              <TimeSlotPicker
+                value={getTimeStart(value.time)}
+                onChange={(t) => onChange({ ...value, time: `${t}-${getTimeEnd(value.time) || "13:00"}` })}
+                placeholder="התחלה"
+              />
+              <span className="text-muted-foreground font-medium text-lg">–</span>
+              <TimeSlotPicker
+                value={getTimeEnd(value.time)}
+                onChange={(t) => onChange({ ...value, time: `${getTimeStart(value.time) || "10:00"}-${t}` })}
+                placeholder="סיום"
+              />
+            </div>
+          </FormSection>
+        )}
 
         {/* Location */}
-        <FormSection icon={MapPin} title="מיקום">
-          <Input
-            value={value.location || ""}
-            onChange={(e) => onChange({ ...value, location: e.target.value })}
-            placeholder="מיקום הסדנה"
-            className="rounded-xl border-0 bg-card h-11 shadow-sm"
-          />
-        </FormSection>
+        {value.is_active && (
+          <FormSection icon={MapPin} title="מיקום">
+            <Input
+              value={value.location || ""}
+              onChange={(e) => onChange({ ...value, location: e.target.value })}
+              placeholder="מיקום הסדנה"
+              className="rounded-xl border-0 bg-card h-11 shadow-sm"
+            />
+          </FormSection>
+        )}
 
         {/* Payment URL */}
-        <FormSection icon={LinkIcon} title="קישור לתשלום">
-          <Input
-            value={value.payment_url || ""}
-            onChange={(e) => onChange({ ...value, payment_url: e.target.value })}
-            placeholder="https://... (קישור לדף תשלום)"
-            className="rounded-xl border-0 bg-card h-11 shadow-sm text-left ltr"
-            dir="ltr"
-          />
-          <p className="text-xs text-muted-foreground px-1">הדביקי קישור לדף תשלום – יופיע ככפתור ללקוחות</p>
-        </FormSection>
+        {value.is_active && (
+          <FormSection icon={LinkIcon} title="קישור לתשלום">
+            <Input
+              value={value.payment_url || ""}
+              onChange={(e) => onChange({ ...value, payment_url: e.target.value })}
+              placeholder="https://... (קישור לדף תשלום)"
+              className="rounded-xl border-0 bg-card h-11 shadow-sm text-left ltr"
+              dir="ltr"
+            />
+            <p className="text-xs text-muted-foreground px-1">הדביקי קישור לדף תשלום – יופיע ככפתור ללקוחות</p>
+          </FormSection>
+        )}
 
         {/* Active toggle */}
         <label className="flex items-center gap-3 text-sm px-1 cursor-pointer">
