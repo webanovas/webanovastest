@@ -23,12 +23,10 @@ import Autoplay from "embla-carousel-autoplay";
 import { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 
-import heroYoga from "@/assets/hero-yoga.jpg";
-import teacherShira from "@/assets/teacher-shira.jpg";
-import studioInterior from "@/assets/studio-interior.jpg";
-import meditationHands from "@/assets/meditation-hands.jpg";
-import yogaSunset from "@/assets/yoga-sunset.jpg";
-import yogaGroup from "@/assets/yoga-group.jpg";
+import {
+  HERO_IMAGES, WELCOME_MAIN, WELCOME_SECONDARY,
+  BENEFITS_IMAGE, CTA_BG_IMAGE,
+} from "@/lib/uploadedImages";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -47,7 +45,7 @@ const benefitDefaults = [
   { title: "הפחתת מתח", desc: "שחרור מתחים ושיפור איכות השינה" },
 ];
 
-const defaultHeroImages = [heroYoga, studioInterior, yogaGroup, yogaSunset, meditationHands];
+const defaultHeroImages = HERO_IMAGES;
 
 const HeroFocalEditor = ({ src, index, objectPosition, onSave }: { src: string; index: number; objectPosition: string; onSave: (pos: string) => void }) => {
   const imgRef = useRef<HTMLDivElement>(null);
