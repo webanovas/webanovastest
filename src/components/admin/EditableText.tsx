@@ -172,6 +172,8 @@ const EditableText = memo(({
       </span>
     </Tag>
   );
-};
+});
+
+EditableText.displayName = "EditableText";
 
 export default EditableText;
