@@ -68,7 +68,7 @@ function TeacherEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew
           </button>
         )}
         <FocalPointPicker
-          src={value.image_url || teacherImg}
+          src={value.image_url || TEACHER_FALLBACK}
           alt="preview"
           objectPosition={value.image_position || "50% 50%"}
           onSave={(pos) => onChange({ ...value, image_position: pos })}
