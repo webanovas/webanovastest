@@ -366,7 +366,7 @@ const Index = () => {
               </div>
               <div className="absolute -bottom-8 -right-8 md:-right-12 w-40 h-40 md:w-52 md:h-52 rounded-2xl overflow-hidden shadow-xl border-4 border-background">
                 <EditableImage
-                  src={getImage("welcome-img-secondary", studioInterior)}
+                  src={getImage("welcome-img-secondary", WELCOME_SECONDARY)}
                   alt="הסטודיו"
                   className="w-full h-full object-cover"
                   folder="welcome"
