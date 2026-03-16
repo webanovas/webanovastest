@@ -33,7 +33,7 @@ const ASPECT_ICONS: Record<AspectMode, typeof Square> = {
   tall: RectangleVertical,
 };
 
-const FocalPointPicker = ({ src, alt, objectPosition, onSave, open, onOpenChange }: FocalPointPickerProps) => {
+const FocalPointPicker = ({ src, alt, objectPosition, onSave, open, onOpenChange, fixedAspectRatio }: FocalPointPickerProps) => {
   const [position, setPosition] = useState(() => {
     const parts = objectPosition.split(" ");
     return {
