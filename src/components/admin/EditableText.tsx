@@ -20,7 +20,7 @@ type PersistedEditState = {
 
 const editStateStore = new Map<string, PersistedEditState>();
 
-const EditableText = ({
+const EditableText = memo(({
   value,
   onSave,
   as: Tag = "span",
@@ -34,6 +34,8 @@ const EditableText = ({
   const [editing, setEditing] = useState<boolean>(persisted?.editing ?? false);
   const [draft, setDraft] = useState<string>(persisted?.draft ?? value);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
+  const onSaveRef = useRef(onSave);
+  onSaveRef.current = onSave;
 
   useEffect(() => {
     if (!persistKey) return;
