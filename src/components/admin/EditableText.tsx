@@ -125,7 +125,7 @@ const EditableText = memo(({
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") { onSave(draft); setEditing(false); }
+              if (e.key === "Enter") { onSaveRef.current(draft); setEditing(false); }
               if (e.key === "Escape") { setDraft(value); setEditing(false); }
             }}
             className={cn(
