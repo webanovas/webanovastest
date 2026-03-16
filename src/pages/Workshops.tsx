@@ -21,8 +21,8 @@ import {
   DialogContent,
 } from "@/components/ui/dialog";
 import { ClockPicker } from "@/components/ui/clock-picker";
-import workshopImg1 from "@/assets/workshop-1.jpg";
-import workshopImg2 from "@/assets/workshop-2.jpg";
+// Workshop fallback uses first uploaded workshop image
+const WORKSHOP_FALLBACK = "https://muhfaqvpnyakhfkcfhkc.supabase.co/storage/v1/object/public/site-images/workshops/1773666905225.jpeg";
 import ImageUpload from "@/components/admin/ImageUpload";
 import FocalPointPicker from "@/components/admin/FocalPointPicker";
 import { usePageContent } from "@/hooks/usePageContent";
