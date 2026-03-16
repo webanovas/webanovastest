@@ -450,19 +450,23 @@ const Index = () => {
           objectPosition={getText("cta-bg-image-pos", "50% 50%")}
           onPositionChange={isEditMode ? (pos) => saveText("cta-bg-image-pos", pos) : undefined}
         />
-        <div className="absolute inset-0 bg-yoga-dark/40 flex items-end md:items-center pointer-events-none" dir="rtl">
+        <div className={`absolute inset-0 bg-yoga-dark/40 flex items-end md:items-center ${isEditMode ? '' : 'pointer-events-none'}`} dir="rtl">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-right px-8 md:px-16 pb-10 md:pb-0 pointer-events-auto max-w-xl">
             <E section="cta-title" fallback="התחילו לנשום" as="h2"
               className="font-heading text-3xl md:text-6xl font-bold text-primary-foreground mb-3 drop-shadow-lg" />
             <E section="cta-subtitle" fallback="הצטרפו למשפחת יוגה במושבה ותגלו מרחב חדש של שקט ורוגע" as="p"
               className="text-primary-foreground/80 text-lg mb-8 max-w-md drop-shadow-md" />
-            <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild={!isEditMode}>
-              {isEditMode ? (
-                <span><E section="cta-btn" fallback="בואו נתחיל" /></span>
-              ) : (
-                <Link to="/contact"><E section="cta-btn" fallback="בואו נתחיל" /></Link>
-              )}
-            </Button>
+            {isEditMode ? (
+              <div className="inline-flex items-center gap-2">
+                <span className="text-xs text-primary-foreground/60 bg-primary-foreground/10 rounded-full px-3 py-1">טקסט כפתור:</span>
+                <E section="cta-btn" fallback="בואו נתחיל" as="span"
+                  className="text-primary-foreground font-medium text-lg" />
+              </div>
+            ) : (
+              <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild>
+                <Link to="/contact">{getText("cta-btn", "בואו נתחיל")}</Link>
+              </Button>
+            )}
           </motion.div>
         </div>
       </section>
