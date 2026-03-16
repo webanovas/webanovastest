@@ -46,7 +46,7 @@ const FloatingContact = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] bg-black/20 backdrop-blur-[2px]"
+            className="fixed inset-0 z-[40] bg-black/20 backdrop-blur-[2px]"
             onClick={() => setIsOpen(false)}
           />
         )}
@@ -60,7 +60,7 @@ const FloatingContact = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.97 }}
             transition={{ type: "spring", damping: 28, stiffness: 350 }}
-            className={`fixed ${isAdmin ? "bottom-36" : "bottom-24"} left-4 sm:left-6 z-[70] w-[calc(100%-2rem)] sm:w-[340px] rounded-2xl shadow-2xl overflow-hidden`}
+            className={`fixed ${isAdmin ? "bottom-36" : "bottom-24"} left-4 sm:left-6 z-[42] w-[calc(100%-2rem)] sm:w-[340px] rounded-2xl shadow-2xl overflow-hidden`}
             style={{
               background: "linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)",
               border: "1px solid hsl(var(--border) / 0.3)",
@@ -151,7 +151,7 @@ const FloatingContact = () => {
       {/* FAB */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed left-4 sm:left-6 z-[70] flex items-center gap-2 text-yoga-dark shadow-lg hover:shadow-xl transition-shadow rounded-full px-5 h-12 border border-[hsl(170,25%,70%)]/30 ${isAdmin ? "bottom-20" : "bottom-6"}`}
+        className={`fixed left-4 sm:left-6 z-[42] flex items-center gap-2 text-yoga-dark shadow-lg hover:shadow-xl transition-shadow rounded-full px-5 h-12 border border-[hsl(170,25%,70%)]/30 ${isAdmin ? "bottom-20" : "bottom-6"}`}
         style={{ backgroundColor: "hsl(170, 25%, 78%)" }}
         whileHover={{ scale: 1.04 }}
         whileTap={{ scale: 0.96 }}
