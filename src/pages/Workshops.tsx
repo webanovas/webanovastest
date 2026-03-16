@@ -118,6 +118,7 @@ const Workshops = () => {
       title: w.title, date: w.date, time: w.time, location: w.location,
       description: w.description, is_active: w.is_active, image_url: w.image_url,
       image_position: (w as any).image_position || "50% 50%",
+      detail_image_position: (w as any).detail_image_position || "50% 50%",
       payment_url: (w as any).payment_url || null,
       short_description: (w as any).short_description || "",
       target_audience: (w as any).target_audience || "",
@@ -325,7 +326,7 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
           src={imgSrc}
           alt={w.title}
           className="w-full h-full object-cover"
-          style={{ objectPosition: (w as any).image_position || "50% 50%" }}
+          style={{ objectPosition: (w as any).detail_image_position || (w as any).image_position || "50% 50%" }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/20 to-transparent" />
         <div className="absolute bottom-5 right-5 left-5">
@@ -485,6 +486,7 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
 }) {
   const [dateOpen, setDateOpen] = useState(false);
   const [showFocalPicker, setShowFocalPicker] = useState(false);
+  const [showDetailFocalPicker, setShowDetailFocalPicker] = useState(false);
   if (!value) return null;
 
   const parsedDate = value.date ? parseHebrewDate(value.date) : undefined;
@@ -501,22 +503,40 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
           className="bottom-20 left-4"
         />
         {value.image_url && (
-          <button
-            onClick={(e) => { e.stopPropagation(); setShowFocalPicker(true); }}
-            className="absolute bottom-20 left-16 z-50 bg-background/90 backdrop-blur-sm rounded-full p-2 shadow-md border border-border hover:bg-background"
-            title="מיקום מוקד התמונה"
-          >
-            <Move className="h-4 w-4 text-foreground" />
-          </button>
+          <>
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowFocalPicker(true); }}
+              className="absolute bottom-20 left-16 z-50 bg-background/90 backdrop-blur-sm rounded-full p-2 shadow-md border border-border hover:bg-background"
+              title="מיקוד כרטיס (ריבוע)"
+            >
+              <Move className="h-4 w-4 text-foreground" />
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowDetailFocalPicker(true); }}
+              className="absolute bottom-20 left-28 z-50 bg-background/90 backdrop-blur-sm rounded-full p-2 shadow-md border border-border hover:bg-background flex items-center gap-1"
+              title="מיקוד תצוגה פנימית"
+            >
+              <FileText className="h-4 w-4 text-foreground" />
+            </button>
+          </>
         )}
         <FocalPointPicker
           src={value.image_url || workshopImg1}
-          alt="preview"
+          alt="מיקוד כרטיס"
           objectPosition={value.image_position || "50% 50%"}
           onSave={(pos) => onChange({ ...value, image_position: pos })}
           open={showFocalPicker}
           onOpenChange={setShowFocalPicker}
           fixedAspectRatio={1}
+        />
+        <FocalPointPicker
+          src={value.image_url || workshopImg1}
+          alt="מיקוד תצוגה פנימית"
+          objectPosition={value.detail_image_position || "50% 50%"}
+          onSave={(pos) => onChange({ ...value, detail_image_position: pos })}
+          open={showDetailFocalPicker}
+          onOpenChange={setShowDetailFocalPicker}
+          fixedAspectRatio={value.is_active ? 16 / 9 : 1}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
         <div className="absolute bottom-4 right-4 left-4">
