@@ -495,7 +495,7 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
     <div className="bg-card rounded-3xl overflow-hidden">
       {/* Image preview with upload */}
       <div className="aspect-square overflow-hidden relative">
-        <img src={value.image_url || workshopImg1} alt="preview" className="w-full h-full object-cover" style={{ objectPosition: value.image_position || "50% 50%" }} />
+        <img src={value.image_url || WORKSHOP_FALLBACK} alt="preview" className="w-full h-full object-cover" style={{ objectPosition: value.image_position || "50% 50%" }} />
         <ImageUpload
           currentUrl={value.image_url}
           onUpload={(url) => onChange({ ...value, image_url: url })}
