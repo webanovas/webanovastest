@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, memo } from "react";
 import { useAdminMode } from "@/hooks/useAdminMode";
 import { Pencil, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -20,7 +20,7 @@ type PersistedEditState = {
 
 const editStateStore = new Map<string, PersistedEditState>();
 
-const EditableText = ({
+const EditableText = memo(({
   value,
   onSave,
   as: Tag = "span",
@@ -34,6 +34,8 @@ const EditableText = ({
   const [editing, setEditing] = useState<boolean>(persisted?.editing ?? false);
   const [draft, setDraft] = useState<string>(persisted?.draft ?? value);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
+  const onSaveRef = useRef(onSave);
+  onSaveRef.current = onSave;
 
   useEffect(() => {
     if (!persistKey) return;
@@ -123,7 +125,7 @@ const EditableText = ({
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") { onSave(draft); setEditing(false); }
+              if (e.key === "Enter") { onSaveRef.current(draft); setEditing(false); }
               if (e.key === "Escape") { setDraft(value); setEditing(false); }
             }}
             className={cn(
@@ -134,7 +136,7 @@ const EditableText = ({
         )}
         <div className="flex gap-1.5 justify-end mt-2" data-edit-actions>
           <button
-            onClick={() => { onSave(draft); setEditing(false); }}
+            onClick={() => { onSaveRef.current(draft); setEditing(false); }}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary text-primary-foreground hover:bg-primary/80 transition-colors text-sm font-medium"
           >
             <Check className="h-3.5 w-3.5" />
@@ -170,6 +172,8 @@ const EditableText = ({
       </span>
     </Tag>
   );
-};
+});
+
+EditableText.displayName = "EditableText";
 
 export default EditableText;

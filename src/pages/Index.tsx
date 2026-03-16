@@ -174,14 +174,17 @@ const Index = () => {
     return () => { emblaApi.off("select", onSelect); };
   }, [emblaApi, onSelect]);
 
-  const E = ({ section, fallback, as, className, multiline }: { section: string; fallback: string; as?: "h1"|"h2"|"h3"|"p"|"span"|"div"; className?: string; multiline?: boolean }) => {
+  const saveTextRef = useRef(saveText);
+  saveTextRef.current = saveText;
+
+  const E = useCallback(({ section, fallback, as, className, multiline }: { section: string; fallback: string; as?: "h1"|"h2"|"h3"|"p"|"span"|"div"; className?: string; multiline?: boolean }) => {
     const val = getText(section, fallback);
     if (!isEditMode) {
       const Tag = as || "span";
       return <Tag className={className}>{val}</Tag>;
     }
-    return <EditableText value={val} onSave={(v) => saveText(section, v)} as={as} className={className} multiline={multiline} persistKey={`home:${section}`} />;
-  };
+    return <EditableText value={val} onSave={(v) => saveTextRef.current(section, v)} as={as} className={className} multiline={multiline} persistKey={`home:${section}`} />;
+  }, [isEditMode, getText]);
 
   // Helper: wrap Link buttons so they don't navigate in edit mode
   const MaybeLink = ({ to, children, ...props }: { to: string; children: React.ReactNode; [key: string]: any }) => {
@@ -299,20 +302,27 @@ const Index = () => {
                 className="text-base md:text-xl text-primary-foreground/90 leading-relaxed mb-8 md:mb-10 max-w-lg" multiline />
             </motion.div>
             <motion.div variants={fadeUp} className="flex flex-wrap gap-4 justify-center md:justify-start">
-              <Button size="lg" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base shadow-xl shadow-primary/30" asChild={!isEditMode}>
-                {isEditMode ? (
-                  <span><E section="hero-btn-schedule" fallback="לוח שיעורים" /></span>
-                ) : (
-                  <Link to="/schedule"><E section="hero-btn-schedule" fallback="לוח שיעורים" /></Link>
-                )}
-              </Button>
-              <Button size="lg" variant="outline" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base border-primary-foreground/50 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:text-primary-foreground backdrop-blur-md" asChild={!isEditMode}>
-                {isEditMode ? (
-                  <span><E section="hero-btn-about" fallback="הכירו אותנו" /></span>
-                ) : (
-                  <Link to="/about"><E section="hero-btn-about" fallback="הכירו אותנו" /></Link>
-                )}
-              </Button>
+              {isEditMode ? (
+                <div className="flex flex-col gap-3">
+                  <div className="inline-flex items-center gap-2">
+                    <span className="text-xs text-primary-foreground/60 bg-primary-foreground/10 rounded-full px-3 py-1">כפתור 1:</span>
+                    <E section="hero-btn-schedule" fallback="לוח שיעורים" as="span" className="text-primary-foreground font-medium" />
+                  </div>
+                  <div className="inline-flex items-center gap-2">
+                    <span className="text-xs text-primary-foreground/60 bg-primary-foreground/10 rounded-full px-3 py-1">כפתור 2:</span>
+                    <E section="hero-btn-about" fallback="הכירו אותנו" as="span" className="text-primary-foreground font-medium" />
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <Button size="lg" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base shadow-xl shadow-primary/30" asChild>
+                    <Link to="/schedule">{getText("hero-btn-schedule", "לוח שיעורים")}</Link>
+                  </Button>
+                  <Button size="lg" variant="outline" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base border-primary-foreground/50 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:text-primary-foreground backdrop-blur-md" asChild>
+                    <Link to="/about">{getText("hero-btn-about", "הכירו אותנו")}</Link>
+                  </Button>
+                </>
+              )}
             </motion.div>
           </motion.div>
         </div>
@@ -332,13 +342,16 @@ const Index = () => {
               <E section="welcome-text-2" fallback="שירה פלג, מורה ומטפלת ביוגה מנוסה, מובילה את הסטודיו מתוך אהבה אמיתית לתרגול ומחויבות לכל מתרגל ומתרגלת." as="p"
                 className="text-muted-foreground leading-relaxed mb-8" multiline />
               <div className="pt-6 border-t border-border"></div>
-              <Button variant="outline" className="rounded-full gap-2 px-8 h-12" asChild={!isEditMode}>
-                {isEditMode ? (
-                  <span><E section="welcome-btn" fallback="קראו עוד עלינו" /><ArrowLeft className="h-4 w-4" /></span>
-                ) : (
-                  <Link to="/about"><E section="welcome-btn" fallback="קראו עוד עלינו" /><ArrowLeft className="h-4 w-4" /></Link>
-                )}
-              </Button>
+              {isEditMode ? (
+                <div className="inline-flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground bg-muted rounded-full px-3 py-1">כפתור:</span>
+                  <E section="welcome-btn" fallback="קראו עוד עלינו" as="span" className="text-foreground font-medium" />
+                </div>
+              ) : (
+                <Button variant="outline" className="rounded-full gap-2 px-8 h-12" asChild>
+                  <Link to="/about">{getText("welcome-btn", "קראו עוד עלינו")}<ArrowLeft className="h-4 w-4" /></Link>
+                </Button>
+              )}
             </motion.div>
 
             <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="relative">
@@ -450,19 +463,23 @@ const Index = () => {
           objectPosition={getText("cta-bg-image-pos", "50% 50%")}
           onPositionChange={isEditMode ? (pos) => saveText("cta-bg-image-pos", pos) : undefined}
         />
-        <div className="absolute inset-0 bg-yoga-dark/40 flex items-end md:items-center pointer-events-none" dir="rtl">
+        <div className={`absolute inset-0 bg-yoga-dark/40 flex items-end md:items-center ${isEditMode ? '' : 'pointer-events-none'}`} dir="rtl">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-right px-8 md:px-16 pb-10 md:pb-0 pointer-events-auto max-w-xl">
             <E section="cta-title" fallback="התחילו לנשום" as="h2"
               className="font-heading text-3xl md:text-6xl font-bold text-primary-foreground mb-3 drop-shadow-lg" />
             <E section="cta-subtitle" fallback="הצטרפו למשפחת יוגה במושבה ותגלו מרחב חדש של שקט ורוגע" as="p"
               className="text-primary-foreground/80 text-lg mb-8 max-w-md drop-shadow-md" />
-            <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild={!isEditMode}>
-              {isEditMode ? (
-                <span><E section="cta-btn" fallback="בואו נתחיל" /></span>
-              ) : (
-                <Link to="/contact"><E section="cta-btn" fallback="בואו נתחיל" /></Link>
-              )}
-            </Button>
+            {isEditMode ? (
+              <div className="inline-flex items-center gap-2">
+                <span className="text-xs text-primary-foreground/60 bg-primary-foreground/10 rounded-full px-3 py-1">טקסט כפתור:</span>
+                <E section="cta-btn" fallback="בואו נתחיל" as="span"
+                  className="text-primary-foreground font-medium text-lg" />
+              </div>
+            ) : (
+              <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild>
+                <Link to="/contact">{getText("cta-btn", "בואו נתחיל")}</Link>
+              </Button>
+            )}
           </motion.div>
         </div>
       </section>
