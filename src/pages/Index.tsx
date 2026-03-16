@@ -457,32 +457,58 @@ const Index = () => {
       </section>
 
       {/* Full-width image divider */}
-      <section className="relative h-[50vh] md:h-[60vh] overflow-hidden">
-        <EditableImage
-          src={getImage("cta-bg-image", yogaSunset)}
-          alt="יוגה"
-          className="absolute inset-0 w-full h-full object-cover"
-          folder="cta"
-          onUpload={isEditMode ? (url) => saveText("cta-bg-image", url) : undefined}
-          objectPosition={getText("cta-bg-image-pos", "50% 50%")}
-          onPositionChange={isEditMode ? (pos) => saveText("cta-bg-image-pos", pos) : undefined}
-        />
-        <div className={`absolute inset-0 bg-yoga-dark/40 flex items-end md:items-center ${isEditMode ? '' : 'pointer-events-none'}`} dir="rtl">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-right px-8 md:px-16 pb-10 md:pb-0 pointer-events-auto max-w-xl">
-            <E section="cta-title" fallback="התחילו לנשום" as="h2"
-              className="font-heading text-3xl md:text-6xl font-bold text-primary-foreground mb-3 drop-shadow-lg" />
-            <E section="cta-subtitle" fallback="הצטרפו למשפחת יוגה במושבה ותגלו מרחב חדש של שקט ורוגע" as="p"
-              className="text-primary-foreground/80 text-lg mb-8 max-w-md drop-shadow-md" />
-            {isEditMode ? (
-              <div className="inline-flex items-center gap-2">
-                <span className="text-xs text-primary-foreground/60 bg-primary-foreground/10 rounded-full px-3 py-1">טקסט כפתור:</span>
-                <E section="cta-btn" fallback="בואו נתחיל" as="span"
-                  className="text-primary-foreground font-medium text-lg" />
-              </div>
-            ) : (
-              <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild>
-                <Link to="/contact">{getText("cta-btn", "בואו נתחיל")}</Link>
-              </Button>
+      <section className="relative md:h-[60vh] overflow-hidden">
+        {/* Image */}
+        <div className="relative h-[35vh] md:h-full">
+          <EditableImage
+            src={getImage("cta-bg-image", yogaSunset)}
+            alt="יוגה"
+            className="absolute inset-0 w-full h-full object-cover"
+            folder="cta"
+            onUpload={isEditMode ? (url) => saveText("cta-bg-image", url) : undefined}
+            objectPosition={getText("cta-bg-image-pos", "50% 50%")}
+            onPositionChange={isEditMode ? (pos) => saveText("cta-bg-image-pos", pos) : undefined}
+          />
+          {/* Desktop overlay */}
+          <div className={`hidden md:flex absolute inset-0 bg-yoga-dark/40 items-center ${isEditMode ? '' : 'pointer-events-none'}`} dir="rtl">
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-right px-16 pointer-events-auto max-w-xl">
+              <E section="cta-title" fallback="התחילו לנשום" as="h2"
+                className="font-heading text-6xl font-bold text-primary-foreground mb-3 drop-shadow-lg" />
+              <E section="cta-subtitle" fallback="הצטרפו למשפחת יוגה במושבה ותגלו מרחב חדש של שקט ורוגע" as="p"
+                className="text-primary-foreground/80 text-lg mb-8 max-w-md drop-shadow-md" />
+              {isEditMode ? (
+                <div className="inline-flex items-center gap-2">
+                  <span className="text-xs text-primary-foreground/60 bg-primary-foreground/10 rounded-full px-3 py-1">טקסט כפתור:</span>
+                  <E section="cta-btn" fallback="בואו נתחיל" as="span"
+                    className="text-primary-foreground font-medium text-lg" />
+                </div>
+              ) : (
+                <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild>
+                  <Link to="/contact">{getText("cta-btn", "בואו נתחיל")}</Link>
+                </Button>
+              )}
+            </motion.div>
+          </div>
+        </div>
+        {/* Mobile: flat text below image */}
+        <div className="md:hidden bg-yoga-dark px-6 py-8 text-right" dir="rtl">
+          <E section="cta-title" fallback="התחילו לנשום" as="h2"
+            className="font-heading text-3xl font-bold text-primary-foreground mb-2" />
+          <E section="cta-subtitle" fallback="הצטרפו למשפחת יוגה במושבה ותגלו מרחב חדש של שקט ורוגע" as="p"
+            className="text-primary-foreground/80 text-base mb-6" />
+          {isEditMode ? (
+            <div className="inline-flex items-center gap-2">
+              <span className="text-xs text-primary-foreground/60 bg-primary-foreground/10 rounded-full px-3 py-1">טקסט כפתור:</span>
+              <E section="cta-btn" fallback="בואו נתחיל" as="span"
+                className="text-primary-foreground font-medium text-lg" />
+            </div>
+          ) : (
+            <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-xl shadow-primary/30" asChild>
+              <Link to="/contact">{getText("cta-btn", "בואו נתחיל")}</Link>
+            </Button>
+          )}
+        </div>
+      </section>
             )}
           </motion.div>
         </div>
