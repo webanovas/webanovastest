@@ -416,7 +416,7 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center max-w-6xl mx-auto">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="rounded-3xl overflow-hidden shadow-xl aspect-square">
               <EditableImage
-                src={getImage("benefits-image", meditationHands)}
+                src={getImage("benefits-image", BENEFITS_IMAGE)}
                 alt="תרגול יוגה"
                 className="w-full h-full object-cover"
                 folder="benefits"
