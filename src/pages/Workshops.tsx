@@ -231,7 +231,7 @@ const Workshops = () => {
                         )}
                         onClick={() => isEditMode ? setEditing({ ...w }) : setViewingWorkshop(w)}
                       >
-                        <div className="aspect-[4/3] overflow-hidden relative">
+                        <div className="aspect-square overflow-hidden relative">
                           <img
                             src={w.image_url || workshopImages[i % workshopImages.length]}
                             alt={w.title}
@@ -320,7 +320,7 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
   return (
     <div className="bg-card rounded-3xl overflow-hidden">
       {/* Hero image */}
-      <div className="aspect-video overflow-hidden relative">
+      <div className={cn("overflow-hidden relative", isPast ? "aspect-square" : "aspect-video")}>
         <img
           src={imgSrc}
           alt={w.title}
@@ -492,7 +492,7 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
   return (
     <div className="bg-card rounded-3xl overflow-hidden">
       {/* Image preview with upload */}
-      <div className="aspect-video overflow-hidden relative">
+      <div className="aspect-square overflow-hidden relative">
         <img src={value.image_url || workshopImg1} alt="preview" className="w-full h-full object-cover" style={{ objectPosition: value.image_position || "50% 50%" }} />
         <ImageUpload
           currentUrl={value.image_url}
