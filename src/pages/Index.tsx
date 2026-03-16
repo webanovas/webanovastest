@@ -174,14 +174,17 @@ const Index = () => {
     return () => { emblaApi.off("select", onSelect); };
   }, [emblaApi, onSelect]);
 
-  const E = ({ section, fallback, as, className, multiline }: { section: string; fallback: string; as?: "h1"|"h2"|"h3"|"p"|"span"|"div"; className?: string; multiline?: boolean }) => {
+  const saveTextRef = useRef(saveText);
+  saveTextRef.current = saveText;
+
+  const E = useCallback(({ section, fallback, as, className, multiline }: { section: string; fallback: string; as?: "h1"|"h2"|"h3"|"p"|"span"|"div"; className?: string; multiline?: boolean }) => {
     const val = getText(section, fallback);
     if (!isEditMode) {
       const Tag = as || "span";
       return <Tag className={className}>{val}</Tag>;
     }
-    return <EditableText value={val} onSave={(v) => saveText(section, v)} as={as} className={className} multiline={multiline} persistKey={`home:${section}`} />;
-  };
+    return <EditableText value={val} onSave={(v) => saveTextRef.current(section, v)} as={as} className={className} multiline={multiline} persistKey={`home:${section}`} />;
+  }, [isEditMode, getText]);
 
   // Helper: wrap Link buttons so they don't navigate in edit mode
   const MaybeLink = ({ to, children, ...props }: { to: string; children: React.ReactNode; [key: string]: any }) => {
