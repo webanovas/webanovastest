@@ -530,7 +530,7 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
           fixedAspectRatio={1}
         />
         <FocalPointPicker
-          src={value.image_url || workshopImg1}
+          src={value.image_url || WORKSHOP_FALLBACK}
           alt="מיקוד תצוגה פנימית"
           objectPosition={value.detail_image_position || "50% 50%"}
           onSave={(pos) => onChange({ ...value, detail_image_position: pos })}
