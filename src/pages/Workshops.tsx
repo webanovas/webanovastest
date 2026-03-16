@@ -521,7 +521,7 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
           </>
         )}
         <FocalPointPicker
-          src={value.image_url || workshopImg1}
+          src={value.image_url || WORKSHOP_FALLBACK}
           alt="מיקוד כרטיס"
           objectPosition={value.image_position || "50% 50%"}
           onSave={(pos) => onChange({ ...value, image_position: pos })}
