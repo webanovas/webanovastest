@@ -339,13 +339,16 @@ const Index = () => {
               <E section="welcome-text-2" fallback="שירה פלג, מורה ומטפלת ביוגה מנוסה, מובילה את הסטודיו מתוך אהבה אמיתית לתרגול ומחויבות לכל מתרגל ומתרגלת." as="p"
                 className="text-muted-foreground leading-relaxed mb-8" multiline />
               <div className="pt-6 border-t border-border"></div>
-              <Button variant="outline" className="rounded-full gap-2 px-8 h-12" asChild={!isEditMode}>
-                {isEditMode ? (
-                  <span><E section="welcome-btn" fallback="קראו עוד עלינו" /><ArrowLeft className="h-4 w-4" /></span>
-                ) : (
-                  <Link to="/about"><E section="welcome-btn" fallback="קראו עוד עלינו" /><ArrowLeft className="h-4 w-4" /></Link>
-                )}
-              </Button>
+              {isEditMode ? (
+                <div className="inline-flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground bg-muted rounded-full px-3 py-1">כפתור:</span>
+                  <E section="welcome-btn" fallback="קראו עוד עלינו" as="span" className="text-foreground font-medium" />
+                </div>
+              ) : (
+                <Button variant="outline" className="rounded-full gap-2 px-8 h-12" asChild>
+                  <Link to="/about">{getText("welcome-btn", "קראו עוד עלינו")}<ArrowLeft className="h-4 w-4" /></Link>
+                </Button>
+              )}
             </motion.div>
 
             <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="relative">
