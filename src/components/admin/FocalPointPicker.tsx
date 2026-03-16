@@ -91,7 +91,7 @@ const FocalPointPicker = ({ src, alt, objectPosition, onSave, open, onOpenChange
   // The crop window shows what object-cover would display at the given focal point
   const computeClipInset = () => {
     const imgAspect = imgNatural.w / imgNatural.h;
-    const cropAspect = ASPECT_RATIOS[aspectMode];
+    const cropAspect = fixedAspectRatio ?? ASPECT_RATIOS[aspectMode];
 
     // Crop window size as percentage of the full image
     let cropW: number, cropH: number;
