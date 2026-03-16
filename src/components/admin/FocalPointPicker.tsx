@@ -131,27 +131,29 @@ const FocalPointPicker = ({ src, alt, objectPosition, onSave, open, onOpenChange
             <p className="text-sm text-muted-foreground">גררו על התמונה כדי לבחור את האזור שיוצג</p>
           </DialogHeader>
 
-          {/* Aspect ratio selector */}
-          <div className="flex gap-1.5 mt-4 justify-center">
-            {(["wide", "square", "tall"] as AspectMode[]).map((mode) => {
-              const Icon = ASPECT_ICONS[mode];
-              const active = aspectMode === mode;
-              return (
-                <button
-                  key={mode}
-                  onClick={() => setAspectMode(mode)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                    active
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground hover:bg-accent"
-                  }`}
-                >
-                  <Icon className="h-3.5 w-3.5" />
-                  {ASPECT_LABELS[mode]}
-                </button>
-              );
-            })}
-          </div>
+          {/* Aspect ratio selector (hidden when fixed) */}
+          {!fixedAspectRatio && (
+            <div className="flex gap-1.5 mt-4 justify-center">
+              {(["wide", "square", "tall"] as AspectMode[]).map((mode) => {
+                const Icon = ASPECT_ICONS[mode];
+                const active = aspectMode === mode;
+                return (
+                  <button
+                    key={mode}
+                    onClick={() => setAspectMode(mode)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                      active
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground hover:bg-accent"
+                    }`}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    {ASPECT_LABELS[mode]}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Crop preview area */}
