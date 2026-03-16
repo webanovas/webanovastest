@@ -10,6 +10,7 @@ interface FocalPointPickerProps {
   onSave: (position: string) => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  fixedAspectRatio?: number;
 }
 
 type AspectMode = "wide" | "square" | "tall";
