@@ -58,11 +58,10 @@ const EditableText = memo(({
   useEffect(() => {
     if (editing && inputRef.current) {
       inputRef.current.focus();
-      if (!multiline) {
-        inputRef.current.select();
-      } else {
-        const el = inputRef.current as HTMLTextAreaElement;
-        el.selectionStart = el.selectionEnd = el.value.length;
+      const el = inputRef.current;
+      const cursorPos = el.value.length;
+      if (typeof el.setSelectionRange === "function") {
+        el.setSelectionRange(cursorPos, cursorPos);
       }
     }
   }, [editing, multiline]);
