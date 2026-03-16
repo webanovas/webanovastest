@@ -109,7 +109,7 @@ const About = () => {
             <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="relative order-2 md:order-1">
               <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[3/4]">
                 <EditableImage
-                  src={getImage("shira-image", teacherShira)}
+                  src={getImage("shira-image", SHIRA_IMAGE)}
                   alt="שירה פלג"
                   className="w-full h-full object-cover"
                   folder="about"
