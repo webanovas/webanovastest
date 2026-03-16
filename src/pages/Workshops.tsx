@@ -502,22 +502,40 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
           className="bottom-20 left-4"
         />
         {value.image_url && (
-          <button
-            onClick={(e) => { e.stopPropagation(); setShowFocalPicker(true); }}
-            className="absolute bottom-20 left-16 z-50 bg-background/90 backdrop-blur-sm rounded-full p-2 shadow-md border border-border hover:bg-background"
-            title="מיקום מוקד התמונה"
-          >
-            <Move className="h-4 w-4 text-foreground" />
-          </button>
+          <>
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowFocalPicker(true); }}
+              className="absolute bottom-20 left-16 z-50 bg-background/90 backdrop-blur-sm rounded-full p-2 shadow-md border border-border hover:bg-background"
+              title="מיקוד כרטיס (ריבוע)"
+            >
+              <Move className="h-4 w-4 text-foreground" />
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowDetailFocalPicker(true); }}
+              className="absolute bottom-20 left-28 z-50 bg-background/90 backdrop-blur-sm rounded-full p-2 shadow-md border border-border hover:bg-background flex items-center gap-1"
+              title="מיקוד תצוגה פנימית"
+            >
+              <FileText className="h-4 w-4 text-foreground" />
+            </button>
+          </>
         )}
         <FocalPointPicker
           src={value.image_url || workshopImg1}
-          alt="preview"
+          alt="מיקוד כרטיס"
           objectPosition={value.image_position || "50% 50%"}
           onSave={(pos) => onChange({ ...value, image_position: pos })}
           open={showFocalPicker}
           onOpenChange={setShowFocalPicker}
           fixedAspectRatio={1}
+        />
+        <FocalPointPicker
+          src={value.image_url || workshopImg1}
+          alt="מיקוד תצוגה פנימית"
+          objectPosition={value.detail_image_position || "50% 50%"}
+          onSave={(pos) => onChange({ ...value, detail_image_position: pos })}
+          open={showDetailFocalPicker}
+          onOpenChange={setShowDetailFocalPicker}
+          fixedAspectRatio={value.is_active ? 16 / 9 : 1}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
         <div className="absolute bottom-4 right-4 left-4">
