@@ -355,7 +355,7 @@ const Index = () => {
             <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="relative">
               <div className="rounded-3xl overflow-hidden shadow-2xl aspect-[3/4]">
                 <EditableImage
-                  src={getImage("welcome-img-main", teacherShira)}
+                  src={getImage("welcome-img-main", WELCOME_MAIN)}
                   alt="שירה פלג"
                   className="w-full h-full object-cover"
                   folder="welcome"
