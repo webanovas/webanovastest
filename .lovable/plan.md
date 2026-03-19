@@ -1,39 +1,25 @@
 
 
-## Send Contact Form Emails via Resend
+## Replace mailto: Links with In-Site Email Sending
 
-Both contact forms (floating button + contact page) will send emails directly to shira.pelleg@gmail.com when submitted, with WhatsApp as a secondary option.
+The contact form already sends emails directly from the site. The remaining issue is three `mailto:` links that still open Outlook. We'll replace them with inline mini-forms or redirect to the existing contact form.
 
 ### Changes
 
-**1. Store the Resend API key securely**
-- Save `RESEND_API_KEY` (`re_bKgWG7Xx_8bF6DBCdisKjA7KtSXgGyaVT`) as a backend secret
+**1. Workshop Detail View (`src/pages/Workshops.tsx`)**
+- Replace the `mailto:` "אימייל" link with a small inline contact form (or a button that opens the floating contact widget)
+- The form will pre-fill the message with the workshop name and send via the existing `send-contact-email` edge function
+- Keep the WhatsApp link as-is
 
-**2. Create backend function: `send-contact-email`**
-- New file: `supabase/functions/send-contact-email/index.ts`
-- Accepts POST with `{ name, phone, message }` (all optional except name+phone)
-- Sends a nicely formatted email to `shira.pelleg@gmail.com` from `onboarding@resend.dev`
-- Public endpoint (no JWT required -- it's a contact form)
-- Proper CORS headers included
+**2. Contact Page info section (`src/pages/Contact.tsx`)**
+- Change the `mailto:shira.pelleg@gmail.com` link to scroll down to the contact form on the same page instead of opening Outlook
+- The email address still displays as info, but clicking it scrolls to the form
 
-**3. Update `supabase/config.toml`**
-- Add `[functions.send-contact-email]` with `verify_jwt = false`
+**3. Home Page contact section (`src/pages/Index.tsx`)**
+- Same approach — change the mailto link to navigate to `/contact` page or scroll to the contact form
+- Alternatively, open the floating contact widget when clicked
 
-**4. Update Floating Contact (`FloatingContact.tsx`)**
-- Replace the current `mailto:` form submission with a call to the backend function
-- Add a loading/sending state on the submit button
-- Show success toast on completion, error toast on failure
-- Keep the WhatsApp link as a secondary option (already exists below the form)
-
-**5. Update Contact Page (`Contact.tsx`)**
-- Wire the contact page form to also call the same backend function
-- Add form state management (name, email, phone, message)
-- Add loading state and success/error feedback
-- The WhatsApp button already exists as a secondary option -- no change needed there
-
-### How it will work for visitors
-1. User fills out the form (name, phone, optional message)
-2. Clicks the send button -- email is sent silently in the background
-3. Success message appears: "ההודעה נשלחה בהצלחה"
-4. Alternatively, they can click the WhatsApp button to message directly
+### Approach
+- Workshop detail: replace email link with a small expandable form (name, phone, optional message, pre-filled with workshop name) that calls `send-contact-email`
+- Contact page + Home page: change mailto click to scroll to the existing form / navigate to contact page
 
