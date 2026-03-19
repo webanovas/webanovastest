@@ -135,7 +135,7 @@ const Contact = () => {
                 <E section="form-title" fallback="השאירו פרטים" as="h2" className="font-heading text-2xl font-bold mb-8" />
               </motion.div>
 
-              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <form id="contact-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <motion.div variants={fadeUp}>
                   <Input placeholder="שם מלא" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-accent/30 border-0 rounded-xl h-12" />
                 </motion.div>
