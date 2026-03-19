@@ -432,11 +432,50 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
                   וואטסאפ
                 </a>
                 <span className="text-muted-foreground/30 text-xs leading-6">|</span>
-                <a href={emailUrl} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1">
-                  <ExternalLink className="h-3.5 w-3.5" />
+                <button onClick={() => setShowEmailForm(!showEmailForm)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1">
+                  <Mail className="h-3.5 w-3.5" />
                   אימייל
-                </a>
+                </button>
               </div>
+
+              {/* Inline email form */}
+              <AnimatePresence>
+                {showEmailForm && (
+                  <motion.form
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.25 }}
+                    onSubmit={handleEmailSubmit}
+                    className="flex flex-col gap-2.5 overflow-hidden"
+                  >
+                    <Input
+                      placeholder="שם מלא"
+                      value={emailForm.name}
+                      onChange={(e) => setEmailForm({ ...emailForm, name: e.target.value })}
+                      className="bg-accent/30 border-0 rounded-xl h-10 text-sm"
+                    />
+                    <Input
+                      type="tel"
+                      placeholder="טלפון"
+                      value={emailForm.phone}
+                      onChange={(e) => setEmailForm({ ...emailForm, phone: e.target.value })}
+                      className="bg-accent/30 border-0 rounded-xl h-10 text-sm"
+                    />
+                    <Textarea
+                      placeholder="הודעה"
+                      value={emailForm.message}
+                      onChange={(e) => setEmailForm({ ...emailForm, message: e.target.value })}
+                      rows={2}
+                      className="bg-accent/30 border-0 rounded-xl text-sm resize-none"
+                    />
+                    <Button type="submit" disabled={emailSending} size="sm" className="w-full gap-2 rounded-xl">
+                      {emailSending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+                      {emailSending ? "שולח..." : "שליחה"}
+                    </Button>
+                  </motion.form>
+                )}
+              </AnimatePresence>
             </div>
           </>
         )}
