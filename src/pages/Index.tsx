@@ -594,7 +594,7 @@ const Index = () => {
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Phone className="h-4 w-4 text-primary" /></div>
                   <E section="contact-phone" fallback="054-213-1254" />
                 </a>
-                <a href="mailto:shira.pelleg@gmail.com" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => isEditMode && e.preventDefault()}>
+                <a href="/contact" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => { if (isEditMode) { e.preventDefault(); } }}>
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Mail className="h-4 w-4 text-primary" /></div>
                   <E section="contact-email" fallback="shira.pelleg@gmail.com" />
                 </a>

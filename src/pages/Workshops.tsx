@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar as CalendarIcon, Clock, MapPin, Plus, Pencil, Check, Trash2, CalendarDays, FileText, Move, MessageCircle, Phone, ExternalLink, CreditCard, Link as LinkIcon, Users, AlignLeft } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, MapPin, Plus, Pencil, Check, Trash2, CalendarDays, FileText, Move, MessageCircle, Phone, Mail, Send, Loader2, CreditCard, Link as LinkIcon, Users, AlignLeft } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminMode } from "@/hooks/useAdminMode";
@@ -312,11 +312,35 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
   const whatsappMessage = encodeURIComponent(`היי שירה, אשמח לשמוע פרטים על הסדנה "${workshopName}" 🙏`);
   const whatsappUrl = `https://wa.me/972542131254?text=${whatsappMessage}`;
 
-  const contactSubject = encodeURIComponent(`פנייה בנוגע לסדנה: ${workshopName}`);
-  const contactBody = encodeURIComponent(`שלום שירה,\nאשמח לקבל פרטים נוספים על הסדנה "${workshopName}".\nתודה!`);
-  const emailUrl = `mailto:shira.pelleg@gmail.com?subject=${contactSubject}&body=${contactBody}`;
-
   const paymentUrl = (w as any).payment_url;
+
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [emailForm, setEmailForm] = useState({ name: "", phone: "", message: `אשמח לקבל פרטים נוספים על הסדנה "${workshopName}"` });
+  const [emailSending, setEmailSending] = useState(false);
+
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailForm.name || !emailForm.phone) {
+      toast.error("נא למלא שם וטלפון");
+      return;
+    }
+    setEmailSending(true);
+    try {
+      const { error } = await supabase.functions.invoke("send-contact-email", {
+        body: { name: emailForm.name, phone: emailForm.phone, message: emailForm.message },
+      });
+      if (error) throw error;
+      toast.success("ההודעה נשלחה בהצלחה!");
+      setShowEmailForm(false);
+      setEmailForm({ name: "", phone: "", message: `אשמח לקבל פרטים נוספים על הסדנה "${workshopName}"` });
+    } catch (err) {
+      console.error(err);
+      toast.error("שגיאה בשליחה, נסו שוב או פנו בוואטסאפ");
+    } finally {
+      setEmailSending(false);
+    }
+  };
+
 
   return (
     <div className="bg-card rounded-3xl overflow-hidden">
@@ -407,11 +431,50 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
                   וואטסאפ
                 </a>
                 <span className="text-muted-foreground/30 text-xs leading-6">|</span>
-                <a href={emailUrl} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1">
-                  <ExternalLink className="h-3.5 w-3.5" />
+                <button onClick={() => setShowEmailForm(!showEmailForm)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1">
+                  <Mail className="h-3.5 w-3.5" />
                   אימייל
-                </a>
+                </button>
               </div>
+
+              {/* Inline email form */}
+              <AnimatePresence>
+                {showEmailForm && (
+                  <motion.form
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.25 }}
+                    onSubmit={handleEmailSubmit}
+                    className="flex flex-col gap-2.5 overflow-hidden"
+                  >
+                    <Input
+                      placeholder="שם מלא"
+                      value={emailForm.name}
+                      onChange={(e) => setEmailForm({ ...emailForm, name: e.target.value })}
+                      className="bg-accent/30 border-0 rounded-xl h-10 text-sm"
+                    />
+                    <Input
+                      type="tel"
+                      placeholder="טלפון"
+                      value={emailForm.phone}
+                      onChange={(e) => setEmailForm({ ...emailForm, phone: e.target.value })}
+                      className="bg-accent/30 border-0 rounded-xl h-10 text-sm"
+                    />
+                    <Textarea
+                      placeholder="הודעה"
+                      value={emailForm.message}
+                      onChange={(e) => setEmailForm({ ...emailForm, message: e.target.value })}
+                      rows={2}
+                      className="bg-accent/30 border-0 rounded-xl text-sm resize-none"
+                    />
+                    <Button type="submit" disabled={emailSending} size="sm" className="w-full gap-2 rounded-xl">
+                      {emailSending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+                      {emailSending ? "שולח..." : "שליחה"}
+                    </Button>
+                  </motion.form>
+                )}
+              </AnimatePresence>
             </div>
           </>
         )}

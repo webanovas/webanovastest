@@ -93,10 +93,16 @@ const Contact = () => {
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><MessageCircle className="h-5 w-5 text-primary" /></div>
                   <E section="whatsapp" fallback="וואטסאפ" />
                 </a>
-                <a href="mailto:shira.pelleg@gmail.com" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => isEditMode && e.preventDefault()}>
+                <button
+                  onClick={() => {
+                    if (isEditMode) return;
+                    document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors cursor-pointer"
+                >
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Mail className="h-5 w-5 text-primary" /></div>
                   <E section="email" fallback="shira.pelleg@gmail.com" />
-                </a>
+                </button>
                 <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => isEditMode && e.preventDefault()}>
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Instagram className="h-5 w-5 text-primary" /></div>
                   <E section="instagram" fallback="@yogabamoshava" />
@@ -129,7 +135,7 @@ const Contact = () => {
                 <E section="form-title" fallback="השאירו פרטים" as="h2" className="font-heading text-2xl font-bold mb-8" />
               </motion.div>
 
-              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <form id="contact-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <motion.div variants={fadeUp}>
                   <Input placeholder="שם מלא" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="bg-accent/30 border-0 rounded-xl h-12" />
                 </motion.div>
