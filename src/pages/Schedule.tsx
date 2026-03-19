@@ -1907,6 +1907,25 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
                 <div className="border-t border-border/30 mt-1 pt-1">
                   <button
                     onClick={() => {
+                      onChange({ ...value, teacher: "מורה מתחלף/ת" });
+                      setShowTeacherPicker(false);
+                    }}
+                    className={cn(
+                      "w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-right transition-colors",
+                      value.teacher === "מורה מתחלף/ת" ? "bg-primary/10 text-primary" : "hover:bg-muted"
+                    )}
+                  >
+                    <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center flex-shrink-0">
+                      <Repeat className="h-3.5 w-3.5 text-amber-600" />
+                    </div>
+                    <div className="flex flex-col items-start">
+                      <span className="text-sm font-medium">מורה מתחלף/ת</span>
+                      <span className="text-[10px] text-muted-foreground">מקשר לדף הצוות</span>
+                    </div>
+                    {value.teacher === "מורה מתחלף/ת" && <Check className="h-4 w-4 text-primary mr-auto" />}
+                  </button>
+                  <button
+                    onClick={() => {
                       setIsCustomTeacher(true);
                       onChange({ ...value, teacher: "" });
                       setShowTeacherPicker(false);
