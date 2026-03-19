@@ -341,7 +341,6 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
     }
   };
 
-  const paymentUrl = (w as any).payment_url;
 
   return (
     <div className="bg-card rounded-3xl overflow-hidden">
