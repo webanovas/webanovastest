@@ -312,9 +312,34 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
   const whatsappMessage = encodeURIComponent(`היי שירה, אשמח לשמוע פרטים על הסדנה "${workshopName}" 🙏`);
   const whatsappUrl = `https://wa.me/972542131254?text=${whatsappMessage}`;
 
-  const contactSubject = encodeURIComponent(`פנייה בנוגע לסדנה: ${workshopName}`);
-  const contactBody = encodeURIComponent(`שלום שירה,\nאשמח לקבל פרטים נוספים על הסדנה "${workshopName}".\nתודה!`);
-  const emailUrl = `mailto:shira.pelleg@gmail.com?subject=${contactSubject}&body=${contactBody}`;
+  const paymentUrl = (w as any).payment_url;
+
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [emailForm, setEmailForm] = useState({ name: "", phone: "", message: `אשמח לקבל פרטים נוספים על הסדנה "${workshopName}"` });
+  const [emailSending, setEmailSending] = useState(false);
+
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailForm.name || !emailForm.phone) {
+      toast.error("נא למלא שם וטלפון");
+      return;
+    }
+    setEmailSending(true);
+    try {
+      const { error } = await supabase.functions.invoke("send-contact-email", {
+        body: { name: emailForm.name, phone: emailForm.phone, message: emailForm.message },
+      });
+      if (error) throw error;
+      toast.success("ההודעה נשלחה בהצלחה!");
+      setShowEmailForm(false);
+      setEmailForm({ name: "", phone: "", message: `אשמח לקבל פרטים נוספים על הסדנה "${workshopName}"` });
+    } catch (err) {
+      console.error(err);
+      toast.error("שגיאה בשליחה, נסו שוב או פנו בוואטסאפ");
+    } finally {
+      setEmailSending(false);
+    }
+  };
 
   const paymentUrl = (w as any).payment_url;
 
