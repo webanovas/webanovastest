@@ -22,10 +22,9 @@ const EditableImage = memo(({ src, alt, className, folder = "images", onUpload, 
   const [hasChanges, setHasChanges] = useState(false);
 
   const posStyle = objectPosition ? { objectPosition } : undefined;
-  const optimizedSrc = optimizeStorageImage(src, { width: 1600, quality: 76 });
 
   if (!isEditMode || !onUpload) {
-    return <img src={optimizedSrc} alt={alt} className={className} style={posStyle} loading="lazy" decoding="async" />;
+    return <img src={src} alt={alt} className={className} style={posStyle} loading="lazy" decoding="async" />;
   }
 
   const isAbsolute = className?.includes("absolute");
