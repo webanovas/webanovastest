@@ -157,13 +157,12 @@
 }
 
 /* Image fade-in on load */
-img {
+img[data-fade-state="pending"] {
   opacity: 0;
-  transition: opacity 0.5s ease-out;
+  transition: opacity 0.35s ease-out;
 }
 
-img[data-loaded="true"],
-img.loaded {
+img[data-fade-state="loaded"] {
   opacity: 1;
 }
 
