@@ -111,7 +111,7 @@ const Index = () => {
   });
 
   // Hero carousel
-  const heroAutoplayRef = useRef(Autoplay({ delay: 3500, stopOnInteraction: false }));
+  const heroAutoplayRef = useRef(Autoplay({ delay: 3500, stopOnInteraction: false, playOnInit: false }));
   const [heroEmblaRef] = useEmblaCarousel(
     { loop: true, direction: "rtl" },
     [heroAutoplayRef.current]
@@ -130,37 +130,62 @@ const Index = () => {
 
   // Show carousel once first image is ready, and warm-up the rest in background
   const [heroImagesReady, setHeroImagesReady] = useState(false);
+  const [heroSlidesBuffered, setHeroSlidesBuffered] = useState(false);
   const heroImagesKey = heroImages.join(",");
   useEffect(() => {
     let cancelled = false;
     setHeroImagesReady(false);
+    setHeroSlidesBuffered(false);
+    heroAutoplayRef.current.stop();
 
     const [firstImage, ...restImages] = heroImages;
     if (!firstImage) {
       setHeroImagesReady(true);
+      setHeroSlidesBuffered(true);
       return;
     }
 
-    const first = new Image();
-    const markReady = () => {
-      if (!cancelled) setHeroImagesReady(true);
-    };
-
-    first.onload = markReady;
-    first.onerror = markReady;
-    first.decoding = "async";
-    first.src = firstImage;
-
-    restImages.forEach((src) => {
+    const warmImage = async (src: string) => {
       const img = new Image();
       img.decoding = "async";
       img.src = src;
-    });
+
+      if (!img.complete) {
+        await new Promise<void>((resolve) => {
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+        });
+      }
+
+      try {
+        await img.decode?.();
+      } catch {
+        // Ignore decode errors and continue rendering.
+      }
+    };
+
+    void (async () => {
+      await warmImage(firstImage);
+      if (cancelled) return;
+
+      setHeroImagesReady(true);
+      await Promise.all(restImages.map((src) => warmImage(src)));
+      if (!cancelled) setHeroSlidesBuffered(true);
+    })();
 
     return () => {
       cancelled = true;
     };
   }, [heroImagesKey]);
+
+  useEffect(() => {
+    if (!heroSlidesBuffered) return;
+    heroAutoplayRef.current.play();
+
+    return () => {
+      heroAutoplayRef.current.stop();
+    };
+  }, [heroSlidesBuffered]);
 
   const handleHeroImageUpload = async (index: number, file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -246,7 +271,7 @@ const Index = () => {
                 <img
                   src={src}
                   alt={`יוגה במושבה ${i + 1}`}
-                  className="w-full h-full object-cover will-change-transform"
+                  className="w-full h-full object-cover will-change-transform transform-gpu"
                   style={{ objectPosition: getText(`hero-image-${i}-pos`, "50% 50%") }}
                   loading={i < 2 ? "eager" : "lazy"}
                   decoding="async"
