@@ -11,7 +11,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminMode } from "@/hooks/useAdminMode";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn, optimizeStorageImage } from "@/lib/utils";
 import type { Tables } from "@/integrations/supabase/types";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
