@@ -22,6 +22,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
+import { optimizeStorageImage } from "@/lib/utils";
 
 import {
   HERO_IMAGES, WELCOME_MAIN, WELCOME_SECONDARY,
@@ -100,7 +101,7 @@ const HeroFocalEditor = ({ src, index, objectPosition, onSave }: { src: string; 
 
 const Index = () => {
   const { isEditMode } = useAdminMode();
-  const { getText, getLoadedText, saveText, isLoading: isContentLoading } = usePageContent("home");
+  const { getText, getLoadedText, saveText } = usePageContent("home");
 
   const { data: testimonials = [] } = useQuery({
     queryKey: ["testimonials-home"],
@@ -111,9 +112,10 @@ const Index = () => {
   });
 
   // Hero carousel
+  const heroAutoplayRef = useRef(Autoplay({ delay: 3500, stopOnInteraction: false }));
   const [heroEmblaRef] = useEmblaCarousel(
     { loop: true, direction: "rtl" },
-    [Autoplay({ delay: 3500, stopOnInteraction: false })]
+    [heroAutoplayRef.current]
   );
 
   // Hero image editor state
@@ -124,26 +126,42 @@ const Index = () => {
   // Get hero images — always show defaults immediately, swap to DB values once loaded
   const heroImages = defaultHeroImages.map((defaultSrc, i) => {
     const saved = getLoadedText(`hero-image-${i}`, "");
-    return saved || defaultSrc;
+    return optimizeStorageImage(saved || defaultSrc, { width: 2200, quality: 78 });
   });
 
-  // Preload hero images for smooth carousel
+  // Show carousel once first image is ready, and warm-up the rest in background
   const [heroImagesReady, setHeroImagesReady] = useState(false);
+  const heroImagesKey = heroImages.join(",");
   useEffect(() => {
     let cancelled = false;
-    const preload = heroImages.map((src) => {
-      return new Promise<void>((resolve) => {
-        const img = new Image();
-        img.onload = () => resolve();
-        img.onerror = () => resolve(); // don't block on errors
-        img.src = src;
-      });
-    });
-    Promise.all(preload).then(() => {
+    setHeroImagesReady(false);
+
+    const [firstImage, ...restImages] = heroImages;
+    if (!firstImage) {
+      setHeroImagesReady(true);
+      return;
+    }
+
+    const first = new Image();
+    const markReady = () => {
       if (!cancelled) setHeroImagesReady(true);
+    };
+
+    first.onload = markReady;
+    first.onerror = markReady;
+    first.decoding = "async";
+    first.src = firstImage;
+
+    restImages.forEach((src) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = src;
     });
-    return () => { cancelled = true; };
-  }, [heroImages.join(",")]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [heroImagesKey]);
 
   const handleHeroImageUpload = async (index: number, file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -171,9 +189,10 @@ const Index = () => {
   };
 
   // Testimonials carousel
+  const testimonialsAutoplayRef = useRef(Autoplay({ delay: 4000, stopOnInteraction: false }));
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: true, direction: "rtl", align: "start" },
-    [Autoplay({ delay: 4000, stopOnInteraction: false })]
+    [testimonialsAutoplayRef.current]
   );
 
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -212,8 +231,8 @@ const Index = () => {
   // Get section images from page_content or use defaults (wait for load)
   const getImage = (section: string, fallback: string) => {
     const saved = getLoadedText(section, "");
-    if (saved === null) return fallback;
-    return saved || fallback;
+    const finalSrc = saved === null ? fallback : (saved || fallback);
+    return optimizeStorageImage(finalSrc, { width: 1600, quality: 76 });
   };
 
   return (
@@ -228,10 +247,11 @@ const Index = () => {
                 <img
                   src={src}
                   alt={`יוגה במושבה ${i + 1}`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover will-change-transform"
                   style={{ objectPosition: getText(`hero-image-${i}-pos`, "50% 50%") }}
-                  loading="eager"
+                  loading={i < 2 ? "eager" : "lazy"}
                   decoding="async"
+                  draggable={false}
                   {...(i === 0 ? { fetchPriority: "high" as any } : {})}
                 />
               </div>

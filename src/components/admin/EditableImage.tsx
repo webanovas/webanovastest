@@ -5,6 +5,7 @@ import FocalPointPicker from "./FocalPointPicker";
 import { Move, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { optimizeStorageImage } from "@/lib/utils";
 
 interface EditableImageProps {
   src: string;
@@ -22,9 +23,10 @@ const EditableImage = memo(({ src, alt, className, folder = "images", onUpload, 
   const [hasChanges, setHasChanges] = useState(false);
 
   const posStyle = objectPosition ? { objectPosition } : undefined;
+  const optimizedSrc = optimizeStorageImage(src, { width: 1600, quality: 76 });
 
   if (!isEditMode || !onUpload) {
-    return <img src={src} alt={alt} className={className} style={posStyle} loading="lazy" />;
+    return <img src={optimizedSrc} alt={alt} className={className} style={posStyle} loading="lazy" decoding="async" />;
   }
 
   const isAbsolute = className?.includes("absolute");
@@ -54,7 +56,7 @@ const EditableImage = memo(({ src, alt, className, folder = "images", onUpload, 
 
   return (
     <div className={wrapperClass}>
-      <img src={src} alt={alt} className={imgClass} style={posStyle} loading="lazy" />
+      <img src={optimizedSrc} alt={alt} className={imgClass} style={posStyle} loading="lazy" decoding="async" />
       <ImageUpload
         currentUrl={src}
         onUpload={handleUpload}

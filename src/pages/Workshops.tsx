@@ -11,7 +11,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminMode } from "@/hooks/useAdminMode";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn, optimizeStorageImage } from "@/lib/utils";
 import type { Tables } from "@/integrations/supabase/types";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -210,7 +210,7 @@ const Workshops = () => {
                           isEditMode={isEditMode}
                           onEdit={() => setEditing({ ...w })}
                           onView={() => setViewingWorkshop(w)}
-                          imgSrc={w.image_url || workshopImages[i % workshopImages.length]}
+                          imgSrc={optimizeStorageImage(w.image_url || workshopImages[i % workshopImages.length], { width: 960, quality: 74 })}
                         />
                       </motion.div>
                     ))}
@@ -234,11 +234,12 @@ const Workshops = () => {
                       >
                         <div className="aspect-square overflow-hidden relative">
                           <img
-                            src={w.image_url || workshopImages[i % workshopImages.length]}
+                            src={optimizeStorageImage(w.image_url || workshopImages[i % workshopImages.length], { width: 760, quality: 72 })}
                             alt={w.title}
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                             style={{ objectPosition: (w as any).image_position || "50% 50%" }}
                             loading="lazy"
+                            decoding="async"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-foreground/50 to-transparent" />
                           <h3 className="absolute bottom-4 right-4 left-4 font-heading font-bold text-lg text-primary-foreground drop-shadow-md">
@@ -269,7 +270,7 @@ const Workshops = () => {
           {viewingWorkshop && (
             <WorkshopDetailView
               workshop={viewingWorkshop}
-              imgSrc={viewingWorkshop.image_url || workshopImages[0]}
+              imgSrc={optimizeStorageImage(viewingWorkshop.image_url || workshopImages[0], { width: 1800, quality: 76 })}
               onClose={() => setViewingWorkshop(null)}
               isPast={!viewingWorkshop.is_active}
             />
@@ -347,10 +348,12 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
       {/* Hero image */}
       <div className={cn("overflow-hidden relative", isPast ? "aspect-square" : "aspect-video")}>
         <img
-          src={imgSrc}
+          src={optimizeStorageImage(imgSrc, { width: isPast ? 1200 : 1800, quality: 76 })}
           alt={w.title}
           className="w-full h-full object-cover"
           style={{ objectPosition: (w as any).detail_image_position || (w as any).image_position || "50% 50%" }}
+          loading="eager"
+          decoding="async"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/20 to-transparent" />
         <div className="absolute bottom-5 right-5 left-5">
@@ -499,7 +502,7 @@ function WorkshopCard({ workshop: w, isEditMode, onEdit, onView, imgSrc }: { wor
         </div>
       )}
       <div className="w-full sm:w-56 md:w-64 shrink-0 aspect-square sm:aspect-auto overflow-hidden">
-        <img src={imgSrc} alt={w.title} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" style={{ objectPosition: (w as any).image_position || "50% 50%" }} loading="lazy" />
+        <img src={optimizeStorageImage(imgSrc, { width: 960, quality: 74 })} alt={w.title} className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" style={{ objectPosition: (w as any).image_position || "50% 50%" }} loading="lazy" decoding="async" />
       </div>
       <CardContent className="pt-6 pb-6 flex flex-col justify-center flex-1">
         <h3 className="font-heading font-semibold text-xl mb-2">{w.title}</h3>
