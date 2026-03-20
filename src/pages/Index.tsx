@@ -132,6 +132,23 @@ const Index = () => {
   const [heroImagesReady, setHeroImagesReady] = useState(false);
   const [heroSlidesBuffered, setHeroSlidesBuffered] = useState(false);
   const heroImagesKey = heroImages.join(",");
+
+  useEffect(() => {
+    const uniqueImages = Array.from(new Set(heroImages.filter(Boolean)));
+    const links = uniqueImages.map((src) => {
+      const link = document.createElement("link");
+      link.rel = "preload";
+      link.as = "image";
+      link.href = src;
+      document.head.appendChild(link);
+      return link;
+    });
+
+    return () => {
+      links.forEach((link) => document.head.removeChild(link));
+    };
+  }, [heroImagesKey]);
+
   useEffect(() => {
     let cancelled = false;
     setHeroImagesReady(false);
@@ -271,12 +288,12 @@ const Index = () => {
                 <img
                   src={src}
                   alt={`יוגה במושבה ${i + 1}`}
-                  className="w-full h-full object-cover will-change-transform transform-gpu"
+                  className="w-full h-full object-cover will-change-transform transform-gpu [backface-visibility:hidden]"
                   style={{ objectPosition: getText(`hero-image-${i}-pos`, "50% 50%") }}
-                  loading={i < 2 ? "eager" : "lazy"}
+                  loading="eager"
                   decoding="async"
                   draggable={false}
-                  {...(i === 0 ? { fetchPriority: "high" as any } : {})}
+                  {...(i < 2 ? { fetchPriority: "high" as any } : { fetchPriority: "auto" as any })}
                 />
               </div>
             ))}
