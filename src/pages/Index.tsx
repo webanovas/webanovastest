@@ -100,7 +100,7 @@ const HeroFocalEditor = ({ src, index, objectPosition, onSave }: { src: string; 
 
 const Index = () => {
   const { isEditMode } = useAdminMode();
-  const { getText, getLoadedText, saveText, isLoading: isContentLoading } = usePageContent("home");
+  const { getText, getLoadedText, saveText } = usePageContent("home");
 
   const { data: testimonials = [] } = useQuery({
     queryKey: ["testimonials-home"],
@@ -111,9 +111,10 @@ const Index = () => {
   });
 
   // Hero carousel
+  const heroAutoplayRef = useRef(Autoplay({ delay: 3500, stopOnInteraction: false }));
   const [heroEmblaRef] = useEmblaCarousel(
     { loop: true, direction: "rtl" },
-    [Autoplay({ delay: 3500, stopOnInteraction: false })]
+    [heroAutoplayRef.current]
   );
 
   // Hero image editor state
@@ -127,23 +128,39 @@ const Index = () => {
     return saved || defaultSrc;
   });
 
-  // Preload hero images for smooth carousel
+  // Show carousel once first image is ready, and warm-up the rest in background
   const [heroImagesReady, setHeroImagesReady] = useState(false);
+  const heroImagesKey = heroImages.join(",");
   useEffect(() => {
     let cancelled = false;
-    const preload = heroImages.map((src) => {
-      return new Promise<void>((resolve) => {
-        const img = new Image();
-        img.onload = () => resolve();
-        img.onerror = () => resolve(); // don't block on errors
-        img.src = src;
-      });
-    });
-    Promise.all(preload).then(() => {
+    setHeroImagesReady(false);
+
+    const [firstImage, ...restImages] = heroImages;
+    if (!firstImage) {
+      setHeroImagesReady(true);
+      return;
+    }
+
+    const first = new Image();
+    const markReady = () => {
       if (!cancelled) setHeroImagesReady(true);
+    };
+
+    first.onload = markReady;
+    first.onerror = markReady;
+    first.decoding = "async";
+    first.src = firstImage;
+
+    restImages.forEach((src) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = src;
     });
-    return () => { cancelled = true; };
-  }, [heroImages.join(",")]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [heroImagesKey]);
 
   const handleHeroImageUpload = async (index: number, file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -171,9 +188,10 @@ const Index = () => {
   };
 
   // Testimonials carousel
+  const testimonialsAutoplayRef = useRef(Autoplay({ delay: 4000, stopOnInteraction: false }));
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: true, direction: "rtl", align: "start" },
-    [Autoplay({ delay: 4000, stopOnInteraction: false })]
+    [testimonialsAutoplayRef.current]
   );
 
   const [selectedIndex, setSelectedIndex] = useState(0);
