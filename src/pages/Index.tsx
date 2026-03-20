@@ -121,12 +121,29 @@ const Index = () => {
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const fileRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Get hero images from page_content or use defaults (wait for content to load)
+  // Get hero images — always show defaults immediately, swap to DB values once loaded
   const heroImages = defaultHeroImages.map((defaultSrc, i) => {
     const saved = getLoadedText(`hero-image-${i}`, "");
-    if (saved === null) return defaultSrc; // still loading, but won't flash since we hide until loaded
     return saved || defaultSrc;
   });
+
+  // Preload hero images for smooth carousel
+  const [heroImagesReady, setHeroImagesReady] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    const preload = heroImages.map((src) => {
+      return new Promise<void>((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve();
+        img.onerror = () => resolve(); // don't block on errors
+        img.src = src;
+      });
+    });
+    Promise.all(preload).then(() => {
+      if (!cancelled) setHeroImagesReady(true);
+    });
+    return () => { cancelled = true; };
+  }, [heroImages.join(",")]);
 
   const handleHeroImageUpload = async (index: number, file: File) => {
     if (!file.type.startsWith("image/")) {
