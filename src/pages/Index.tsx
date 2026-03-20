@@ -382,13 +382,13 @@ const Index = () => {
                 <E section="hero-badge" fallback="כיכר המושבה, הוד השרון" as="span" className="" />
               </a>
             </motion.div>
-            <motion.div variants={fadeUp} style={{ textShadow: '0 2px 20px rgba(0,0,0,0.4), 0 4px 40px rgba(0,0,0,0.2)' }}>
+            <motion.div variants={fadeUp} style={{ textShadow: '0 2px 24px rgba(0,0,0,0.3), 0 4px 48px rgba(0,0,0,0.15)' }}>
               <E section="hero-title" fallback="יוגה במושבה" as="h1"
-                className="font-heading text-4xl md:text-7xl lg:text-8xl font-extrabold text-primary-foreground mb-4 md:mb-6 leading-[1.05] tracking-tight" />
+                className="font-heading text-4xl md:text-7xl lg:text-8xl font-bold text-primary-foreground/90 mb-4 md:mb-6 leading-[1.05] tracking-tight" />
             </motion.div>
             <motion.div variants={fadeUp}>
               <E section="hero-subtitle" fallback="מקום של שקט, נשימה וחיבור. בואו לתרגל במרחב חם ומזמין עם שירה פלג וצוות המורים שלנו." as="p"
-                className="text-base md:text-xl text-primary-foreground/90 leading-relaxed mb-8 md:mb-10 max-w-lg" multiline />
+                className="text-base md:text-xl text-primary-foreground/75 leading-relaxed mb-8 md:mb-10 max-w-lg font-light" multiline />
             </motion.div>
             <motion.div variants={fadeUp} className="flex flex-wrap gap-4 justify-center md:justify-start">
               {isEditMode ? (

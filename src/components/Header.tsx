@@ -59,7 +59,7 @@ const Header = () => {
             : "bg-transparent"
         )}
       >
-        <div className="container mx-auto flex items-center justify-between h-16 md:h-20 px-4">
+        <div className="container mx-auto flex items-center justify-between h-20 md:h-24 px-4">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group z-50">
             <img src={logo} alt="יוגה במושבה" className="w-14 h-14 md:w-16 md:h-16 rounded-full object-contain drop-shadow-md" />
