@@ -210,7 +210,7 @@ const Workshops = () => {
                           isEditMode={isEditMode}
                           onEdit={() => setEditing({ ...w })}
                           onView={() => setViewingWorkshop(w)}
-                          imgSrc={w.image_url || workshopImages[i % workshopImages.length]}
+                          imgSrc={optimizeStorageImage(w.image_url || workshopImages[i % workshopImages.length], { width: 960, quality: 74 })}
                         />
                       </motion.div>
                     ))}
