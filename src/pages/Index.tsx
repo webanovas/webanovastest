@@ -20,7 +20,7 @@ import EditableText from "@/components/admin/EditableText";
 import EditableImage from "@/components/admin/EditableImage";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef, useMemo } from "react";
 import { toast } from "sonner";
 
 import {
@@ -46,6 +46,26 @@ const benefitDefaults = [
 ];
 
 const defaultHeroImages = HERO_IMAGES;
+
+const toOptimizedStorageImage = (src: string, width: number, quality = 72) => {
+  try {
+    const url = new URL(src);
+    const objectPublicPrefix = "/storage/v1/object/public/";
+    const pathIndex = url.pathname.indexOf(objectPublicPrefix);
+
+    if (pathIndex === -1) return src;
+
+    const bucketAndPath = url.pathname.slice(pathIndex + objectPublicPrefix.length);
+    url.pathname = `/storage/v1/render/image/public/${bucketAndPath}`;
+    url.searchParams.set("width", String(width));
+    url.searchParams.set("quality", String(quality));
+    url.searchParams.set("format", "webp");
+
+    return url.toString();
+  } catch {
+    return src;
+  }
+};
 
 const HeroFocalEditor = ({ src, index, objectPosition, onSave }: { src: string; index: number; objectPosition: string; onSave: (pos: string) => void }) => {
   const imgRef = useRef<HTMLDivElement>(null);
@@ -128,13 +148,26 @@ const Index = () => {
     return saved || defaultSrc;
   });
 
+  const heroImageSources = useMemo(
+    () =>
+      heroImages.map((src) => ({
+        displaySrc: toOptimizedStorageImage(src, 1920),
+        preloadSrc: toOptimizedStorageImage(src, 2560),
+        srcSet: [1280, 1920, 2560]
+          .map((w) => `${toOptimizedStorageImage(src, w)} ${w}w`)
+          .join(", "),
+      })),
+    [heroImages]
+  );
+
   // Show carousel once first image is ready, and warm-up the rest in background
   const [heroImagesReady, setHeroImagesReady] = useState(false);
   const [heroSlidesBuffered, setHeroSlidesBuffered] = useState(false);
   const heroImagesKey = heroImages.join(",");
+  const optimizedHeroKey = heroImageSources.map((img) => img.preloadSrc).join(",");
 
   useEffect(() => {
-    const uniqueImages = Array.from(new Set(heroImages.filter(Boolean)));
+    const uniqueImages = Array.from(new Set(heroImageSources.map((img) => img.preloadSrc).filter(Boolean)));
     const links = uniqueImages.map((src) => {
       const link = document.createElement("link");
       link.rel = "preload";
@@ -147,7 +180,7 @@ const Index = () => {
     return () => {
       links.forEach((link) => document.head.removeChild(link));
     };
-  }, [heroImagesKey]);
+  }, [optimizedHeroKey, heroImageSources]);
 
   useEffect(() => {
     let cancelled = false;
@@ -155,7 +188,8 @@ const Index = () => {
     setHeroSlidesBuffered(false);
     heroAutoplayRef.current.stop();
 
-    const [firstImage, ...restImages] = heroImages;
+    const uniqueImages = Array.from(new Set(heroImageSources.map((img) => img.preloadSrc).filter(Boolean)));
+    const [firstImage, ...restImages] = uniqueImages;
     if (!firstImage) {
       setHeroImagesReady(true);
       setHeroSlidesBuffered(true);
@@ -193,7 +227,7 @@ const Index = () => {
     return () => {
       cancelled = true;
     };
-  }, [heroImagesKey]);
+  }, [optimizedHeroKey, heroImageSources]);
 
   useEffect(() => {
     if (!heroSlidesBuffered) return;
@@ -286,7 +320,9 @@ const Index = () => {
             {heroImages.map((src, i) => (
               <div key={i} className="flex-none w-full h-full min-w-0 relative">
                 <img
-                  src={src}
+                  src={heroImageSources[i]?.displaySrc || src}
+                  srcSet={heroImageSources[i]?.srcSet}
+                  sizes="100vw"
                   alt={`יוגה במושבה ${i + 1}`}
                   className="w-full h-full object-cover will-change-transform transform-gpu [backface-visibility:hidden]"
                   style={{ objectPosition: getText(`hero-image-${i}-pos`, "50% 50%") }}
