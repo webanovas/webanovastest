@@ -270,7 +270,7 @@ const Workshops = () => {
           {viewingWorkshop && (
             <WorkshopDetailView
               workshop={viewingWorkshop}
-              imgSrc={viewingWorkshop.image_url || workshopImages[0]}
+              imgSrc={optimizeStorageImage(viewingWorkshop.image_url || workshopImages[0], { width: 1800, quality: 76 })}
               onClose={() => setViewingWorkshop(null)}
               isPast={!viewingWorkshop.is_active}
             />
