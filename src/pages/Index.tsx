@@ -27,6 +27,7 @@ import {
   HERO_IMAGES, WELCOME_MAIN, WELCOME_SECONDARY,
   BENEFITS_IMAGE, CTA_BG_IMAGE,
 } from "@/lib/uploadedImages";
+import logo from "@/assets/logo.png";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
