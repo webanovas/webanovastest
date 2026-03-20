@@ -5,7 +5,6 @@ import FocalPointPicker from "./FocalPointPicker";
 import { Move, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { optimizeStorageImage } from "@/lib/utils";
 
 interface EditableImageProps {
   src: string;
