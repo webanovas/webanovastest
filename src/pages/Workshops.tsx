@@ -239,6 +239,7 @@ const Workshops = () => {
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                             style={{ objectPosition: (w as any).image_position || "50% 50%" }}
                             loading="lazy"
+                            decoding="async"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-foreground/50 to-transparent" />
                           <h3 className="absolute bottom-4 right-4 left-4 font-heading font-bold text-lg text-primary-foreground drop-shadow-md">
