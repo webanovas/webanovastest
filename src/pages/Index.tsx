@@ -22,6 +22,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
+import { optimizeStorageImage } from "@/lib/utils";
 
 import {
   HERO_IMAGES, WELCOME_MAIN, WELCOME_SECONDARY,
