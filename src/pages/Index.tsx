@@ -22,7 +22,6 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
-import { optimizeStorageImage } from "@/lib/utils";
 
 import {
   HERO_IMAGES, WELCOME_MAIN, WELCOME_SECONDARY,
@@ -126,7 +125,7 @@ const Index = () => {
   // Get hero images — always show defaults immediately, swap to DB values once loaded
   const heroImages = defaultHeroImages.map((defaultSrc, i) => {
     const saved = getLoadedText(`hero-image-${i}`, "");
-    return optimizeStorageImage(saved || defaultSrc, { width: 2200, quality: 78 });
+    return saved || defaultSrc;
   });
 
   // Show carousel once first image is ready, and warm-up the rest in background
@@ -231,8 +230,8 @@ const Index = () => {
   // Get section images from page_content or use defaults (wait for load)
   const getImage = (section: string, fallback: string) => {
     const saved = getLoadedText(section, "");
-    const finalSrc = saved === null ? fallback : (saved || fallback);
-    return optimizeStorageImage(finalSrc, { width: 1600, quality: 76 });
+    if (saved === null) return fallback;
+    return saved || fallback;
   };
 
   return (
