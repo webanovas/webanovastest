@@ -62,7 +62,7 @@ const Header = () => {
         <div className="container mx-auto flex items-center justify-between h-16 md:h-20 px-4">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group z-50">
-            <img src={logo} alt="יוגה במושבה" className="w-10 h-10 md:w-11 md:h-11 rounded-full object-contain" />
+            <img src={logo} alt="יוגה במושבה" className="w-14 h-14 md:w-16 md:h-16 rounded-full object-contain drop-shadow-md" />
             <span
               className={cn(
                 "font-heading font-bold text-base md:text-lg tracking-tight transition-colors",
