@@ -112,11 +112,7 @@ const Index = () => {
   });
 
   // Hero carousel
-  const heroAutoplayRef = useRef(Autoplay({ delay: 3500, stopOnInteraction: false, playOnInit: false }));
-  const [heroEmblaRef] = useEmblaCarousel(
-    { loop: true, direction: "rtl" },
-    [heroAutoplayRef.current]
-  );
+  const [activeHeroIndex, setActiveHeroIndex] = useState(0);
 
   // Hero image editor state
   const [showHeroEditor, setShowHeroEditor] = useState(false);
@@ -154,7 +150,7 @@ const Index = () => {
     let cancelled = false;
     setHeroImagesReady(false);
     setHeroSlidesBuffered(false);
-    heroAutoplayRef.current.stop();
+    setActiveHeroIndex(0);
 
     const [firstImage, ...restImages] = heroImages;
     if (!firstImage) {
@@ -197,13 +193,16 @@ const Index = () => {
   }, [heroImagesKey]);
 
   useEffect(() => {
-    if (!heroSlidesBuffered) return;
-    heroAutoplayRef.current.play();
+    if (!heroSlidesBuffered || heroImages.length <= 1) return;
+
+    const intervalId = window.setInterval(() => {
+      setActiveHeroIndex((prev) => (prev + 1) % heroImages.length);
+    }, 3500);
 
     return () => {
-      heroAutoplayRef.current.stop();
+      window.clearInterval(intervalId);
     };
-  }, [heroSlidesBuffered]);
+  }, [heroSlidesBuffered, heroImages.length]);
 
   const handleHeroImageUpload = async (index: number, file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -282,23 +281,24 @@ const Index = () => {
       {/* Hero with image carousel */}
       <section className="relative min-h-[85vh] md:min-h-screen flex items-end overflow-hidden">
         {/* Image carousel background */}
-        <div className={`absolute inset-0 transition-opacity duration-700 ease-out ${heroImagesReady ? 'opacity-100' : 'opacity-0'}`} ref={heroEmblaRef}>
-          <div className="flex h-full">
-            {heroImages.map((src, i) => (
-              <div key={i} className="flex-none w-full h-full min-w-0 relative">
-                <img
-                  src={src}
-                  alt={`יוגה במושבה ${i + 1}`}
-                  className="w-full h-full object-cover will-change-transform transform-gpu [backface-visibility:hidden]"
-                  style={{ objectPosition: getText(`hero-image-${i}-pos`, "50% 50%") }}
-                  loading="eager"
-                  decoding="async"
-                  draggable={false}
-                  {...(i < 2 ? { fetchPriority: "high" as any } : { fetchPriority: "auto" as any })}
-                />
-              </div>
-            ))}
-          </div>
+        <div className={`absolute inset-0 transition-opacity duration-700 ease-out ${heroImagesReady ? 'opacity-100' : 'opacity-0'}`}>
+          {heroImages.map((src, i) => (
+            <div
+              key={i}
+              className={`absolute inset-0 transition-opacity duration-700 ease-linear ${i === activeHeroIndex ? "opacity-100" : "opacity-0"}`}
+            >
+              <img
+                src={src}
+                alt={`יוגה במושבה ${i + 1}`}
+                className="w-full h-full object-cover will-change-[opacity] [backface-visibility:hidden]"
+                style={{ objectPosition: getText(`hero-image-${i}-pos`, "50% 50%") }}
+                loading="eager"
+                decoding="async"
+                draggable={false}
+                {...(i < 2 ? { fetchPriority: "high" as any } : { fetchPriority: "auto" as any })}
+              />
+            </div>
+          ))}
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-yoga-dark/95 via-yoga-dark/50 to-yoga-dark/10" />
 
