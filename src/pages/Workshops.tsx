@@ -234,7 +234,7 @@ const Workshops = () => {
                       >
                         <div className="aspect-square overflow-hidden relative">
                           <img
-                            src={w.image_url || workshopImages[i % workshopImages.length]}
+                            src={optimizeStorageImage(w.image_url || workshopImages[i % workshopImages.length], { width: 760, quality: 72 })}
                             alt={w.title}
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                             style={{ objectPosition: (w as any).image_position || "50% 50%" }}
