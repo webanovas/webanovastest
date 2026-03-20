@@ -156,6 +156,17 @@
   }
 }
 
+/* Image fade-in on load */
+img {
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}
+
+img[data-loaded="true"],
+img.loaded {
+  opacity: 1;
+}
+
 @keyframes scroll {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
