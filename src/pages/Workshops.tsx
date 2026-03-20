@@ -348,7 +348,7 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
       {/* Hero image */}
       <div className={cn("overflow-hidden relative", isPast ? "aspect-square" : "aspect-video")}>
         <img
-          src={imgSrc}
+          src={optimizeStorageImage(imgSrc, { width: isPast ? 1200 : 1800, quality: 76 })}
           alt={w.title}
           className="w-full h-full object-cover"
           style={{ objectPosition: (w as any).detail_image_position || (w as any).image_position || "50% 50%" }}
