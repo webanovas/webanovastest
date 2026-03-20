@@ -4,32 +4,49 @@ import "./index.css";
 
 // Global: fade-in images on load
 const markLoaded = (img: HTMLImageElement) => {
-  img.setAttribute("data-loaded", "true");
+  img.setAttribute("data-fade-state", "loaded");
 };
 
-// Handle images already in DOM or added later
-const observer = new MutationObserver((mutations) => {
-  for (const m of mutations) {
-    for (const node of m.addedNodes) {
-      if (node instanceof HTMLImageElement) {
-        if (node.complete) markLoaded(node);
-        else node.addEventListener("load", () => markLoaded(node), { once: true });
-      }
-      if (node instanceof HTMLElement) {
-        node.querySelectorAll?.("img").forEach((img) => {
-          if (img.complete) markLoaded(img);
-          else img.addEventListener("load", () => markLoaded(img), { once: true });
-        });
-      }
-    }
+const markPending = (img: HTMLImageElement) => {
+  img.setAttribute("data-fade-state", "pending");
+};
+
+const prepareImageFade = (img: HTMLImageElement) => {
+  if (img.complete && img.naturalWidth > 0) {
+    markLoaded(img);
+    return;
   }
-});
-observer.observe(document.documentElement, { childList: true, subtree: true });
+
+  markPending(img);
+  const onDone = () => markLoaded(img);
+  img.addEventListener("load", onDone, { once: true });
+  img.addEventListener("error", onDone, { once: true });
+};
 
 // Handle images already present
-document.querySelectorAll("img").forEach((img) => {
-  if (img.complete) markLoaded(img);
-  else img.addEventListener("load", () => markLoaded(img), { once: true });
-});
+document.querySelectorAll("img").forEach(prepareImageFade);
+
+// Lightweight global listener for future image load/error events
+document.addEventListener(
+  "load",
+  (event) => {
+    const target = event.target;
+    if (target instanceof HTMLImageElement) {
+      markLoaded(target);
+    }
+  },
+  true,
+);
+
+document.addEventListener(
+  "error",
+  (event) => {
+    const target = event.target;
+    if (target instanceof HTMLImageElement) {
+      markLoaded(target);
+    }
+  },
+  true,
+);
 
 createRoot(document.getElementById("root")!).render(<App />);
