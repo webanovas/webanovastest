@@ -246,10 +246,11 @@ const Index = () => {
                 <img
                   src={src}
                   alt={`יוגה במושבה ${i + 1}`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover will-change-transform"
                   style={{ objectPosition: getText(`hero-image-${i}-pos`, "50% 50%") }}
-                  loading="eager"
+                  loading={i < 2 ? "eager" : "lazy"}
                   decoding="async"
+                  draggable={false}
                   {...(i === 0 ? { fetchPriority: "high" as any } : {})}
                 />
               </div>
