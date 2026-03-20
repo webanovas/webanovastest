@@ -230,8 +230,8 @@ const Index = () => {
   // Get section images from page_content or use defaults (wait for load)
   const getImage = (section: string, fallback: string) => {
     const saved = getLoadedText(section, "");
-    const finalSrc = saved === null ? fallback : (saved || fallback);
-    return optimizeStorageImage(finalSrc, { width: 1600, quality: 76 });
+    if (saved === null) return fallback;
+    return saved || fallback;
   };
 
   return (

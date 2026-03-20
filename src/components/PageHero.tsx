@@ -52,7 +52,7 @@ const PageHero = ({ title, subtitle, label, image, imagePosition, page, titleSec
                 onPositionChange={onImagePositionChange}
               />
             ) : (
-              <img src={optimizeStorageImage(image, { width: 2200, quality: 78 })} alt={resolvedTitle} className="w-full h-full object-cover" style={imagePosition ? { objectPosition: imagePosition } : undefined} loading="eager" decoding="async" fetchPriority="high" />
+              <img src={image} alt={resolvedTitle} className="w-full h-full object-cover" style={imagePosition ? { objectPosition: imagePosition } : undefined} loading="eager" decoding="async" fetchPriority="high" />
             )}
           </div>
           <div className="absolute inset-0 bg-gradient-to-t from-yoga-dark/90 via-yoga-dark/40 to-yoga-dark/20" />

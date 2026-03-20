@@ -54,7 +54,7 @@ const EditableImage = memo(({ src, alt, className, folder = "images", onUpload, 
 
   return (
     <div className={wrapperClass}>
-      <img src={optimizedSrc} alt={alt} className={imgClass} style={posStyle} loading="lazy" decoding="async" />
+      <img src={src} alt={alt} className={imgClass} style={posStyle} loading="lazy" decoding="async" />
       <ImageUpload
         currentUrl={src}
         onUpload={handleUpload}
