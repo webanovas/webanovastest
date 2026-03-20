@@ -367,9 +367,6 @@ const Index = () => {
 
         <div className="container mx-auto px-4 relative z-10 pb-12 md:pb-24 pt-28 md:pt-40 flex flex-col items-center text-center md:items-start md:text-right">
           <motion.div initial="hidden" animate="visible" variants={stagger} className="max-w-2xl">
-            <motion.div variants={fadeUp} className="mb-6 md:mb-8">
-              <img src={logo} alt="יוגה במושבה" className="w-24 h-24 md:w-36 md:h-36 rounded-full object-contain drop-shadow-2xl border-2 border-primary-foreground/20 mx-auto md:mx-0" />
-            </motion.div>
             <motion.div variants={fadeUp} className="mb-5">
               <a
                 href="https://www.google.com/maps/search/%D7%9B%D7%99%D7%9B%D7%A8+%D7%94%D7%9E%D7%95%D7%A9%D7%91%D7%94+%D7%94%D7%95%D7%93+%D7%94%D7%A9%D7%A8%D7%95%D7%9F"
