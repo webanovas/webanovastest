@@ -125,7 +125,7 @@ const Index = () => {
   // Get hero images — always show defaults immediately, swap to DB values once loaded
   const heroImages = defaultHeroImages.map((defaultSrc, i) => {
     const saved = getLoadedText(`hero-image-${i}`, "");
-    return optimizeStorageImage(saved || defaultSrc, { width: 2200, quality: 78 });
+    return saved || defaultSrc;
   });
 
   // Show carousel once first image is ready, and warm-up the rest in background
