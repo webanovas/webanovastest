@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import Layout from "@/components/Layout";
+import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import PageHero from "@/components/PageHero";
 import { Plus, Pencil, Check, Trash2, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -153,6 +154,7 @@ const Team = () => {
   })), [teachers]);
 
   const [editingTeacher, setEditingTeacher] = useState<TeacherRow | null>(null);
+  const [viewingTeacher, setViewingTeacher] = useState<TeacherRow | null>(null);
 
   const [isAddingTeacher, setIsAddingTeacher] = useState(false);
   const [newTeacher, setNewTeacher] = useState({ name: "", role: "", description: "" });
@@ -224,11 +226,11 @@ const Team = () => {
                 <div key={teacher.id} ref={(el) => { teacherRefs.current[teacher.name] = el; }}>
                   <Card
                     className={cn(
-                      "text-center h-full rounded-3xl border-0 overflow-hidden hover-lift shadow-lg transition-all duration-500",
-                      isEditMode && "cursor-pointer ring-2 ring-transparent hover:ring-primary/30",
+                      "text-center h-full rounded-3xl border-0 overflow-hidden hover-lift shadow-lg transition-all duration-500 cursor-pointer",
+                      isEditMode && "ring-2 ring-transparent hover:ring-primary/30",
                       highlightTeacher === teacher.name && "ring-2 ring-primary shadow-xl shadow-primary/20"
                     )}
-                    onClick={() => isEditMode && setEditingTeacher({ ...teacher })}
+                    onClick={() => isEditMode ? setEditingTeacher({ ...teacher }) : setViewingTeacher(teacher)}
                   >
                     {/* Mobile: name above image */}
                     <div className="md:hidden pt-5 pb-3 px-4">
@@ -282,6 +284,37 @@ const Team = () => {
             onCancel={() => setIsAddingTeacher(false)}
             isNew
           />
+        </DialogContent>
+      </Dialog>
+
+      {/* Teacher View Dialog (for visitors) */}
+      <Dialog open={!!viewingTeacher} onOpenChange={(open) => !open && setViewingTeacher(null)}>
+        <DialogContent className="max-w-md p-0 overflow-hidden" dir="rtl">
+          {viewingTeacher && (
+            <>
+              <div className="aspect-[4/3] overflow-hidden relative">
+                <img
+                  src={viewingTeacher.image_url || TEACHER_FALLBACK}
+                  alt={viewingTeacher.name}
+                  className="w-full h-full object-cover"
+                  style={{ objectPosition: (viewingTeacher as any).image_position || "50% 50%" }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
+                <div className="absolute bottom-4 right-4 left-4">
+                  <h3 className="font-heading font-bold text-xl text-primary-foreground">{viewingTeacher.name}</h3>
+                  <p className="text-primary-foreground/80 text-sm font-medium">{viewingTeacher.role}</p>
+                </div>
+              </div>
+              <div className="p-6">
+                <DialogHeader className="sr-only">
+                  <DialogTitle>{viewingTeacher.name}</DialogTitle>
+                </DialogHeader>
+                <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">
+                  {viewingTeacher.description || "מידע נוסף יתעדכן בקרוב"}
+                </p>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </Layout>

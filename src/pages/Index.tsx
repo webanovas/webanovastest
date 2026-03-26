@@ -413,18 +413,20 @@ const Index = () => {
           </motion.div>
         </div>
 
-        {/* Subtle scroll-down arrow */}
+        {/* Scroll-down arrow */}
         <motion.div
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 cursor-pointer"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 2, duration: 1 }}
+          transition={{ delay: 1.5, duration: 0.8 }}
+          onClick={() => window.scrollTo({ top: window.innerHeight * 0.85, behavior: "smooth" })}
         >
           <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+            className="flex flex-col items-center gap-1"
           >
-            <ChevronDown className="h-6 w-6 text-primary-foreground/40" />
+            <ChevronDown className="h-8 w-8 text-primary-foreground/60 drop-shadow-md" />
           </motion.div>
         </motion.div>
       </section>
