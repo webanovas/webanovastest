@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, MapPin, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -60,18 +60,26 @@ const Header = () => {
         )}
       >
         <div className="container mx-auto flex items-center justify-between h-20 md:h-24 px-4">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group z-50">
-            <img src={logo} alt="יוגה במושבה" className="w-14 h-14 md:w-16 md:h-16 rounded-full object-contain drop-shadow-md" />
-            <span
+          {/* Logo + Location */}
+          <div className="flex items-center gap-3 z-50">
+            <Link to="/" className="flex items-center gap-2 group">
+              <img src={logo} alt="יוגה במושבה" className="w-16 h-16 md:w-20 md:h-20 rounded-full object-contain drop-shadow-md" />
+            </Link>
+            <a
+              href="https://www.google.com/maps/search/%D7%9B%D7%99%D7%9B%D7%A8+%D7%94%D7%9E%D7%95%D7%A9%D7%91%D7%94+%D7%94%D7%95%D7%93+%D7%94%D7%A9%D7%A8%D7%95%D7%9F"
+              target="_blank"
+              rel="noopener noreferrer"
               className={cn(
-                "font-heading font-bold text-base md:text-lg tracking-tight transition-colors",
-                scrolled || !isHome ? "text-foreground" : "text-primary-foreground"
+                "hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-body font-medium transition-all duration-200 border",
+                scrolled || !isHome
+                  ? "text-foreground/70 hover:text-foreground border-border/50 hover:bg-accent"
+                  : "text-primary-foreground/80 hover:text-primary-foreground border-primary-foreground/20 hover:bg-primary-foreground/10"
               )}
             >
-              יוגה במושבה
-            </span>
-          </Link>
+              <MapPin className="h-3.5 w-3.5" />
+              כיכר המושבה, הוד השרון
+            </a>
+          </div>
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-1">
@@ -94,21 +102,35 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Mobile toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "md:hidden rounded-2xl z-50 h-14 w-14 border-2 border-border/50",
-              !scrolled && isHome && !mobileOpen
-                ? "text-primary-foreground border-primary-foreground/30 hover:bg-primary-foreground/10"
-                : "text-foreground border-border hover:bg-accent"
-            )}
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="תפריט"
-          >
-            {mobileOpen ? <X className="h-8 w-8" /> : <Menu className="h-8 w-8" />}
-          </Button>
+          {/* Mobile: Contact + Hamburger */}
+          <div className="flex items-center gap-2 md:hidden z-50">
+            <Link
+              to="/contact"
+              className={cn(
+                "flex items-center gap-1.5 rounded-full px-4 py-2.5 text-sm font-body font-medium transition-all duration-200 border",
+                !scrolled && isHome && !mobileOpen
+                  ? "text-primary-foreground border-primary-foreground/30 bg-primary-foreground/10 hover:bg-primary-foreground/20"
+                  : "text-foreground border-border bg-accent/50 hover:bg-accent"
+              )}
+            >
+              <MessageCircle className="h-4 w-4" />
+              צרו קשר
+            </Link>
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "rounded-2xl h-14 w-14 border-2 border-border/50",
+                !scrolled && isHome && !mobileOpen
+                  ? "text-primary-foreground border-primary-foreground/30 hover:bg-primary-foreground/10"
+                  : "text-foreground border-border hover:bg-accent"
+              )}
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="תפריט"
+            >
+              {mobileOpen ? <X className="h-9 w-9" /> : <Menu className="h-9 w-9" />}
+            </Button>
+          </div>
         </div>
       </header>
 
