@@ -153,6 +153,7 @@ const Team = () => {
   })), [teachers]);
 
   const [editingTeacher, setEditingTeacher] = useState<TeacherRow | null>(null);
+  const [viewingTeacher, setViewingTeacher] = useState<TeacherRow | null>(null);
 
   const [isAddingTeacher, setIsAddingTeacher] = useState(false);
   const [newTeacher, setNewTeacher] = useState({ name: "", role: "", description: "" });
