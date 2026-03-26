@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import Layout from "@/components/Layout";
+import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import PageHero from "@/components/PageHero";
 import { Plus, Pencil, Check, Trash2, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -283,6 +284,37 @@ const Team = () => {
             onCancel={() => setIsAddingTeacher(false)}
             isNew
           />
+        </DialogContent>
+      </Dialog>
+
+      {/* Teacher View Dialog (for visitors) */}
+      <Dialog open={!!viewingTeacher} onOpenChange={(open) => !open && setViewingTeacher(null)}>
+        <DialogContent className="max-w-md p-0 overflow-hidden" dir="rtl">
+          {viewingTeacher && (
+            <>
+              <div className="aspect-[4/3] overflow-hidden relative">
+                <img
+                  src={viewingTeacher.image_url || TEACHER_FALLBACK}
+                  alt={viewingTeacher.name}
+                  className="w-full h-full object-cover"
+                  style={{ objectPosition: (viewingTeacher as any).image_position || "50% 50%" }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
+                <div className="absolute bottom-4 right-4 left-4">
+                  <h3 className="font-heading font-bold text-xl text-primary-foreground">{viewingTeacher.name}</h3>
+                  <p className="text-primary-foreground/80 text-sm font-medium">{viewingTeacher.role}</p>
+                </div>
+              </div>
+              <div className="p-6">
+                <DialogHeader className="sr-only">
+                  <DialogTitle>{viewingTeacher.name}</DialogTitle>
+                </DialogHeader>
+                <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">
+                  {viewingTeacher.description || "מידע נוסף יתעדכן בקרוב"}
+                </p>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </Layout>
