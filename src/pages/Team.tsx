@@ -225,11 +225,11 @@ const Team = () => {
                 <div key={teacher.id} ref={(el) => { teacherRefs.current[teacher.name] = el; }}>
                   <Card
                     className={cn(
-                      "text-center h-full rounded-3xl border-0 overflow-hidden hover-lift shadow-lg transition-all duration-500",
-                      isEditMode && "cursor-pointer ring-2 ring-transparent hover:ring-primary/30",
+                      "text-center h-full rounded-3xl border-0 overflow-hidden hover-lift shadow-lg transition-all duration-500 cursor-pointer",
+                      isEditMode && "ring-2 ring-transparent hover:ring-primary/30",
                       highlightTeacher === teacher.name && "ring-2 ring-primary shadow-xl shadow-primary/20"
                     )}
-                    onClick={() => isEditMode && setEditingTeacher({ ...teacher })}
+                    onClick={() => isEditMode ? setEditingTeacher({ ...teacher }) : setViewingTeacher(teacher)}
                   >
                     {/* Mobile: name above image */}
                     <div className="md:hidden pt-5 pb-3 px-4">
