@@ -289,7 +289,7 @@ const Team = () => {
 
       {/* Teacher View Dialog (for visitors) */}
       <Dialog open={!!viewingTeacher} onOpenChange={(open) => !open && setViewingTeacher(null)}>
-        <DialogContent className="max-w-md p-0 overflow-hidden" dir="rtl">
+        <DialogContent className="max-w-md max-h-[85vh] p-0 overflow-y-auto" dir="rtl">
           {viewingTeacher && (
             <>
               <div className="aspect-[4/3] overflow-hidden relative">
