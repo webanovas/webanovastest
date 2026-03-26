@@ -9,7 +9,7 @@ import {
   Heart,
   Leaf, Brain, Sunrise, Wind,
   Phone, Mail, MessageCircle, Send,
-  ArrowLeft, Quote, MapPin, Images, X, Camera, Loader2,
+  ArrowLeft, Quote, MapPin, Images, X, Camera, Loader2, ChevronDown,
 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { useQuery } from "@tanstack/react-query";
@@ -412,6 +412,21 @@ const Index = () => {
             </motion.div>
           </motion.div>
         </div>
+
+        {/* Subtle scroll-down arrow */}
+        <motion.div
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2, duration: 1 }}
+        >
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <ChevronDown className="h-6 w-6 text-primary-foreground/40" />
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* Welcome / About */}
