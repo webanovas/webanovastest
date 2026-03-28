@@ -26,6 +26,20 @@ const prepareImageFade = (img: HTMLImageElement) => {
 // Handle images already present
 document.querySelectorAll("img").forEach(prepareImageFade);
 
+// Watch for dynamically added images and prepare them for fade-in
+const observer = new MutationObserver((mutations) => {
+  for (const mutation of mutations) {
+    for (const node of mutation.addedNodes) {
+      if (node instanceof HTMLImageElement) {
+        prepareImageFade(node);
+      } else if (node instanceof HTMLElement) {
+        node.querySelectorAll("img").forEach(prepareImageFade);
+      }
+    }
+  }
+});
+observer.observe(document.body, { childList: true, subtree: true });
+
 // Lightweight global listener for future image load/error events
 document.addEventListener(
   "load",

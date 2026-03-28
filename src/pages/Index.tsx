@@ -291,6 +291,7 @@ const Index = () => {
               <img
                 src={src}
                 alt={`יוגה במושבה ${i + 1}`}
+                data-fade-state="loaded"
                 className="w-full h-full object-cover will-change-[opacity] [backface-visibility:hidden]"
                 style={{ objectPosition: getText(`hero-image-${i}-pos`, "50% 50%") }}
                 loading="eager"
