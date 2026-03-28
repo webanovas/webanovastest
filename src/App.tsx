@@ -47,7 +47,7 @@ const App = () => {
             <Toaster />
             <Sonner />
             {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
-            <MotionConfig reducedMotion="always">
+            <MotionConfig reducedMotion="user">
               <BrowserRouter>
                 <ScrollToTop />
                 <Suspense fallback={<div className="min-h-screen bg-background" />}>
