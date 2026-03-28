@@ -168,7 +168,7 @@ const FloatingContact = () => {
             </motion.div>
           )}
         </AnimatePresence>
-        <span className="text-sm font-medium">{isOpen ? "סגירה" : "דברו איתנו"}</span>
+        <span className="text-sm font-medium">{isOpen ? "סגירה" : "צרו קשר"}</span>
       </motion.button>
     </>
   );

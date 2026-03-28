@@ -104,18 +104,6 @@ const Header = () => {
 
           {/* Mobile: Contact + Hamburger */}
           <div className="flex items-center gap-2 md:hidden z-50">
-            <Link
-              to="/contact"
-              className={cn(
-                "flex items-center gap-1.5 rounded-full px-4 py-2.5 text-sm font-body font-medium transition-all duration-200 border",
-                !scrolled && isHome && !mobileOpen
-                  ? "text-primary-foreground border-primary-foreground/30 bg-primary-foreground/10 hover:bg-primary-foreground/20"
-                  : "text-foreground border-border bg-accent/50 hover:bg-accent"
-              )}
-            >
-              <MessageCircle className="h-4 w-4" />
-              צרו קשר
-            </Link>
             <Button
               variant="ghost"
               size="icon"
