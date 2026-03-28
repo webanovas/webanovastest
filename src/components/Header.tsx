@@ -70,7 +70,7 @@ const Header = () => {
               target="_blank"
               rel="noopener noreferrer"
               className={cn(
-                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-body font-medium transition-all duration-200 border",
+                "hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-body font-medium transition-all duration-200 border",
                 scrolled || !isHome
                   ? "text-foreground/70 hover:text-foreground border-border/50 hover:bg-accent"
                   : "text-primary-foreground/80 hover:text-primary-foreground border-primary-foreground/20 hover:bg-primary-foreground/10"
