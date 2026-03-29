@@ -65,42 +65,42 @@ const Header = () => {
             : "bg-transparent"
         )}
       >
-        <div className="container mx-auto flex items-center justify-between h-20 md:h-24 px-4">
+        <div className="container mx-auto flex items-center justify-between h-16 md:h-20 px-4">
           {/* Logo + Location */}
-          <div className="flex items-center gap-3 z-50">
+          <div className="flex items-center gap-2 z-50">
             <Link to="/" className="flex items-center gap-2 group">
-              <img src={logo} alt="יוגה במושבה" className="w-16 h-16 md:w-20 md:h-20 rounded-full object-contain drop-shadow-md" />
+              <img src={logo} alt="יוגה במושבה" className="w-12 h-12 md:w-16 md:h-16 rounded-full object-contain" />
             </Link>
             <a
               href="https://www.google.com/maps/search/%D7%9B%D7%99%D7%9B%D7%A8+%D7%94%D7%9E%D7%95%D7%A9%D7%91%D7%94+%D7%94%D7%95%D7%93+%D7%94%D7%A9%D7%A8%D7%95%D7%9F"
               target="_blank"
               rel="noopener noreferrer"
               className={cn(
-                "hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-body font-medium transition-all duration-200 border",
+                "hidden md:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-body font-medium transition-all duration-200",
                 scrolled || !isHome
-                  ? "text-foreground/70 hover:text-foreground border-border/50 hover:bg-accent"
-                  : "text-primary-foreground/80 hover:text-primary-foreground border-primary-foreground/20 hover:bg-primary-foreground/10"
+                  ? "text-foreground/50 hover:text-foreground/70"
+                  : "text-primary-foreground/60 hover:text-primary-foreground/80"
               )}
             >
-              <MapPin className="h-3.5 w-3.5" />
+              <MapPin className="h-3 w-3" />
               כיכר המושבה, הוד השרון
             </a>
           </div>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-0.5">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  "px-4 py-2 rounded-xl text-sm font-body font-medium transition-all duration-200",
+                  "px-3 py-1.5 rounded-lg text-[13px] font-body font-medium transition-all duration-200",
                   scrolled || !isHome
-                    ? "text-foreground/70 hover:text-foreground hover:bg-accent"
-                    : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10",
+                    ? "text-foreground/60 hover:text-foreground hover:bg-accent/50"
+                    : "text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10",
                   location.pathname === item.path && (scrolled || !isHome
-                    ? "bg-accent text-foreground"
-                    : "bg-primary-foreground/15 text-primary-foreground")
+                    ? "text-foreground"
+                    : "text-primary-foreground")
                 )}
               >
                 {item.label}
@@ -108,34 +108,34 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Mobile: Hamburger only (right side) */}
+          {/* Mobile: Hamburger (right side) */}
           <div className="flex items-center md:hidden z-50">
             <Button
               variant="ghost"
               size="icon"
               className={cn(
-                "rounded-2xl h-14 w-14 border-2 border-border/50",
+                "rounded-xl h-11 w-11",
                 !scrolled && isHome && !mobileOpen
-                  ? "text-primary-foreground border-primary-foreground/30 hover:bg-primary-foreground/10"
-                  : "text-foreground border-border hover:bg-accent"
+                  ? "text-primary-foreground/80 hover:bg-primary-foreground/10"
+                  : "text-foreground/70 hover:bg-accent/50"
               )}
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="תפריט"
             >
-              {mobileOpen ? <X className="h-9 w-9" /> : <Menu className="h-9 w-9" />}
+              {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
           </div>
 
-          {/* Mobile: Centered contact button - only show after scrolling past hero on home, or always on other pages */}
+          {/* Mobile: Centered contact button - appears after scrolling past hero */}
           <Link
             to="/contact"
             className={cn(
-              "absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-body font-semibold transition-all duration-300 text-yoga-dark shadow-md md:hidden z-50",
-              (isHome && !pastHero) ? "opacity-0 pointer-events-none translate-y-2" : "opacity-100 translate-y-0"
+              "absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-body font-medium transition-all duration-300 md:hidden z-50",
+              (isHome && !pastHero) ? "opacity-0 pointer-events-none translate-y-1" : "opacity-100 translate-y-0"
             )}
-            style={{ backgroundColor: "#bdd3d1" }}
+            style={{ backgroundColor: "#bdd3d1", color: "#2d3a36" }}
           >
-            <MessageCircle className="h-4 w-4" />
+            <MessageCircle className="h-3.5 w-3.5" />
             צרו קשר
           </Link>
         </div>
