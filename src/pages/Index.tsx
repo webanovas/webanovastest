@@ -396,12 +396,6 @@ const Index = () => {
                   <Button size="lg" variant="outline" className="rounded-full px-8 md:px-10 h-12 md:h-14 text-base border-primary-foreground/50 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20 hover:text-primary-foreground backdrop-blur-md" asChild>
                     <Link to="/about">{getText("hero-btn-about", "הכירו אותנו")}</Link>
                   </Button>
-                  <Button size="lg" className="rounded-full px-8 h-12 text-base md:hidden border-0 shadow-lg font-semibold" style={{ backgroundColor: "#bdd3d1", color: "#2d3a36" }} asChild>
-                    <Link to="/contact" className="flex items-center gap-2">
-                      <MessageCircle className="h-4 w-4" />
-                      צרו קשר
-                    </Link>
-                  </Button>
                 </>
               )}
             </motion.div>
