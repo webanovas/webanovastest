@@ -19,6 +19,7 @@ const navItems = [
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [pastHero, setPastHero] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === "/";
 
@@ -28,8 +29,13 @@ const Header = () => {
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(() => {
+        const sy = window.scrollY;
         setScrolled((prev) => {
-          const next = window.scrollY > 50;
+          const next = sy > 50;
+          return prev === next ? prev : next;
+        });
+        setPastHero((prev) => {
+          const next = sy > window.innerHeight * 0.7;
           return prev === next ? prev : next;
         });
         ticking = false;
@@ -120,10 +126,13 @@ const Header = () => {
             </Button>
           </div>
 
-          {/* Mobile: Centered contact button */}
+          {/* Mobile: Centered contact button - only show after scrolling past hero on home, or always on other pages */}
           <Link
             to="/contact"
-            className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-body font-semibold transition-all duration-200 text-yoga-dark shadow-md md:hidden z-50"
+            className={cn(
+              "absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-body font-semibold transition-all duration-300 text-yoga-dark shadow-md md:hidden z-50",
+              (isHome && !pastHero) ? "opacity-0 pointer-events-none translate-y-2" : "opacity-100 translate-y-0"
+            )}
             style={{ backgroundColor: "#bdd3d1" }}
           >
             <MessageCircle className="h-4 w-4" />
