@@ -1,11 +1,20 @@
+## ניתוח: האם המסך הראשון עמוס במובייל?
 
-## Plan: Make hero carousel full-screen on mobile
+כרגע במובייל המסך הראשון מכיל:
 
-**Problem**: On mobile, the hero carousel doesn't cover the full viewport height, leaving a white strip visible below it on initial load.
+- **Header**: לוגו + כפתור "צרו קשר" (מרכז) + המבורגר
+- **Hero**: כותרת + תת-כותרת + **3 כפתורים** (לוח שיעורים, הכירו אותנו, צרו קשר)
 
-**Change**: In `src/pages/Index.tsx` line 283, change `min-h-[85vh]` to `min-h-screen` (or `min-h-dvh` for dynamic viewport height which accounts for mobile browser chrome).
+**הבעיה**: כפתור "צרו קשר" מופיע פעמיים — גם ב-Hero וגם ב-Header. בנוסף 3 כפתורים + כותרת + תת-כותרת על מסך מובייל זה אכן עמוס.
 
-**File**: `src/pages/Index.tsx`
-- Line 283: Change `min-h-[85vh] md:min-h-screen` → `min-h-dvh md:min-h-screen`
+## הצעה לפישוט
 
-This uses `dvh` (dynamic viewport height) which adapts to the actual visible area on mobile browsers, ensuring the carousel always fills exactly the visible screen — no white strip below.
+**להסיר את כפתור "צרו קשר" מה-Hero** — הוא כבר נמצא ב-Header (ומופיע גם כשגוללים). כך יישארו רק 2 כפתורים ב-Hero במובייל, מה שנותן מראה נקי ואוורירי יותר.
+
+### שינוי בקובץ `src/pages/Index.tsx`
+
+- שורה 399-404: הסרת הכפתור השלישי (`צרו קשר` עם `md:hidden`)
+
+התוצאה: מסך ראשון עם כותרת, תת-כותרת, ו-2 כפתורים בלבד. כפתור "צרו קשר" נגיש תמיד דרך ה-Header.
+
+מקום לשים את הכפתור מיקום ליד הכיתוב "יוגה במושבה"
