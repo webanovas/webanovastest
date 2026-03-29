@@ -170,7 +170,8 @@ const Team = () => {
 
   const addTeacher = async () => {
     if (!newTeacher.name) { toast.error("שם חובה"); return; }
-    const { error } = await supabase.from("teachers").insert(newTeacher);
+    const maxSort = teachers.length > 0 ? Math.max(...teachers.map(t => t.sort_order)) : -1;
+    const { error } = await supabase.from("teachers").insert({ ...newTeacher, sort_order: maxSort + 1 });
     if (error) { toast.error("שגיאה: " + error.message); }
     else {
       toast.success("נוסף");
@@ -289,10 +290,10 @@ const Team = () => {
 
       {/* Teacher View Dialog (for visitors) */}
       <Dialog open={!!viewingTeacher} onOpenChange={(open) => !open && setViewingTeacher(null)}>
-        <DialogContent className="max-w-sm w-[calc(100%-2rem)] max-h-[80vh] p-0 overflow-y-auto rounded-2xl" dir="rtl">
+        <DialogContent className="max-w-sm w-[calc(100%-2rem)] p-0 overflow-hidden rounded-2xl" dir="rtl">
           {viewingTeacher && (
-            <>
-              <div className="aspect-[4/3] overflow-hidden relative">
+            <div className="flex flex-col max-h-[80vh]">
+              <div className="aspect-[4/3] overflow-hidden relative flex-shrink-0">
                 <img
                   src={viewingTeacher.image_url || TEACHER_FALLBACK}
                   alt={viewingTeacher.name}
@@ -305,7 +306,7 @@ const Team = () => {
                   <p className="text-primary-foreground/80 text-sm font-medium">{viewingTeacher.role}</p>
                 </div>
               </div>
-              <div className="p-6">
+              <div className="p-6 overflow-y-auto flex-1 min-h-0">
                 <DialogHeader className="sr-only">
                   <DialogTitle>{viewingTeacher.name}</DialogTitle>
                 </DialogHeader>
@@ -313,7 +314,7 @@ const Team = () => {
                   {viewingTeacher.description || "מידע נוסף יתעדכן בקרוב"}
                 </p>
               </div>
-            </>
+            </div>
           )}
         </DialogContent>
       </Dialog>
