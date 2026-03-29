@@ -368,18 +368,6 @@ const Index = () => {
 
         <div className="container mx-auto px-4 relative z-10 pb-12 md:pb-24 pt-28 md:pt-40 flex flex-col items-center text-center md:items-start md:text-right">
           <motion.div initial="hidden" animate="visible" variants={stagger} className="max-w-2xl">
-            <motion.div variants={fadeUp} className="mb-5">
-              <a
-                href="https://www.google.com/maps/search/%D7%9B%D7%99%D7%9B%D7%A8+%D7%94%D7%9E%D7%95%D7%A9%D7%91%D7%94+%D7%94%D7%95%D7%93+%D7%94%D7%A9%D7%A8%D7%95%D7%9F"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-foreground/15 backdrop-blur-md text-primary-foreground/90 text-sm font-body border border-primary-foreground/20 hover:bg-primary-foreground/25 transition-colors"
-                onClick={(e) => isEditMode && e.preventDefault()}
-              >
-                <MapPin className="h-3.5 w-3.5" />
-                <E section="hero-badge" fallback="כיכר המושבה, הוד השרון" as="span" className="" />
-              </a>
-            </motion.div>
             <motion.div variants={fadeUp} style={{ textShadow: '0 2px 24px rgba(0,0,0,0.3), 0 4px 48px rgba(0,0,0,0.15)' }}>
               <E section="hero-title" fallback="יוגה במושבה" as="h1"
                 className="font-heading text-4xl md:text-7xl lg:text-8xl font-bold text-primary-foreground/90 mb-4 md:mb-6 leading-[1.05] tracking-tight" />
