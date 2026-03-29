@@ -280,7 +280,7 @@ const Index = () => {
   return (
     <Layout>
       {/* Hero with image carousel */}
-      <section className="relative min-h-[85vh] md:min-h-screen flex items-end overflow-hidden">
+      <section className="relative min-h-dvh md:min-h-screen flex items-end overflow-hidden">
         {/* Image carousel background */}
         <div className={`absolute inset-0 transition-opacity duration-700 ease-out ${heroImagesReady ? 'opacity-100' : 'opacity-0'}`}>
           {heroImages.map((src, i) => (
