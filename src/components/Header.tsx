@@ -102,16 +102,8 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Mobile: Contact + Hamburger */}
-          <div className="flex items-center gap-2 md:hidden z-50">
-            <Link
-              to="/contact"
-              className="flex items-center gap-1.5 rounded-full px-4 py-2.5 text-sm font-body font-medium transition-all duration-200 text-yoga-dark border border-[hsl(170,25%,70%)]/30 shadow-sm"
-              style={{ backgroundColor: "hsl(170, 25%, 78%)" }}
-            >
-              <MessageCircle className="h-4 w-4" />
-              צרו קשר
-            </Link>
+          {/* Mobile: Hamburger only (right side) */}
+          <div className="flex items-center md:hidden z-50">
             <Button
               variant="ghost"
               size="icon"
@@ -127,6 +119,16 @@ const Header = () => {
               {mobileOpen ? <X className="h-9 w-9" /> : <Menu className="h-9 w-9" />}
             </Button>
           </div>
+
+          {/* Mobile: Centered contact button */}
+          <Link
+            to="/contact"
+            className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-body font-semibold transition-all duration-200 text-white shadow-md md:hidden z-50"
+            style={{ backgroundColor: "hsl(var(--primary))" }}
+          >
+            <MessageCircle className="h-4 w-4" />
+            צרו קשר
+          </Link>
         </div>
       </header>
 
