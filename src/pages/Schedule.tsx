@@ -690,7 +690,7 @@ const Schedule = () => {
 
       {/* Class Edit */}
       <Dialog open={!!editingClass} onOpenChange={(open) => !open && setEditingClass(null)}>
-        <DialogContent className="max-w-md p-0 overflow-hidden" dir="rtl">
+        <DialogContent className="max-w-md p-0 overflow-hidden max-h-[90vh]" dir="rtl">
           {editingClass && (
             <ClassEditPreview
               value={editingClass}
@@ -708,7 +708,7 @@ const Schedule = () => {
 
       {/* Class Add - Two Step Flow */}
       <Dialog open={isAddingClass} onOpenChange={(open) => { if (!open) { setIsAddingClass(false); setSelectedClassType(null); setAddClassStep("pick"); } }}>
-        <DialogContent className={cn("p-0 overflow-hidden [&>button]:hidden", addClassStep === "pick" ? "max-w-2xl" : addClassStep === "new-type" ? "max-w-md" : "max-w-md")} dir="rtl">
+        <DialogContent className={cn("p-0 overflow-hidden max-h-[90vh]", addClassStep === "pick" ? "max-w-2xl" : addClassStep === "new-type" ? "max-w-md" : "max-w-md", "[&>button]:hidden")} dir="rtl">
           <AnimatePresence mode="wait">
             {addClassStep === "pick" ? (
               <motion.div
@@ -1874,7 +1874,7 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
                   <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-64 p-2 max-h-[300px] overflow-y-auto" align="start" dir="rtl">
+              <PopoverContent className="w-64 p-2 max-h-[50vh] overflow-y-auto overscroll-contain" align="start" dir="rtl" style={{ pointerEvents: 'auto' }}>
                 <p className="text-[10px] font-heading font-semibold text-foreground/50 uppercase tracking-wider px-2 py-1.5">מורים מהצוות</p>
                 {teachers.map((t) => (
                   <button
