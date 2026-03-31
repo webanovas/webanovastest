@@ -1874,7 +1874,7 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
                   <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-64 p-2 max-h-[300px] overflow-y-auto" align="start" dir="rtl">
+              <PopoverContent className="w-64 p-2 max-h-[50vh] overflow-y-auto overscroll-contain" align="start" dir="rtl" style={{ pointerEvents: 'auto' }}>
                 <p className="text-[10px] font-heading font-semibold text-foreground/50 uppercase tracking-wider px-2 py-1.5">מורים מהצוות</p>
                 {teachers.map((t) => (
                   <button
