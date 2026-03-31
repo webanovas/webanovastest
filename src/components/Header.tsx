@@ -108,8 +108,19 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Mobile: Hamburger (right side) */}
-          <div className="flex items-center md:hidden z-50">
+          {/* Mobile: Contact + Hamburger (right side) */}
+          <div className="flex items-center gap-2 md:hidden z-50">
+            <Link
+              to="/contact"
+              className={cn(
+                "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-body font-medium transition-all duration-300",
+                (isHome && !pastHero) ? "opacity-0 pointer-events-none translate-y-1" : "opacity-100 translate-y-0"
+              )}
+              style={{ backgroundColor: "#bdd3d1", color: "#2d3a36" }}
+            >
+              <MessageCircle className="h-3.5 w-3.5" />
+              צרו קשר
+            </Link>
             <Button
               variant="ghost"
               size="icon"
@@ -125,19 +136,6 @@ const Header = () => {
               {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
           </div>
-
-          {/* Mobile: Centered contact button - appears after scrolling past hero */}
-          <Link
-            to="/contact"
-            className={cn(
-              "absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-body font-medium transition-all duration-300 md:hidden z-50",
-              (isHome && !pastHero) ? "opacity-0 pointer-events-none translate-y-1" : "opacity-100 translate-y-0"
-            )}
-            style={{ backgroundColor: "#bdd3d1", color: "#2d3a36" }}
-          >
-            <MessageCircle className="h-3.5 w-3.5" />
-            צרו קשר
-          </Link>
         </div>
       </header>
 
