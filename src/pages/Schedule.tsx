@@ -1633,15 +1633,20 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
     return !teachers.some(t => t.name === value.teacher);
   });
 
-  // Build unique class types for the switcher
   const classTypes = useMemo(() => {
     if (!allClasses) return [];
-    const unique = allClasses.reduce<ClassRow[]>((acc, cls) => {
-      if (!acc.find(c => c.name === cls.name)) acc.push(cls);
-      return acc;
-    }, []);
-    return unique;
+    const seen = new Set<string>();
+    return allClasses.filter((cls) => {
+      if (seen.has(cls.name)) return false;
+      seen.add(cls.name);
+      return true;
+    });
   }, [allClasses]);
+
+  const activeSpecialClasses = useMemo(
+    () => specialClasses?.filter((sc) => sc.is_active) ?? [],
+    [specialClasses]
+  );
 
   return (
      <div className="bg-card max-h-[85vh] overflow-y-auto">
