@@ -690,7 +690,7 @@ const Schedule = () => {
 
       {/* Class Edit */}
       <Dialog open={!!editingClass} onOpenChange={(open) => !open && setEditingClass(null)}>
-        <DialogContent className="max-w-md p-0 overflow-hidden" dir="rtl">
+        <DialogContent className="max-w-md p-0 overflow-hidden max-h-[90vh]" dir="rtl">
           {editingClass && (
             <ClassEditPreview
               value={editingClass}
