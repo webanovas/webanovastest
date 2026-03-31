@@ -1633,15 +1633,20 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
     return !teachers.some(t => t.name === value.teacher);
   });
 
-  // Build unique class types for the switcher
   const classTypes = useMemo(() => {
     if (!allClasses) return [];
-    const unique = allClasses.reduce<ClassRow[]>((acc, cls) => {
-      if (!acc.find(c => c.name === cls.name)) acc.push(cls);
-      return acc;
-    }, []);
-    return unique;
+    const seen = new Set<string>();
+    return allClasses.filter((cls) => {
+      if (seen.has(cls.name)) return false;
+      seen.add(cls.name);
+      return true;
+    });
   }, [allClasses]);
+
+  const activeSpecialClasses = useMemo(
+    () => specialClasses?.filter((sc) => sc.is_active) ?? [],
+    [specialClasses]
+  );
 
   return (
      <div className="bg-card max-h-[85vh] overflow-y-auto">
@@ -1690,78 +1695,58 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
               </PopoverTrigger>
               <PopoverContent className="w-72 p-2 max-h-[50vh] overflow-y-auto overscroll-contain" align="start" dir="rtl">
                 <p className="text-[10px] font-heading font-semibold text-foreground/50 uppercase tracking-wider px-2 py-1.5">שיעורים</p>
-                {classTypes.map((cls) => (
-                  <button
-                    key={cls.id}
-                    onClick={() => {
-                      onChange({
-                        ...value,
-                        name: cls.name,
-                        description: cls.description,
-                        image_url: cls.image_url,
-                        image_position: cls.image_position || "50% 50%",
-                        level: (cls as any).level || "all",
-                      });
-                      setShowTypePicker(false);
-                    }}
-                    className={cn(
-                      "w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-right transition-colors",
-                      value.name === cls.name ? "bg-primary/10 text-primary" : "hover:bg-muted"
-                    )}
-                  >
-                    {cls.image_url ? (
-                      <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
-                        <img src={cls.image_url} alt="" className="w-full h-full object-cover" style={{ objectPosition: cls.image_position || "50% 50%" }} />
-                      </div>
-                    ) : (
-                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <BookOpen className="h-4 w-4 text-primary/40" />
-                      </div>
-                    )}
-                    <div className="flex items-center gap-1 flex-1 min-w-0">
-                      <LevelBadge level={(cls as any).level || "all"} compact />
-                      <span className="font-heading font-medium text-sm truncate">{cls.name}</span>
-                    </div>
-                    {value.name === cls.name && <Check className="h-4 w-4 text-primary flex-shrink-0" />}
-                  </button>
-                ))}
-                {specialClasses && specialClasses.filter(sc => sc.is_active).length > 0 && (
+                <div className="space-y-1">
+                  {classTypes.map((cls) => (
+                    <button
+                      key={cls.id}
+                      onClick={() => {
+                        onChange({
+                          ...value,
+                          name: cls.name,
+                          description: cls.description,
+                          image_url: cls.image_url,
+                          image_position: cls.image_position || "50% 50%",
+                          level: (cls as any).level || "all",
+                        });
+                        setShowTypePicker(false);
+                      }}
+                      className={cn(
+                        "w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-right transition-colors",
+                        value.name === cls.name ? "bg-primary/10 text-primary" : "hover:bg-muted"
+                      )}
+                    >
+                      <span className="font-heading font-medium text-sm truncate flex-1 text-right">{cls.name}</span>
+                      {value.name === cls.name && <Check className="h-4 w-4 text-primary flex-shrink-0" />}
+                    </button>
+                  ))}
+                </div>
+                {activeSpecialClasses.length > 0 && (
                   <>
                     <p className="text-[10px] font-heading font-semibold text-foreground/50 uppercase tracking-wider px-2 py-1.5 mt-2 border-t border-border/30 pt-2.5">שיעורים מיוחדים</p>
-                    {specialClasses.filter(sc => sc.is_active).map((sc) => (
-                      <button
-                        key={sc.id}
-                        onClick={() => {
-                          onChange({
-                            ...value,
-                            name: sc.name,
-                            description: sc.description,
-                            image_url: sc.image_url,
-                            image_position: sc.image_position || "50% 50%",
-                          });
-                          setShowTypePicker(false);
-                        }}
-                        className={cn(
-                          "w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-right transition-colors",
-                          value.name === sc.name ? "bg-primary/10 text-primary" : "hover:bg-muted"
-                        )}
-                      >
-                        {sc.image_url ? (
-                          <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
-                            <img src={sc.image_url} alt="" className="w-full h-full object-cover" style={{ objectPosition: sc.image_position || "50% 50%" }} />
-                          </div>
-                        ) : (
-                          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <Star className="h-4 w-4 text-primary/40" />
-                          </div>
-                        )}
-                        <div className="flex items-center gap-1 flex-1 min-w-0">
-                          <Star className="h-3 w-3 text-primary flex-shrink-0" />
-                          <span className="font-heading font-medium text-sm truncate">{sc.name}</span>
-                        </div>
-                        {value.name === sc.name && <Check className="h-4 w-4 text-primary flex-shrink-0" />}
-                      </button>
-                    ))}
+                    <div className="space-y-1">
+                      {activeSpecialClasses.map((sc) => (
+                        <button
+                          key={sc.id}
+                          onClick={() => {
+                            onChange({
+                              ...value,
+                              name: sc.name,
+                              description: sc.description,
+                              image_url: sc.image_url,
+                              image_position: sc.image_position || "50% 50%",
+                            });
+                            setShowTypePicker(false);
+                          }}
+                          className={cn(
+                            "w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-right transition-colors",
+                            value.name === sc.name ? "bg-primary/10 text-primary" : "hover:bg-muted"
+                          )}
+                        >
+                          <span className="font-heading font-medium text-sm truncate flex-1 text-right">{sc.name}</span>
+                          {value.name === sc.name && <Check className="h-4 w-4 text-primary flex-shrink-0" />}
+                        </button>
+                      ))}
+                    </div>
                   </>
                 )}
               </PopoverContent>
