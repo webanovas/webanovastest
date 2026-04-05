@@ -27,8 +27,7 @@ const FloatingContact = () => {
       });
       if (error) throw error;
       toast.success("ההודעה נשלחה בהצלחה!");
-      setForm({ name: "", phone: "", message: "" });
-      setIsOpen(false);
+      setForm((prev) => ({ ...prev, message: "" }));
     } catch (err) {
       console.error(err);
       toast.error("שגיאה בשליחה, נסו שוב או פנו בוואטסאפ");

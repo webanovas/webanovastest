@@ -51,7 +51,7 @@ const Contact = () => {
       });
       if (error) throw error;
       toast.success("ההודעה נשלחה בהצלחה!");
-      setForm({ name: "", email: "", phone: "", message: "" });
+      setForm((prev) => ({ ...prev, message: "" }));
     } catch (err) {
       console.error(err);
       toast.error("שגיאה בשליחה, נסו שוב או פנו בוואטסאפ");
