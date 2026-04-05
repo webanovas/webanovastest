@@ -61,8 +61,8 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'יוגה במושבה <onboarding@resend.dev>',
-        to: ['shira.pelleg@gmail.com'],
+        from: 'onboarding@resend.dev',
+        to: 'shira.pelleg@gmail.com',
         subject: `פנייה חדשה מ${name}`,
         html: htmlBody,
       }),
