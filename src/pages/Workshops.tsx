@@ -210,7 +210,7 @@ const Workshops = () => {
         const elRect = el.getBoundingClientRect();
         const elCenter = elRect.top + window.scrollY + elRect.height / 2;
         const scrollTo = elCenter - window.innerHeight / 2;
-        window.scrollTo({ top: Math.max(0, scrollTo - headerHeight / 2), behavior: "smooth" });
+        window.scrollTo({ top: Math.max(0, scrollTo - headerHeight / 2), behavior: "instant" });
         setHighlightedId(targetId);
         setTimeout(() => setHighlightedId(null), 3000);
       }
