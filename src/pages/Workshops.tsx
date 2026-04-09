@@ -293,7 +293,7 @@ const Workshops = () => {
                 ) : (
                   <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="flex flex-col gap-8 max-w-3xl mx-auto">
                     {activeWorkshops.map((w, i) => (
-                      <motion.div key={w.id} variants={fadeUp}>
+                      <motion.div key={w.id} id={`workshop-${w.id}`} variants={fadeUp} className={cn("transition-all duration-700", highlightedId === w.id && "ring-2 ring-primary rounded-3xl shadow-xl shadow-primary/20")}>
                         <WorkshopCard
                           workshop={w}
                           isEditMode={isEditMode}
@@ -315,9 +315,11 @@ const Workshops = () => {
                     {pastWorkshops.map((w, i) => (
                       <Card
                         key={w.id}
+                        id={`workshop-${w.id}`}
                         className={cn(
-                          "rounded-3xl border-0 overflow-hidden shadow-md group cursor-pointer",
-                          isEditMode && "hover:ring-2 hover:ring-primary/30"
+                          "rounded-3xl border-0 overflow-hidden shadow-md group cursor-pointer transition-all duration-700",
+                          isEditMode && "hover:ring-2 hover:ring-primary/30",
+                          highlightedId === w.id && "ring-2 ring-primary shadow-xl shadow-primary/20"
                         )}
                         onClick={() => isEditMode ? setEditing({ ...w }) : setViewingWorkshop(w)}
                       >
