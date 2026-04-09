@@ -146,6 +146,9 @@ const Workshops = () => {
   const { isEditMode } = useAdminMode();
   const queryClient = useQueryClient();
   const { getText, saveText } = usePageContent("workshops");
+  const location = useLocation();
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
+  const scrolledRef = useRef(false);
 
   const WE = ({ section, fallback, as, className }: { section: string; fallback: string; as?: "h1"|"h2"|"h3"|"h4"|"p"|"span"|"div"; className?: string }) => {
     const val = getText(section, fallback);
