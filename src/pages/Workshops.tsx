@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Layout from "@/components/Layout";
@@ -185,7 +185,8 @@ const Workshops = () => {
   const pastWorkshops = workshops.filter((w) => !w.is_active);
 
   // Handle deep link scroll + highlight from hash
-  useEffect(() => {
+  // useLayoutEffect runs synchronously before browser paint — no visible jump
+  useLayoutEffect(() => {
     if (scrolledRef.current || workshops.length === 0) return;
     const hash = location.hash;
     if (!hash.startsWith("#workshop-")) return;
@@ -198,13 +199,17 @@ const Workshops = () => {
     if (workshop.is_active && activeTab !== "upcoming") setActiveTab("upcoming");
 
     scrolledRef.current = true;
+  }, [workshops, location.hash, activeTab]);
 
-    // Scroll instantly while splash is still covering the screen,
-    // so when splash fades the workshop is already centered
-    const splashShown = sessionStorage.getItem("splashShown");
-    const scrollDelay = splashShown ? 100 : 2000; // before splash ends (2400ms)
+  // After layout settles, scroll instantly (still behind splash)
+  useEffect(() => {
+    if (!scrolledRef.current) return;
+    const hash = location.hash;
+    if (!hash.startsWith("#workshop-")) return;
+    const targetId = hash.replace("#workshop-", "");
 
-    setTimeout(() => {
+    // Use requestAnimationFrame to ensure DOM is ready after tab switch
+    requestAnimationFrame(() => {
       const el = document.getElementById(`workshop-${targetId}`);
       if (el) {
         const headerHeight = 80;
@@ -215,8 +220,8 @@ const Workshops = () => {
         setHighlightedId(targetId);
         setTimeout(() => setHighlightedId(null), 3000);
       }
-    }, scrollDelay);
-  }, [workshops, location.hash, activeTab]);
+    });
+  }, [activeTab, location.hash]);
 
 
   const save = async (w: WorkshopRow) => {
