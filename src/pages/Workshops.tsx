@@ -85,8 +85,10 @@ function ShareMenu({ workshopId, workshopTitle, className }: { workshopId: strin
     }
   };
 
-  // On mobile, use native share if available
-  if (navigator.share) {
+  // Use native share only on mobile (touch devices)
+  const isMobile = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
+  if (isMobile && navigator.share) {
     return (
       <button onClick={(e) => { e.stopPropagation(); handleShare("native"); }} className={cn("flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors", className)} title="שיתוף">
         <Share2 className="h-3.5 w-3.5" />
@@ -179,7 +181,7 @@ const Workshops = () => {
   // Handle deep link scroll + highlight from hash
   useEffect(() => {
     if (scrolledRef.current || workshops.length === 0) return;
-    const hash = location.hash; // e.g. #workshop-uuid
+    const hash = location.hash;
     if (!hash.startsWith("#workshop-")) return;
     const targetId = hash.replace("#workshop-", "");
     const workshop = workshops.find(w => w.id === targetId);
@@ -190,15 +192,23 @@ const Workshops = () => {
     if (workshop.is_active && activeTab !== "upcoming") setActiveTab("upcoming");
 
     scrolledRef.current = true;
-    // Wait for tab switch + render
+
+    // Wait for splash screen (2500ms) + tab render (400ms)
+    const splashShown = sessionStorage.getItem("splashShown");
+    const delay = splashShown ? 500 : 3000;
+
     setTimeout(() => {
       const el = document.getElementById(`workshop-${targetId}`);
       if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        const headerHeight = 80;
+        const elRect = el.getBoundingClientRect();
+        const elCenter = elRect.top + window.scrollY + elRect.height / 2;
+        const scrollTo = elCenter - window.innerHeight / 2;
+        window.scrollTo({ top: Math.max(0, scrollTo - headerHeight / 2), behavior: "smooth" });
         setHighlightedId(targetId);
         setTimeout(() => setHighlightedId(null), 3000);
       }
-    }, 400);
+    }, delay);
   }, [workshops, location.hash, activeTab]);
 
 
