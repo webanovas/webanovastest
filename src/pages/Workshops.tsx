@@ -85,8 +85,10 @@ function ShareMenu({ workshopId, workshopTitle, className }: { workshopId: strin
     }
   };
 
-  // On mobile, use native share if available
-  if (navigator.share) {
+  // Use native share only on mobile (touch devices)
+  const isMobile = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
+  if (isMobile && navigator.share) {
     return (
       <button onClick={(e) => { e.stopPropagation(); handleShare("native"); }} className={cn("flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors", className)} title="שיתוף">
         <Share2 className="h-3.5 w-3.5" />
