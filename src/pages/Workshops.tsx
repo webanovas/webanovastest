@@ -640,9 +640,12 @@ function WorkshopCard({ workshop: w, isEditMode, onEdit, onView, imgSrc }: { wor
           )}
         </div>
 
-        <Button className="w-full sm:w-auto rounded-full h-10 px-8 shadow-lg shadow-primary/20" onClick={(e) => { e.stopPropagation(); isEditMode ? onEdit() : onView(); }}>
-          פרטים והרשמה
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button className="flex-1 sm:flex-none rounded-full h-10 px-8 shadow-lg shadow-primary/20" onClick={(e) => { e.stopPropagation(); isEditMode ? onEdit() : onView(); }}>
+            פרטים והרשמה
+          </Button>
+          <ShareMenu workshopId={w.id} workshopTitle={w.title} />
+        </div>
       </CardContent>
     </Card>
   );
