@@ -176,6 +176,32 @@ const Workshops = () => {
   const activeWorkshops = workshops.filter((w) => w.is_active);
   const pastWorkshops = workshops.filter((w) => !w.is_active);
 
+  // Handle deep link scroll + highlight from hash
+  useEffect(() => {
+    if (scrolledRef.current || workshops.length === 0) return;
+    const hash = location.hash; // e.g. #workshop-uuid
+    if (!hash.startsWith("#workshop-")) return;
+    const targetId = hash.replace("#workshop-", "");
+    const workshop = workshops.find(w => w.id === targetId);
+    if (!workshop) return;
+
+    // Switch to correct tab
+    if (!workshop.is_active && activeTab !== "past") setActiveTab("past");
+    if (workshop.is_active && activeTab !== "upcoming") setActiveTab("upcoming");
+
+    scrolledRef.current = true;
+    // Wait for tab switch + render
+    setTimeout(() => {
+      const el = document.getElementById(`workshop-${targetId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        setHighlightedId(targetId);
+        setTimeout(() => setHighlightedId(null), 3000);
+      }
+    }, 400);
+  }, [workshops, location.hash, activeTab]);
+
+
   const save = async (w: WorkshopRow) => {
     const { error } = await supabase.from("workshops").update({
       title: w.title, date: w.date, time: w.time, location: w.location,
