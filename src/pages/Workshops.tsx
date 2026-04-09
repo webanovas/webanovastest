@@ -60,7 +60,65 @@ function FormSection({ icon: Icon, title, children }: { icon: any; title: string
   );
 }
 
-/* ──── Time Picker with Clock Face ──── */
+/* ──── Share Menu ──── */
+function ShareMenu({ workshopId, workshopTitle, className }: { workshopId: string; workshopTitle: string; className?: string }) {
+  const shareUrl = `${window.location.origin}/workshops#workshop-${workshopId}`;
+  const shareText = `בואו לסדנה: ${workshopTitle}`;
+
+  const handleShare = async (method: string) => {
+    switch (method) {
+      case "native":
+        if (navigator.share) {
+          try { await navigator.share({ title: workshopTitle, text: shareText, url: shareUrl }); } catch {}
+        }
+        break;
+      case "whatsapp":
+        window.open(`https://wa.me/?text=${encodeURIComponent(shareText + "\n" + shareUrl)}`, "_blank");
+        break;
+      case "facebook":
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, "_blank");
+        break;
+      case "copy":
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success("הקישור הועתק");
+        break;
+    }
+  };
+
+  // On mobile, use native share if available
+  if (navigator.share) {
+    return (
+      <button onClick={(e) => { e.stopPropagation(); handleShare("native"); }} className={cn("flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors", className)} title="שיתוף">
+        <Share2 className="h-3.5 w-3.5" />
+        <span>שיתוף</span>
+      </button>
+    );
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button onClick={(e) => e.stopPropagation()} className={cn("flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors", className)} title="שיתוף">
+          <Share2 className="h-3.5 w-3.5" />
+          <span>שיתוף</span>
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="center" dir="rtl">
+        <DropdownMenuItem onClick={() => handleShare("whatsapp")} className="gap-2 cursor-pointer">
+          <MessageCircle className="h-4 w-4" /> וואטסאפ
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleShare("facebook")} className="gap-2 cursor-pointer">
+          <Users className="h-4 w-4" /> פייסבוק
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleShare("copy")} className="gap-2 cursor-pointer">
+          <Copy className="h-4 w-4" /> העתק קישור
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+
 function TimeSlotPicker({ value, onChange, placeholder }: { value: string; onChange: (t: string) => void; placeholder: string }) {
   const [open, setOpen] = useState(false);
 
