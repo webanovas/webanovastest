@@ -503,6 +503,13 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
           </div>
         )}
 
+        {/* Share button (always visible, even for past) */}
+        {isPast && (
+          <div className="flex justify-center pt-2">
+            <ShareMenu workshopId={w.id} workshopTitle={w.title} className="py-2 px-4 bg-muted/50 rounded-full" />
+          </div>
+        )}
+
         {/* Action buttons (only for active workshops) */}
         {!isPast && (
           <>
