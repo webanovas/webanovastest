@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Layout from "@/components/Layout";
 import PageHero from "@/components/PageHero";
@@ -6,7 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar as CalendarIcon, Clock, MapPin, Plus, Pencil, Check, Trash2, CalendarDays, FileText, Move, MessageCircle, Phone, Mail, Send, Loader2, CreditCard, Link as LinkIcon, Users, AlignLeft } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, MapPin, Plus, Pencil, Check, Trash2, CalendarDays, FileText, Move, MessageCircle, Phone, Mail, Send, Loader2, CreditCard, Link as LinkIcon, Users, AlignLeft, Share2, Copy } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminMode } from "@/hooks/useAdminMode";
@@ -58,7 +60,65 @@ function FormSection({ icon: Icon, title, children }: { icon: any; title: string
   );
 }
 
-/* ──── Time Picker with Clock Face ──── */
+/* ──── Share Menu ──── */
+function ShareMenu({ workshopId, workshopTitle, className }: { workshopId: string; workshopTitle: string; className?: string }) {
+  const shareUrl = `${window.location.origin}/workshops#workshop-${workshopId}`;
+  const shareText = `בואו לסדנה: ${workshopTitle}`;
+
+  const handleShare = async (method: string) => {
+    switch (method) {
+      case "native":
+        if (navigator.share) {
+          try { await navigator.share({ title: workshopTitle, text: shareText, url: shareUrl }); } catch {}
+        }
+        break;
+      case "whatsapp":
+        window.open(`https://wa.me/?text=${encodeURIComponent(shareText + "\n" + shareUrl)}`, "_blank");
+        break;
+      case "facebook":
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, "_blank");
+        break;
+      case "copy":
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success("הקישור הועתק");
+        break;
+    }
+  };
+
+  // On mobile, use native share if available
+  if (navigator.share) {
+    return (
+      <button onClick={(e) => { e.stopPropagation(); handleShare("native"); }} className={cn("flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors", className)} title="שיתוף">
+        <Share2 className="h-3.5 w-3.5" />
+        <span>שיתוף</span>
+      </button>
+    );
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button onClick={(e) => e.stopPropagation()} className={cn("flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors", className)} title="שיתוף">
+          <Share2 className="h-3.5 w-3.5" />
+          <span>שיתוף</span>
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="center">
+        <DropdownMenuItem onClick={() => handleShare("whatsapp")} className="gap-2 cursor-pointer">
+          <MessageCircle className="h-4 w-4" /> וואטסאפ
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleShare("facebook")} className="gap-2 cursor-pointer">
+          <Users className="h-4 w-4" /> פייסבוק
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleShare("copy")} className="gap-2 cursor-pointer">
+          <Copy className="h-4 w-4" /> העתק קישור
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+
 function TimeSlotPicker({ value, onChange, placeholder }: { value: string; onChange: (t: string) => void; placeholder: string }) {
   const [open, setOpen] = useState(false);
 
@@ -86,6 +146,9 @@ const Workshops = () => {
   const { isEditMode } = useAdminMode();
   const queryClient = useQueryClient();
   const { getText, saveText } = usePageContent("workshops");
+  const location = useLocation();
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
+  const scrolledRef = useRef(false);
 
   const WE = ({ section, fallback, as, className }: { section: string; fallback: string; as?: "h1"|"h2"|"h3"|"h4"|"p"|"span"|"div"; className?: string }) => {
     const val = getText(section, fallback);
@@ -112,6 +175,32 @@ const Workshops = () => {
 
   const activeWorkshops = workshops.filter((w) => w.is_active);
   const pastWorkshops = workshops.filter((w) => !w.is_active);
+
+  // Handle deep link scroll + highlight from hash
+  useEffect(() => {
+    if (scrolledRef.current || workshops.length === 0) return;
+    const hash = location.hash; // e.g. #workshop-uuid
+    if (!hash.startsWith("#workshop-")) return;
+    const targetId = hash.replace("#workshop-", "");
+    const workshop = workshops.find(w => w.id === targetId);
+    if (!workshop) return;
+
+    // Switch to correct tab
+    if (!workshop.is_active && activeTab !== "past") setActiveTab("past");
+    if (workshop.is_active && activeTab !== "upcoming") setActiveTab("upcoming");
+
+    scrolledRef.current = true;
+    // Wait for tab switch + render
+    setTimeout(() => {
+      const el = document.getElementById(`workshop-${targetId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        setHighlightedId(targetId);
+        setTimeout(() => setHighlightedId(null), 3000);
+      }
+    }, 400);
+  }, [workshops, location.hash, activeTab]);
+
 
   const save = async (w: WorkshopRow) => {
     const { error } = await supabase.from("workshops").update({
@@ -204,7 +293,7 @@ const Workshops = () => {
                 ) : (
                   <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="flex flex-col gap-8 max-w-3xl mx-auto">
                     {activeWorkshops.map((w, i) => (
-                      <motion.div key={w.id} variants={fadeUp}>
+                      <motion.div key={w.id} id={`workshop-${w.id}`} variants={fadeUp} className={cn("transition-all duration-700", highlightedId === w.id && "ring-2 ring-primary rounded-3xl shadow-xl shadow-primary/20")}>
                         <WorkshopCard
                           workshop={w}
                           isEditMode={isEditMode}
@@ -226,9 +315,11 @@ const Workshops = () => {
                     {pastWorkshops.map((w, i) => (
                       <Card
                         key={w.id}
+                        id={`workshop-${w.id}`}
                         className={cn(
-                          "rounded-3xl border-0 overflow-hidden shadow-md group cursor-pointer",
-                          isEditMode && "hover:ring-2 hover:ring-primary/30"
+                          "rounded-3xl border-0 overflow-hidden shadow-md group cursor-pointer transition-all duration-700",
+                          isEditMode && "hover:ring-2 hover:ring-primary/30",
+                          highlightedId === w.id && "ring-2 ring-primary shadow-xl shadow-primary/20"
                         )}
                         onClick={() => isEditMode ? setEditing({ ...w }) : setViewingWorkshop(w)}
                       >
@@ -250,9 +341,12 @@ const Workshops = () => {
                           <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
                             {(w as any).short_description || w.description}
                           </p>
-                          <Button variant="outline" size="sm" className="rounded-full px-6 text-xs" onClick={(e) => { e.stopPropagation(); setViewingWorkshop(w); }}>
-                            פרטים
-                          </Button>
+                          <div className="flex items-center gap-3">
+                            <Button variant="outline" size="sm" className="rounded-full px-6 text-xs" onClick={(e) => { e.stopPropagation(); setViewingWorkshop(w); }}>
+                              פרטים
+                            </Button>
+                            <ShareMenu workshopId={w.id} workshopTitle={w.title} />
+                          </div>
                         </CardContent>
                       </Card>
                     ))}
@@ -409,6 +503,13 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
           </div>
         )}
 
+        {/* Share button (always visible, even for past) */}
+        {isPast && (
+          <div className="flex justify-center pt-2">
+            <ShareMenu workshopId={w.id} workshopTitle={w.title} className="py-2 px-4 bg-muted/50 rounded-full" />
+          </div>
+        )}
+
         {/* Action buttons (only for active workshops) */}
         {!isPast && (
           <>
@@ -438,6 +539,8 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
                   <Mail className="h-3.5 w-3.5" />
                   אימייל
                 </button>
+                <span className="text-muted-foreground/30 text-xs leading-6">|</span>
+                <ShareMenu workshopId={w.id} workshopTitle={w.title} className="py-1" />
               </div>
 
               {/* Inline email form */}
@@ -537,9 +640,12 @@ function WorkshopCard({ workshop: w, isEditMode, onEdit, onView, imgSrc }: { wor
           )}
         </div>
 
-        <Button className="w-full sm:w-auto rounded-full h-10 px-8 shadow-lg shadow-primary/20" onClick={(e) => { e.stopPropagation(); isEditMode ? onEdit() : onView(); }}>
-          פרטים והרשמה
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button className="flex-1 sm:flex-none rounded-full h-10 px-8 shadow-lg shadow-primary/20" onClick={(e) => { e.stopPropagation(); isEditMode ? onEdit() : onView(); }}>
+            פרטים והרשמה
+          </Button>
+          <ShareMenu workshopId={w.id} workshopTitle={w.title} />
+        </div>
       </CardContent>
     </Card>
   );
