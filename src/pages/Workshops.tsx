@@ -103,7 +103,7 @@ function ShareMenu({ workshopId, workshopTitle, className }: { workshopId: strin
           <span>שיתוף</span>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="center" dir="rtl">
+      <DropdownMenuContent align="center">
         <DropdownMenuItem onClick={() => handleShare("whatsapp")} className="gap-2 cursor-pointer">
           <MessageCircle className="h-4 w-4" /> וואטסאפ
         </DropdownMenuItem>
