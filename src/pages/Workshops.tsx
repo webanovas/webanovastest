@@ -64,8 +64,11 @@ function FormSection({ icon: Icon, title, children }: { icon: any; title: string
 function ShareMenu({ workshopId, workshopTitle, className }: { workshopId: string; workshopTitle: string; className?: string }) {
   const shareUrl = `${window.location.origin}/workshops#workshop-${workshopId}`;
   const shareText = `בואו לסדנה: ${workshopTitle}`;
+  const [copied, setCopied] = useState(false);
 
-  const handleShare = async (method: string) => {
+  const handleShare = async (method: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    e?.preventDefault();
     switch (method) {
       case "native":
         if (navigator.share) {
@@ -80,7 +83,9 @@ function ShareMenu({ workshopId, workshopTitle, className }: { workshopId: strin
         break;
       case "copy":
         await navigator.clipboard.writeText(shareUrl);
+        setCopied(true);
         toast.success("הקישור הועתק");
+        setTimeout(() => setCopied(false), 2000);
         break;
     }
   };
@@ -90,7 +95,7 @@ function ShareMenu({ workshopId, workshopTitle, className }: { workshopId: strin
 
   if (isMobile && navigator.share) {
     return (
-      <button onClick={(e) => { e.stopPropagation(); handleShare("native"); }} className={cn("flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors", className)} title="שיתוף">
+      <button onClick={(e) => { e.stopPropagation(); handleShare("native", e); }} className={cn("flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors", className)} title="שיתוף">
         <Share2 className="h-3.5 w-3.5" />
         <span>שיתוף</span>
       </button>
@@ -101,19 +106,20 @@ function ShareMenu({ workshopId, workshopTitle, className }: { workshopId: strin
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button onClick={(e) => e.stopPropagation()} className={cn("flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors", className)} title="שיתוף">
-          <Share2 className="h-3.5 w-3.5" />
-          <span>שיתוף</span>
+          {copied ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Share2 className="h-3.5 w-3.5" />}
+          <span>{copied ? "הועתק!" : "שיתוף"}</span>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="center">
-        <DropdownMenuItem onClick={() => handleShare("whatsapp")} className="gap-2 cursor-pointer">
+      <DropdownMenuContent align="center" onClick={(e) => e.stopPropagation()}>
+        <DropdownMenuItem onClick={(e) => handleShare("whatsapp", e)} className="gap-2 cursor-pointer">
           <MessageCircle className="h-4 w-4" /> וואטסאפ
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleShare("facebook")} className="gap-2 cursor-pointer">
+        <DropdownMenuItem onClick={(e) => handleShare("facebook", e)} className="gap-2 cursor-pointer">
           <Users className="h-4 w-4" /> פייסבוק
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleShare("copy")} className="gap-2 cursor-pointer">
-          <Copy className="h-4 w-4" /> העתק קישור
+        <DropdownMenuItem onClick={(e) => handleShare("copy", e)} className="gap-2 cursor-pointer">
+          {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
+          {copied ? "הועתק!" : "העתק קישור"}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -193,9 +199,9 @@ const Workshops = () => {
 
     scrolledRef.current = true;
 
-    // Wait for splash screen (2500ms) + tab render (400ms)
+    // Splash is 2400ms; wait just 500ms after it ends
     const splashShown = sessionStorage.getItem("splashShown");
-    const delay = splashShown ? 500 : 3000;
+    const delay = splashShown ? 500 : 2900;
 
     setTimeout(() => {
       const el = document.getElementById(`workshop-${targetId}`);
