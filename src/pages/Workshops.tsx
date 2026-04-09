@@ -199,9 +199,10 @@ const Workshops = () => {
 
     scrolledRef.current = true;
 
-    // Splash is 2400ms; wait just 500ms after it ends
+    // Scroll instantly while splash is still covering the screen,
+    // so when splash fades the workshop is already centered
     const splashShown = sessionStorage.getItem("splashShown");
-    const delay = splashShown ? 500 : 2900;
+    const scrollDelay = splashShown ? 100 : 2000; // before splash ends (2400ms)
 
     setTimeout(() => {
       const el = document.getElementById(`workshop-${targetId}`);
@@ -214,7 +215,7 @@ const Workshops = () => {
         setHighlightedId(targetId);
         setTimeout(() => setHighlightedId(null), 3000);
       }
-    }, delay);
+    }, scrollDelay);
   }, [workshops, location.hash, activeTab]);
 
 
