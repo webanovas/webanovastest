@@ -341,9 +341,12 @@ const Workshops = () => {
                           <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
                             {(w as any).short_description || w.description}
                           </p>
-                          <Button variant="outline" size="sm" className="rounded-full px-6 text-xs" onClick={(e) => { e.stopPropagation(); setViewingWorkshop(w); }}>
-                            פרטים
-                          </Button>
+                          <div className="flex items-center gap-3">
+                            <Button variant="outline" size="sm" className="rounded-full px-6 text-xs" onClick={(e) => { e.stopPropagation(); setViewingWorkshop(w); }}>
+                              פרטים
+                            </Button>
+                            <ShareMenu workshopId={w.id} workshopTitle={w.title} />
+                          </div>
                         </CardContent>
                       </Card>
                     ))}
@@ -529,6 +532,8 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
                   <Mail className="h-3.5 w-3.5" />
                   אימייל
                 </button>
+                <span className="text-muted-foreground/30 text-xs leading-6">|</span>
+                <ShareMenu workshopId={w.id} workshopTitle={w.title} className="py-1" />
               </div>
 
               {/* Inline email form */}
