@@ -156,7 +156,18 @@ const Workshops = () => {
   const { getText, saveText } = usePageContent("workshops");
   const location = useLocation();
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
-  const scrolledRef = useRef(false);
+  const [pendingScrollId, setPendingScrollId] = useState<string | null>(null);
+  const highlightTimeoutRef = useRef<number | null>(null);
+
+  const getCenteredScrollTop = useCallback((el: HTMLElement) => {
+    const header = document.querySelector("header");
+    const headerHeight = header instanceof HTMLElement ? header.getBoundingClientRect().height : 0;
+    const rect = el.getBoundingClientRect();
+    const elementCenter = rect.top + window.scrollY + rect.height / 2;
+    const visibleCenter = window.innerHeight / 2 + headerHeight / 2;
+
+    return Math.max(0, elementCenter - visibleCenter);
+  }, []);
 
   const WE = ({ section, fallback, as, className }: { section: string; fallback: string; as?: "h1"|"h2"|"h3"|"h4"|"p"|"span"|"div"; className?: string }) => {
     const val = getText(section, fallback);
@@ -184,49 +195,90 @@ const Workshops = () => {
   const activeWorkshops = workshops.filter((w) => w.is_active);
   const pastWorkshops = workshops.filter((w) => !w.is_active);
 
-  // Handle deep link scroll + highlight from hash
-  // useLayoutEffect runs synchronously before browser paint — no visible jump
+  // Resolve deep link target + ensure the correct tab is rendered before paint
   useLayoutEffect(() => {
-    if (scrolledRef.current || workshops.length === 0) return;
+    if (workshops.length === 0) return;
+
     const hash = location.hash;
-    if (!hash.startsWith("#workshop-")) return;
+    if (!hash.startsWith("#workshop-")) {
+      setPendingScrollId(null);
+      return;
+    }
+
     const targetId = hash.replace("#workshop-", "");
-    const workshop = workshops.find(w => w.id === targetId);
+    const workshop = workshops.find((w) => w.id === targetId);
     if (!workshop) return;
 
-    // Switch to correct tab
-    if (!workshop.is_active && activeTab !== "past") setActiveTab("past");
-    if (workshop.is_active && activeTab !== "upcoming") setActiveTab("upcoming");
+    const nextTab = workshop.is_active ? "upcoming" : "past";
+    if (activeTab !== nextTab) {
+      setActiveTab(nextTab);
+    }
 
-    scrolledRef.current = true;
+    setPendingScrollId(targetId);
   }, [workshops, location.hash, activeTab]);
 
-  // After layout settles, scroll instantly (still behind splash)
+  // Center the shared workshop as soon as it exists, then re-center after layout settles
   useEffect(() => {
-    if (!scrolledRef.current) return;
-    const hash = location.hash;
-    if (!hash.startsWith("#workshop-")) return;
-    const targetId = hash.replace("#workshop-", "");
+    if (!pendingScrollId) return;
 
-    // Poll until the element exists in DOM (tab switch may cause re-render)
-    let attempts = 0;
-    const tryScroll = () => {
-      const el = document.getElementById(`workshop-${targetId}`);
-      if (el) {
-        const headerHeight = 80;
-        const elRect = el.getBoundingClientRect();
-        const elCenter = elRect.top + window.scrollY + elRect.height / 2;
-        const scrollTo = elCenter - window.innerHeight / 2;
-        window.scrollTo({ top: Math.max(0, scrollTo - headerHeight / 2), behavior: "instant" });
-        setHighlightedId(targetId);
-        setTimeout(() => setHighlightedId(null), 3000);
-      } else if (attempts < 20) {
-        attempts++;
-        requestAnimationFrame(tryScroll);
+    let cancelled = false;
+    let pollFrame = 0;
+    let correctionFrame = 0;
+    let correctionTimeoutA = 0;
+    let correctionTimeoutB = 0;
+
+    const centerWorkshop = () => {
+      const el = document.getElementById(`workshop-${pendingScrollId}`);
+      if (!el) return false;
+
+      window.scrollTo({ top: getCenteredScrollTop(el), behavior: "auto" });
+      setHighlightedId(pendingScrollId);
+
+      if (highlightTimeoutRef.current) {
+        window.clearTimeout(highlightTimeoutRef.current);
+      }
+
+      highlightTimeoutRef.current = window.setTimeout(() => {
+        setHighlightedId((current) => (current === pendingScrollId ? null : current));
+      }, 3000);
+
+      return true;
+    };
+
+    const tryCenter = (attempt = 0) => {
+      if (cancelled) return;
+
+      if (centerWorkshop()) {
+        correctionTimeoutA = window.setTimeout(() => {
+          correctionFrame = window.requestAnimationFrame(() => {
+            if (!cancelled) centerWorkshop();
+          });
+        }, 120);
+
+        correctionTimeoutB = window.setTimeout(() => {
+          correctionFrame = window.requestAnimationFrame(() => {
+            if (!cancelled) centerWorkshop();
+          });
+        }, 360);
+
+        return;
+      }
+
+      if (attempt < 45) {
+        pollFrame = window.requestAnimationFrame(() => tryCenter(attempt + 1));
       }
     };
-    requestAnimationFrame(tryScroll);
-  }, [activeTab, location.hash]);
+
+    tryCenter();
+
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(pollFrame);
+      window.cancelAnimationFrame(correctionFrame);
+      window.clearTimeout(correctionTimeoutA);
+      window.clearTimeout(correctionTimeoutB);
+    };
+  }, [pendingScrollId, activeTab, workshops.length, getCenteredScrollTop]);
 
 
   const save = async (w: WorkshopRow) => {
