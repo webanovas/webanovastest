@@ -208,8 +208,9 @@ const Workshops = () => {
     if (!hash.startsWith("#workshop-")) return;
     const targetId = hash.replace("#workshop-", "");
 
-    // Use requestAnimationFrame to ensure DOM is ready after tab switch
-    requestAnimationFrame(() => {
+    // Poll until the element exists in DOM (tab switch may cause re-render)
+    let attempts = 0;
+    const tryScroll = () => {
       const el = document.getElementById(`workshop-${targetId}`);
       if (el) {
         const headerHeight = 80;
@@ -219,8 +220,12 @@ const Workshops = () => {
         window.scrollTo({ top: Math.max(0, scrollTo - headerHeight / 2), behavior: "instant" });
         setHighlightedId(targetId);
         setTimeout(() => setHighlightedId(null), 3000);
+      } else if (attempts < 20) {
+        attempts++;
+        requestAnimationFrame(tryScroll);
       }
-    });
+    };
+    requestAnimationFrame(tryScroll);
   }, [activeTab, location.hash]);
 
 
