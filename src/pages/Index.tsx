@@ -198,7 +198,7 @@ const Index = () => {
 
     const intervalId = window.setInterval(() => {
       setActiveHeroIndex((prev) => (prev + 1) % heroImages.length);
-    }, 3500);
+    }, 2500);
 
     return () => {
       window.clearInterval(intervalId);
