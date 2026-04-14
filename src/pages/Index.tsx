@@ -410,7 +410,7 @@ const Index = () => {
 
         {/* Scroll-down arrow */}
         <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 cursor-pointer hidden md:block"
+          className="absolute bottom-28 md:bottom-8 left-1/2 -translate-x-1/2 z-10 cursor-pointer"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5, duration: 0.8 }}
