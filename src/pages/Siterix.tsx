@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import siterixLogo from "@/assets/siterix-logo.png";
 
-const SITERIX_URL = "https://siterix.com";
+const SITERIX_URL = "https://siterixstudios.com";
 const REDIRECT_DELAY_MS = 4000;
 
 const Siterix = () => {
