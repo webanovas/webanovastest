@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import siterixLogo from "@/assets/siterix-logo.png";
 
 const SITERIX_URL = "https://siterix.com";
 const REDIRECT_DELAY_MS = 4000;
@@ -47,10 +48,12 @@ const Siterix = () => {
             className="mb-8"
           >
             <div className="relative">
-              <div className="absolute inset-0 bg-primary/30 blur-2xl rounded-full" />
-              <div className="relative w-24 h-24 md:w-28 md:h-28 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-2xl">
-                <span className="text-4xl md:text-5xl font-bold text-primary-foreground tracking-tight">S</span>
-              </div>
+              <div className="absolute inset-0 bg-primary/30 blur-3xl rounded-full" />
+              <img
+                src={siterixLogo}
+                alt="Siterix Studios"
+                className="relative w-32 h-32 md:w-40 md:h-40 rounded-full shadow-2xl"
+              />
             </div>
           </motion.div>
 
