@@ -23,6 +23,7 @@ const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 const Admin = lazy(() => import("./pages/Admin"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const Siterix = lazy(() => import("./pages/Siterix"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -62,6 +63,7 @@ const App = () => {
                     <Route path="/admin-login" element={<AdminLogin />} />
                     <Route path="/admin" element={<Admin />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/siterix" element={<Siterix />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
