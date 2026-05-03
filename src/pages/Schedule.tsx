@@ -1238,6 +1238,7 @@ const Schedule = () => {
                   <Check className="h-4 w-4" />שמירה
                 </Button>
                 <Button variant="destructive" size="sm" onClick={async () => {
+                  if (!confirm(`למחוק את השיעור המיוחד "${editingSpecialClass.name}"?\nפעולה זו אינה הפיכה.`)) return;
                   const { error } = await supabase.from("special_classes" as any).delete().eq("id", editingSpecialClass.id);
                   if (error) { toast.error("שגיאה: " + error.message); }
                   else { toast.success("נמחק"); queryClient.invalidateQueries({ queryKey: ["special_classes"] }); }
