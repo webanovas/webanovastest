@@ -696,7 +696,10 @@ const Schedule = () => {
               value={editingClass}
               onChange={setEditingClass}
               onSave={() => saveClass(editingClass)}
-              onDelete={() => deleteClass(editingClass.id)}
+              onDelete={() => {
+                if (!confirm(`למחוק את השיעור "${editingClass.name}" (${editingClass.day} ${editingClass.time})?\nפעולה זו אינה הפיכה לאחר רענון הדף.`)) return;
+                deleteClass(editingClass.id);
+              }}
               onCancel={() => setEditingClass(null)}
               allClasses={classes}
               specialClasses={specialClasses}
