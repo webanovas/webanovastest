@@ -696,7 +696,10 @@ const Schedule = () => {
               value={editingClass}
               onChange={setEditingClass}
               onSave={() => saveClass(editingClass)}
-              onDelete={() => deleteClass(editingClass.id)}
+              onDelete={() => {
+                if (!confirm(`למחוק את השיעור "${editingClass.name}" (${editingClass.day} ${editingClass.time})?\nפעולה זו אינה הפיכה לאחר רענון הדף.`)) return;
+                deleteClass(editingClass.id);
+              }}
               onCancel={() => setEditingClass(null)}
               allClasses={classes}
               specialClasses={specialClasses}
@@ -1235,6 +1238,7 @@ const Schedule = () => {
                   <Check className="h-4 w-4" />שמירה
                 </Button>
                 <Button variant="destructive" size="sm" onClick={async () => {
+                  if (!confirm(`למחוק את השיעור המיוחד "${editingSpecialClass.name}"?\nפעולה זו אינה הפיכה.`)) return;
                   const { error } = await supabase.from("special_classes" as any).delete().eq("id", editingSpecialClass.id);
                   if (error) { toast.error("שגיאה: " + error.message); }
                   else { toast.success("נמחק"); queryClient.invalidateQueries({ queryKey: ["special_classes"] }); }
