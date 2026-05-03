@@ -1864,12 +1864,20 @@ function ClassEditPreview({ value, onChange, onSave, onDelete, onCancel, isNew =
                 </Button>
               </PopoverTrigger>
               <PopoverContent
-                className="w-64 p-2 max-h-[60vh] overflow-y-auto overscroll-contain"
+                className="w-64 p-2 max-h-[min(60vh,360px)] overflow-y-auto overscroll-contain touch-pan-y"
                 align="start"
-                dir="rtl"
+                side="bottom"
+                sideOffset={6}
+                avoidCollisions
                 collisionPadding={16}
+                dir="rtl"
                 onWheel={(e) => e.stopPropagation()}
                 onTouchMove={(e) => e.stopPropagation()}
+                onPointerDownOutside={(e) => {
+                  // allow scrolling within popover on mobile
+                  const target = e.target as HTMLElement;
+                  if (target.closest("[data-radix-popper-content-wrapper]")) e.preventDefault();
+                }}
               >
                 <p className="text-[10px] font-heading font-semibold text-foreground/50 uppercase tracking-wider px-2 py-1.5">מורים מהצוות</p>
                 {teachers.map((t) => (
