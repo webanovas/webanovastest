@@ -574,6 +574,14 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
                 <span className="font-medium">{w.location}</span>
               </div>
             )}
+            {(w as any).instructor && (
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Users className="h-4 w-4 text-primary" />
+                </div>
+                <span className="font-medium">בהנחיית {(w as any).instructor}</span>
+              </div>
+            )}
           </div>
         )}
 
