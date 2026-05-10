@@ -854,9 +854,9 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
           </FormSection>
         )}
 
-        {/* Date */}
+        {/* Date(s) */}
         {value.is_active && (
-          <FormSection icon={CalendarDays} title="תאריך">
+          <FormSection icon={CalendarDays} title="תאריכים">
             <div className="flex items-center gap-2 mb-2">
               <label className="flex items-center gap-2 text-sm cursor-pointer">
                 <input
@@ -875,35 +875,12 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
               </label>
             </div>
             {value.date !== "עדכון בקרוב" && (
-              <Popover open={dateOpen} onOpenChange={setDateOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-right font-normal rounded-xl h-11 border-0 bg-card shadow-sm",
-                      !value.date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarDays className="h-4 w-4 ml-2 text-primary" />
-                    {value.date || "בחר תאריך"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={parsedDate}
-                    onSelect={(date) => {
-                      if (date) {
-                        onChange({ ...value, date: format(date, "dd.MM.yyyy") });
-                      }
-                      setDateOpen(false);
-                    }}
-                    initialFocus
-                    className="p-3 pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
+              <MultiDatePicker
+                value={value.date || ""}
+                onChange={(d) => onChange({ ...value, date: d })}
+              />
             )}
+            <p className="text-xs text-muted-foreground px-1">ניתן להוסיף מספר מועדים (לדוגמה למיני־קורס)</p>
           </FormSection>
         )}
 
