@@ -938,6 +938,31 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
           </FormSection>
         )}
 
+        {/* Instructor */}
+        {value.is_active && (
+          <FormSection icon={Users} title="מנחה">
+            <Input
+              value={value.instructor || ""}
+              onChange={(e) => onChange({ ...value, instructor: e.target.value })}
+              placeholder="שם המנחה (לדוגמה: שירה פלג)"
+              className="rounded-xl border-0 bg-card h-11 shadow-sm"
+            />
+          </FormSection>
+        )}
+
+        {/* Display from date */}
+        {value.is_active && (
+          <FormSection icon={CalendarDays} title="יוצג באתר מתאריך">
+            <Input
+              type="date"
+              value={value.display_from || ""}
+              onChange={(e) => onChange({ ...value, display_from: e.target.value })}
+              className="rounded-xl border-0 bg-card h-11 shadow-sm"
+            />
+            <p className="text-xs text-muted-foreground px-1">השאירי ריק כדי שהסדנה תוצג מיד. אם מוגדר תאריך – הסדנה תופיע לציבור רק החל מהתאריך הזה.</p>
+          </FormSection>
+        )}
+
         {/* Payment URL */}
         {value.is_active && (
           <FormSection icon={LinkIcon} title="קישור לתשלום">
