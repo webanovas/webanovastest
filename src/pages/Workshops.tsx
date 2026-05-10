@@ -722,12 +722,14 @@ function WorkshopCard({ workshop: w, isEditMode, onEdit, onView, imgSrc }: { wor
         )}
 
         <div className="flex flex-wrap gap-4 mb-5 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10">
-              <CalendarIcon className="h-3.5 w-3.5 text-primary" />
+          {(splitDates(w.date).length > 0 ? splitDates(w.date) : (w.date ? [w.date] : [])).map((d, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <div className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10">
+                <CalendarIcon className="h-3.5 w-3.5 text-primary" />
+              </div>
+              <span className="font-medium">{d}</span>
             </div>
-            <span className="font-medium">{w.date}</span>
-          </div>
+          ))}
           {w.time && (
             <div className="flex items-center gap-2">
               <div className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10">
