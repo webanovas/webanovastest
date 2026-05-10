@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar as CalendarIcon, Clock, MapPin, Plus, Pencil, Check, Trash2, CalendarDays, FileText, Move, MessageCircle, Phone, Mail, Send, Loader2, CreditCard, Link as LinkIcon, Users, AlignLeft, Share2, Copy } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, MapPin, Plus, Pencil, Check, Trash2, CalendarDays, FileText, Move, MessageCircle, Phone, Mail, Send, Loader2, CreditCard, Link as LinkIcon, Users, AlignLeft, Share2, Copy, X } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -550,12 +550,20 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
         {/* Meta info (only for active workshops) */}
         {!isPast && (
           <div className="flex flex-wrap gap-4 text-sm">
-            {w.date && (
+            {splitDates(w.date).map((d, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <CalendarIcon className="h-4 w-4 text-primary" />
+                </div>
+                <span className="font-medium">{d}</span>
+              </div>
+            ))}
+            {w.date === "עדכון בקרוב" && (
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                   <CalendarIcon className="h-4 w-4 text-primary" />
                 </div>
-                <span className="font-medium">{w.date}</span>
+                <span className="font-medium">עדכון בקרוב</span>
               </div>
             )}
             {w.time && (
@@ -714,12 +722,14 @@ function WorkshopCard({ workshop: w, isEditMode, onEdit, onView, imgSrc }: { wor
         )}
 
         <div className="flex flex-wrap gap-4 mb-5 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10">
-              <CalendarIcon className="h-3.5 w-3.5 text-primary" />
+          {(splitDates(w.date).length > 0 ? splitDates(w.date) : (w.date ? [w.date] : [])).map((d, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <div className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10">
+                <CalendarIcon className="h-3.5 w-3.5 text-primary" />
+              </div>
+              <span className="font-medium">{d}</span>
             </div>
-            <span className="font-medium">{w.date}</span>
-          </div>
+          ))}
           {w.time && (
             <div className="flex items-center gap-2">
               <div className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10">
@@ -754,12 +764,9 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
   value: any; onChange: (v: any) => void; onSave: () => void;
   onDelete?: () => void; onCancel: () => void; isNew?: boolean;
 }) {
-  const [dateOpen, setDateOpen] = useState(false);
   const [showFocalPicker, setShowFocalPicker] = useState(false);
   const [showDetailFocalPicker, setShowDetailFocalPicker] = useState(false);
   if (!value) return null;
-
-  const parsedDate = value.date ? parseHebrewDate(value.date) : undefined;
 
   return (
     <div className="bg-card rounded-3xl overflow-hidden">
@@ -854,9 +861,9 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
           </FormSection>
         )}
 
-        {/* Date */}
+        {/* Date(s) */}
         {value.is_active && (
-          <FormSection icon={CalendarDays} title="תאריך">
+          <FormSection icon={CalendarDays} title="תאריכים">
             <div className="flex items-center gap-2 mb-2">
               <label className="flex items-center gap-2 text-sm cursor-pointer">
                 <input
@@ -875,35 +882,12 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
               </label>
             </div>
             {value.date !== "עדכון בקרוב" && (
-              <Popover open={dateOpen} onOpenChange={setDateOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-right font-normal rounded-xl h-11 border-0 bg-card shadow-sm",
-                      !value.date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarDays className="h-4 w-4 ml-2 text-primary" />
-                    {value.date || "בחר תאריך"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={parsedDate}
-                    onSelect={(date) => {
-                      if (date) {
-                        onChange({ ...value, date: format(date, "dd.MM.yyyy") });
-                      }
-                      setDateOpen(false);
-                    }}
-                    initialFocus
-                    className="p-3 pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
+              <MultiDatePicker
+                value={value.date || ""}
+                onChange={(d) => onChange({ ...value, date: d })}
+              />
             )}
+            <p className="text-xs text-muted-foreground px-1">ניתן להוסיף מספר מועדים (לדוגמה למיני־קורס)</p>
           </FormSection>
         )}
 
@@ -1030,6 +1014,95 @@ function parseHebrewDate(dateStr: string): Date | undefined {
     if (!isNaN(d) && !isNaN(m) && !isNaN(y)) return new Date(y, m, d);
   }
   return undefined;
+}
+
+function splitDates(dateStr: string | null | undefined): string[] {
+  if (!dateStr) return [];
+  return dateStr.split(",").map((s) => s.trim()).filter(Boolean);
+}
+
+function MultiDatePicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const dates = splitDates(value);
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const [addOpen, setAddOpen] = useState(false);
+
+  const updateAt = (idx: number, newDate: string) => {
+    const next = [...dates];
+    next[idx] = newDate;
+    onChange(next.join(", "));
+  };
+  const removeAt = (idx: number) => {
+    const next = dates.filter((_, i) => i !== idx);
+    onChange(next.join(", "));
+  };
+  const addDate = (newDate: string) => {
+    onChange([...dates, newDate].join(", "));
+  };
+
+  return (
+    <div className="space-y-2">
+      {dates.map((d, idx) => (
+        <div key={idx} className="flex items-center gap-2">
+          <Popover open={openIdx === idx} onOpenChange={(o) => setOpenIdx(o ? idx : null)}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="flex-1 justify-start text-right font-normal rounded-xl h-11 border-0 bg-card shadow-sm"
+              >
+                <CalendarDays className="h-4 w-4 ml-2 text-primary" />
+                {d}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={parseHebrewDate(d)}
+                onSelect={(date) => {
+                  if (date) updateAt(idx, format(date, "dd.MM.yyyy"));
+                  setOpenIdx(null);
+                }}
+                initialFocus
+                className="p-3 pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="rounded-full h-9 w-9 text-muted-foreground hover:text-destructive shrink-0"
+            onClick={() => removeAt(idx)}
+            title="הסר תאריך"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      ))}
+      <Popover open={addOpen} onOpenChange={setAddOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full justify-center rounded-xl h-11 border-dashed border-primary/40 bg-card/50 text-primary hover:bg-primary/5 gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            {dates.length === 0 ? "בחר תאריך" : "הוסף מועד נוסף"}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            onSelect={(date) => {
+              if (date) addDate(format(date, "dd.MM.yyyy"));
+              setAddOpen(false);
+            }}
+            initialFocus
+            className="p-3 pointer-events-auto"
+          />
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
 }
 
 export default Workshops;
