@@ -1009,4 +1009,93 @@ function parseHebrewDate(dateStr: string): Date | undefined {
   return undefined;
 }
 
+function splitDates(dateStr: string | null | undefined): string[] {
+  if (!dateStr) return [];
+  return dateStr.split(",").map((s) => s.trim()).filter(Boolean);
+}
+
+function MultiDatePicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const dates = splitDates(value);
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const [addOpen, setAddOpen] = useState(false);
+
+  const updateAt = (idx: number, newDate: string) => {
+    const next = [...dates];
+    next[idx] = newDate;
+    onChange(next.join(", "));
+  };
+  const removeAt = (idx: number) => {
+    const next = dates.filter((_, i) => i !== idx);
+    onChange(next.join(", "));
+  };
+  const addDate = (newDate: string) => {
+    onChange([...dates, newDate].join(", "));
+  };
+
+  return (
+    <div className="space-y-2">
+      {dates.map((d, idx) => (
+        <div key={idx} className="flex items-center gap-2">
+          <Popover open={openIdx === idx} onOpenChange={(o) => setOpenIdx(o ? idx : null)}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="flex-1 justify-start text-right font-normal rounded-xl h-11 border-0 bg-card shadow-sm"
+              >
+                <CalendarDays className="h-4 w-4 ml-2 text-primary" />
+                {d}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={parseHebrewDate(d)}
+                onSelect={(date) => {
+                  if (date) updateAt(idx, format(date, "dd.MM.yyyy"));
+                  setOpenIdx(null);
+                }}
+                initialFocus
+                className="p-3 pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="rounded-full h-9 w-9 text-muted-foreground hover:text-destructive shrink-0"
+            onClick={() => removeAt(idx)}
+            title="הסר תאריך"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      ))}
+      <Popover open={addOpen} onOpenChange={setAddOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full justify-center rounded-xl h-11 border-dashed border-primary/40 bg-card/50 text-primary hover:bg-primary/5 gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            {dates.length === 0 ? "בחר תאריך" : "הוסף מועד נוסף"}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            onSelect={(date) => {
+              if (date) addDate(format(date, "dd.MM.yyyy"));
+              setAddOpen(false);
+            }}
+            initialFocus
+            className="p-3 pointer-events-auto"
+          />
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+}
+
 export default Workshops;
