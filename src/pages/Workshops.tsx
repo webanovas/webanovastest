@@ -315,7 +315,7 @@ const Workshops = () => {
     if (error) { console.error("Add error:", error); toast.error("שגיאה: " + error.message); }
     else {
       toast.success("נוסף"); queryClient.invalidateQueries({ queryKey: ["workshops"] });
-      setNewItem({ title: "", date: "", time: "", location: "", description: "", short_description: "", target_audience: "", is_active: true, payment_url: "" }); setIsAdding(false);
+      setNewItem({ title: "", date: "", time: "", location: "", description: "", short_description: "", target_audience: "", is_active: true, payment_url: "", instructor: "", display_from: "" }); setIsAdding(false);
     }
   };
 
