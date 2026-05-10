@@ -75,7 +75,7 @@ const Footer = () => {
                 <E section="facebook" fallback="פייסבוק" />
               </a>
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/yogabamoshava/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-white/60 hover:text-white transition-colors"
