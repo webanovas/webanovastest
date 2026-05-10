@@ -187,12 +187,19 @@ const Workshops = () => {
   const { data: workshops = [] } = useQuery({
     queryKey: ["workshops"],
     queryFn: async () => {
-      const { data } = await supabase.from("workshops").select("*").order("sort_order");
+      const { data } = await supabase.from("workshops").select("*").order("created_at", { ascending: false });
       return data ?? [];
     },
   });
 
-  const activeWorkshops = workshops.filter((w) => w.is_active);
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const activeWorkshops = workshops.filter((w) => {
+    if (!w.is_active) return false;
+    const df = (w as any).display_from as string | null;
+    // Hide for public until display_from; admins see everything
+    if (df && df > todayStr && !isEditMode) return false;
+    return true;
+  });
   const pastWorkshops = workshops.filter((w) => !w.is_active);
 
   // Resolve deep link target + ensure the correct tab is rendered before paint
