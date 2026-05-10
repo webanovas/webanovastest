@@ -111,7 +111,7 @@ const Contact = () => {
                   </div>
                   <E section="facebook" fallback="פייסבוק" />
                 </a>
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => isEditMode && e.preventDefault()}>
+                <a href="https://www.instagram.com/yogabamoshava/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => isEditMode && e.preventDefault()}>
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Instagram className="h-5 w-5 text-primary" /></div>
                   <E section="instagram" fallback="@yogabamoshava" />
                 </a>
