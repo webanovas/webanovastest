@@ -764,12 +764,9 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
   value: any; onChange: (v: any) => void; onSave: () => void;
   onDelete?: () => void; onCancel: () => void; isNew?: boolean;
 }) {
-  const [dateOpen, setDateOpen] = useState(false);
   const [showFocalPicker, setShowFocalPicker] = useState(false);
   const [showDetailFocalPicker, setShowDetailFocalPicker] = useState(false);
   if (!value) return null;
-
-  const parsedDate = value.date ? parseHebrewDate(value.date) : undefined;
 
   return (
     <div className="bg-card rounded-3xl overflow-hidden">
