@@ -182,7 +182,7 @@ const Workshops = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [activeTab, setActiveTab] = useState<"upcoming" | "past">("upcoming");
   const [viewingWorkshop, setViewingWorkshop] = useState<WorkshopRow | null>(null);
-  const [newItem, setNewItem] = useState({ title: "", date: "", time: "", location: "", description: "", short_description: "", target_audience: "", is_active: true, payment_url: "" });
+  const [newItem, setNewItem] = useState({ title: "", date: "", time: "", location: "", description: "", short_description: "", target_audience: "", is_active: true, payment_url: "", instructor: "", display_from: "" });
 
   const { data: workshops = [] } = useQuery({
     queryKey: ["workshops"],
