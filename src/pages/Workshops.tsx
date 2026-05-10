@@ -550,12 +550,20 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
         {/* Meta info (only for active workshops) */}
         {!isPast && (
           <div className="flex flex-wrap gap-4 text-sm">
-            {w.date && (
+            {splitDates(w.date).map((d, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <CalendarIcon className="h-4 w-4 text-primary" />
+                </div>
+                <span className="font-medium">{d}</span>
+              </div>
+            ))}
+            {w.date === "עדכון בקרוב" && (
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                   <CalendarIcon className="h-4 w-4 text-primary" />
                 </div>
-                <span className="font-medium">{w.date}</span>
+                <span className="font-medium">עדכון בקרוב</span>
               </div>
             )}
             {w.time && (
