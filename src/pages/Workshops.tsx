@@ -313,6 +313,8 @@ const Workshops = () => {
       payment_url: newItem.payment_url || null,
       short_description: newItem.short_description || "",
       target_audience: newItem.target_audience || "",
+      instructor: newItem.instructor || "",
+      display_from: newItem.display_from || null,
     });
     if (error) { console.error("Add error:", error); toast.error("שגיאה: " + error.message); }
     else {
