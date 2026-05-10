@@ -182,17 +182,24 @@ const Workshops = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [activeTab, setActiveTab] = useState<"upcoming" | "past">("upcoming");
   const [viewingWorkshop, setViewingWorkshop] = useState<WorkshopRow | null>(null);
-  const [newItem, setNewItem] = useState({ title: "", date: "", time: "", location: "", description: "", short_description: "", target_audience: "", is_active: true, payment_url: "" });
+  const [newItem, setNewItem] = useState({ title: "", date: "", time: "", location: "", description: "", short_description: "", target_audience: "", is_active: true, payment_url: "", instructor: "", display_from: "" });
 
   const { data: workshops = [] } = useQuery({
     queryKey: ["workshops"],
     queryFn: async () => {
-      const { data } = await supabase.from("workshops").select("*").order("sort_order");
+      const { data } = await supabase.from("workshops").select("*").order("created_at", { ascending: false });
       return data ?? [];
     },
   });
 
-  const activeWorkshops = workshops.filter((w) => w.is_active);
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const activeWorkshops = workshops.filter((w) => {
+    if (!w.is_active) return false;
+    const df = (w as any).display_from as string | null;
+    // Hide for public until display_from; admins see everything
+    if (df && df > todayStr && !isEditMode) return false;
+    return true;
+  });
   const pastWorkshops = workshops.filter((w) => !w.is_active);
 
   // Resolve deep link target + ensure the correct tab is rendered before paint
@@ -290,6 +297,8 @@ const Workshops = () => {
       payment_url: (w as any).payment_url || null,
       short_description: (w as any).short_description || "",
       target_audience: (w as any).target_audience || "",
+      instructor: (w as any).instructor || "",
+      display_from: (w as any).display_from || null,
     }).eq("id", w.id);
     if (error) { console.error("Save error:", error); toast.error("שגיאה: " + error.message); }
     else { toast.success("נשמר"); queryClient.invalidateQueries({ queryKey: ["workshops"] }); }
@@ -304,11 +313,13 @@ const Workshops = () => {
       payment_url: newItem.payment_url || null,
       short_description: newItem.short_description || "",
       target_audience: newItem.target_audience || "",
+      instructor: newItem.instructor || "",
+      display_from: newItem.display_from || null,
     });
     if (error) { console.error("Add error:", error); toast.error("שגיאה: " + error.message); }
     else {
       toast.success("נוסף"); queryClient.invalidateQueries({ queryKey: ["workshops"] });
-      setNewItem({ title: "", date: "", time: "", location: "", description: "", short_description: "", target_audience: "", is_active: true, payment_url: "" }); setIsAdding(false);
+      setNewItem({ title: "", date: "", time: "", location: "", description: "", short_description: "", target_audience: "", is_active: true, payment_url: "", instructor: "", display_from: "" }); setIsAdding(false);
     }
   };
 
@@ -358,7 +369,7 @@ const Workshops = () => {
 
           {isEditMode && (
             <div className="text-center mb-8">
-              <Button size="sm" onClick={() => { setNewItem({ title: "", date: "", time: "", location: "", description: "", short_description: "", target_audience: "", is_active: activeTab === "upcoming", payment_url: "" }); setIsAdding(true); }} className="rounded-full gap-2">
+              <Button size="sm" onClick={() => { setNewItem({ title: "", date: "", time: "", location: "", description: "", short_description: "", target_audience: "", is_active: activeTab === "upcoming", payment_url: "", instructor: "", display_from: "" }); setIsAdding(true); }} className="rounded-full gap-2">
                 <Plus className="h-4 w-4" />הוסף סדנה
               </Button>
             </div>
@@ -561,6 +572,14 @@ function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { 
                   <MapPin className="h-4 w-4 text-primary" />
                 </div>
                 <span className="font-medium">{w.location}</span>
+              </div>
+            )}
+            {(w as any).instructor && (
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Users className="h-4 w-4 text-primary" />
+                </div>
+                <span className="font-medium">בהנחיית {(w as any).instructor}</span>
               </div>
             )}
           </div>
@@ -916,6 +935,31 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
               placeholder="מיקום הסדנה"
               className="rounded-xl border-0 bg-card h-11 shadow-sm"
             />
+          </FormSection>
+        )}
+
+        {/* Instructor */}
+        {value.is_active && (
+          <FormSection icon={Users} title="מנחה">
+            <Input
+              value={value.instructor || ""}
+              onChange={(e) => onChange({ ...value, instructor: e.target.value })}
+              placeholder="שם המנחה (לדוגמה: שירה פלג)"
+              className="rounded-xl border-0 bg-card h-11 shadow-sm"
+            />
+          </FormSection>
+        )}
+
+        {/* Display from date */}
+        {value.is_active && (
+          <FormSection icon={CalendarDays} title="יוצג באתר מתאריך">
+            <Input
+              type="date"
+              value={value.display_from || ""}
+              onChange={(e) => onChange({ ...value, display_from: e.target.value })}
+              className="rounded-xl border-0 bg-card h-11 shadow-sm"
+            />
+            <p className="text-xs text-muted-foreground px-1">השאירי ריק כדי שהסדנה תוצג מיד. אם מוגדר תאריך – הסדנה תופיע לציבור רק החל מהתאריך הזה.</p>
           </FormSection>
         )}
 

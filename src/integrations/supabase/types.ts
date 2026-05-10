@@ -203,9 +203,11 @@ export type Database = {
           date: string
           description: string
           detail_image_position: string | null
+          display_from: string | null
           id: string
           image_position: string | null
           image_url: string | null
+          instructor: string | null
           is_active: boolean
           location: string | null
           payment_url: string | null
@@ -220,9 +222,11 @@ export type Database = {
           date: string
           description?: string
           detail_image_position?: string | null
+          display_from?: string | null
           id?: string
           image_position?: string | null
           image_url?: string | null
+          instructor?: string | null
           is_active?: boolean
           location?: string | null
           payment_url?: string | null
@@ -237,9 +241,11 @@ export type Database = {
           date?: string
           description?: string
           detail_image_position?: string | null
+          display_from?: string | null
           id?: string
           image_position?: string | null
           image_url?: string | null
+          instructor?: string | null
           is_active?: boolean
           location?: string | null
           payment_url?: string | null
