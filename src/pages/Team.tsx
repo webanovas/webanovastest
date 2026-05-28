@@ -134,7 +134,14 @@ const Team = () => {
     queryKey: ["teachers"],
     queryFn: async () => {
       const { data } = await supabase.from("teachers").select("*").order("sort_order");
-      return data ?? [];
+      const list = data ?? [];
+      // Shira must always appear first
+      return [...list].sort((a, b) => {
+        const aShira = a.name?.includes("שירה") ? -1 : 0;
+        const bShira = b.name?.includes("שירה") ? -1 : 0;
+        if (aShira !== bShira) return aShira - bShira;
+        return (a.sort_order ?? 0) - (b.sort_order ?? 0);
+      });
     },
   });
 
