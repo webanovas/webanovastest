@@ -55,9 +55,9 @@ const Footer = () => {
           <div>
             <E section="contact-title" fallback="צרו קשר" as="h4" className="font-heading font-semibold mb-4 text-white" />
             <div className="flex flex-col gap-3 text-sm">
-              <a href="tel:0542131254" className="flex items-center gap-3 text-white/60 hover:text-white transition-colors">
+              <a href="tel:0548314247" className="flex items-center gap-3 text-white/60 hover:text-white transition-colors">
                 <Phone className="h-4 w-4" />
-                <E section="phone" fallback="054-213-1254" />
+                <E section="phone" fallback="054-831-4247" />
               </a>
               <a href="https://www.google.com/maps/search/%D7%9B%D7%99%D7%9B%D7%A8+%D7%94%D7%9E%D7%95%D7%A9%D7%91%D7%94+%D7%94%D7%95%D7%93+%D7%94%D7%A9%D7%A8%D7%95%D7%9F" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-white/60 hover:text-white transition-colors">
                 <MapPin className="h-4 w-4" />

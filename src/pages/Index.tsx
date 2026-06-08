@@ -690,15 +690,15 @@ const Index = () => {
                 <E section="contact-subtitle" fallback="רוצים לשמוע עוד? השאירו פרטים ונחזור אליכם בהקדם." as="p" className="text-muted-foreground mb-8 text-lg" />
               </motion.div>
               <motion.div variants={fadeUp} className="flex flex-col gap-5 text-sm">
-                <a href="tel:0542131254" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => isEditMode && e.preventDefault()}>
+                <a href="tel:0548314247" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => isEditMode && e.preventDefault()}>
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Phone className="h-4 w-4 text-primary" /></div>
-                  <E section="contact-phone" fallback="054-213-1254" />
+                  <E section="contact-phone" fallback="054-831-4247" />
                 </a>
                 <a href="/contact" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => { if (isEditMode) { e.preventDefault(); } }}>
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Mail className="h-4 w-4 text-primary" /></div>
                   <E section="contact-email" fallback="shira.pelleg@gmail.com" />
                 </a>
-                <a href="https://wa.me/972542131254" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => isEditMode && e.preventDefault()}>
+                <a href="https://wa.me/972548314247" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => isEditMode && e.preventDefault()}>
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><MessageCircle className="h-4 w-4 text-primary" /></div>
                   <E section="contact-whatsapp" fallback="שלחו הודעה בוואטסאפ" />
                 </a>

@@ -495,7 +495,7 @@ const Workshops = () => {
 function WorkshopDetailView({ workshop: w, imgSrc, onClose, isPast = false }: { workshop: WorkshopRow; imgSrc: string; onClose: () => void; isPast?: boolean }) {
   const workshopName = w.title;
   const whatsappMessage = encodeURIComponent(`היי שירה, אשמח לשמוע פרטים על הסדנה "${workshopName}" 🙏`);
-  const whatsappUrl = `https://wa.me/972542131254?text=${whatsappMessage}`;
+  const whatsappUrl = `https://wa.me/972548314247?text=${whatsappMessage}`;
 
   const paymentUrl = (w as any).payment_url;
 
