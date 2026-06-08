@@ -125,7 +125,7 @@ const FloatingContact = () => {
               </Button>
               <div className="flex items-center justify-center gap-3 pt-1">
                 <a
-                  href="https://wa.me/972542131254"
+                  href="https://wa.me/972548314247"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1.5"
@@ -135,7 +135,7 @@ const FloatingContact = () => {
                 </a>
                 <span className="text-muted-foreground/30 text-xs">|</span>
                 <a
-                  href="tel:0542131254"
+                  href="tel:0548314247"
                   className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1.5"
                 >
                   <Phone className="h-3 w-3" />

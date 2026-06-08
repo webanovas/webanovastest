@@ -85,11 +85,11 @@ const Contact = () => {
               </motion.div>
 
               <motion.div variants={fadeUp} className="flex flex-col gap-5 mb-10">
-                <a href="tel:0542131254" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => isEditMode && e.preventDefault()}>
+                <a href="tel:0548314247" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => isEditMode && e.preventDefault()}>
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><Phone className="h-5 w-5 text-primary" /></div>
-                  <E section="phone" fallback="054-213-1254" />
+                  <E section="phone" fallback="054-831-4247" />
                 </a>
-                <a href="https://wa.me/972542131254" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => isEditMode && e.preventDefault()}>
+                <a href="https://wa.me/972548314247" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-foreground/70 hover:text-primary transition-colors" onClick={(e) => isEditMode && e.preventDefault()}>
                   <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center"><MessageCircle className="h-5 w-5 text-primary" /></div>
                   <E section="whatsapp" fallback="וואטסאפ" />
                 </a>
@@ -169,7 +169,7 @@ const Contact = () => {
                   {isEditMode ? (
                     <span><MessageCircle className="h-4 w-4" /><E section="whatsapp-btn" fallback="שלחו הודעה בוואטסאפ" /></span>
                   ) : (
-                    <a href="https://wa.me/972542131254" target="_blank" rel="noopener noreferrer">
+                    <a href="https://wa.me/972548314247" target="_blank" rel="noopener noreferrer">
                       <MessageCircle className="h-4 w-4" /><E section="whatsapp-btn" fallback="שלחו הודעה בוואטסאפ" />
                     </a>
                   )}
