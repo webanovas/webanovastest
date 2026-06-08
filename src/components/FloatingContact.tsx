@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, X, Send, Phone, Sparkles, Loader2 } from "lucide-react";
+import { MessageCircle, X, Send, Mail, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -35,6 +35,8 @@ const FloatingContact = () => {
       setSending(false);
     }
   };
+
+  const bottomClass = isAdmin ? "bottom-20" : "bottom-6";
 
   return (
     <>
@@ -73,7 +75,7 @@ const FloatingContact = () => {
                 </div>
                 <div>
                   <h3 className="font-heading font-semibold text-sm text-foreground">
-                    דברו איתנו
+                    שלחו הודעה
                   </h3>
                   <p className="text-[11px] text-muted-foreground">נחזור אליכם בהקדם</p>
                 </div>
@@ -123,38 +125,34 @@ const FloatingContact = () => {
                 )}
                 {sending ? "שולח..." : "שליחה"}
               </Button>
-              <div className="flex items-center justify-center gap-3 pt-1">
-                <a
-                  href="https://wa.me/972548314247"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1.5"
-                >
-                  <MessageCircle className="h-3 w-3" />
-                  וואטסאפ
-                </a>
-                <span className="text-muted-foreground/30 text-xs">|</span>
-                <a
-                  href="tel:0548314247"
-                  className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1.5"
-                >
-                  <Phone className="h-3 w-3" />
-                  התקשרו
-                </a>
-              </div>
             </form>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* FAB */}
-      <motion.button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`fixed left-4 sm:left-6 z-[42] hidden md:flex items-center gap-2 text-yoga-dark shadow-lg hover:shadow-xl transition-shadow rounded-full px-5 h-12 border border-[hsl(170,25%,70%)]/30 ${isAdmin ? "bottom-20" : "bottom-6"}`}
+      {/* WhatsApp FAB — direct link */}
+      <motion.a
+        href="https://wa.me/972548314247"
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`fixed left-4 sm:left-6 z-[42] hidden md:flex items-center gap-2 text-yoga-dark shadow-lg hover:shadow-xl transition-shadow rounded-full px-5 h-12 border border-[hsl(170,25%,70%)]/30 ${bottomClass}`}
         style={{ backgroundColor: "hsl(170, 25%, 78%)" }}
         whileHover={{ scale: 1.04 }}
         whileTap={{ scale: 0.96 }}
-        aria-label="צור קשר"
+        aria-label="שלחו הודעת וואטסאפ"
+      >
+        <MessageCircle className="h-5 w-5" />
+        <span className="text-sm font-medium">וואטסאפ</span>
+      </motion.a>
+
+      {/* Email FAB — opens popup */}
+      <motion.button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`fixed left-4 sm:left-6 z-[42] hidden md:flex items-center gap-2 text-yoga-dark shadow-lg hover:shadow-xl transition-shadow rounded-full px-5 h-12 border border-[hsl(170,25%,70%)]/30 ${bottomClass}`}
+        style={{ backgroundColor: "hsl(170, 25%, 88%)", marginLeft: "140px" }}
+        whileHover={{ scale: 1.04 }}
+        whileTap={{ scale: 0.96 }}
+        aria-label="שלחו אימייל"
       >
         <AnimatePresence mode="wait">
           {isOpen ? (
@@ -163,11 +161,11 @@ const FloatingContact = () => {
             </motion.div>
           ) : (
             <motion.div key="open" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.15 }}>
-              <MessageCircle className="h-5 w-5" />
+              <Mail className="h-5 w-5" />
             </motion.div>
           )}
         </AnimatePresence>
-        <span className="text-sm font-medium">{isOpen ? "סגירה" : "דברו איתנו"}</span>
+        <span className="text-sm font-medium">{isOpen ? "סגירה" : "אימייל"}</span>
       </motion.button>
     </>
   );
