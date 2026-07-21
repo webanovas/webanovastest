@@ -975,6 +975,19 @@ function WorkshopEditPreview({ value, onChange, onSave, onDelete, onCancel, isNe
           <span className="text-muted-foreground font-medium text-sm">{value.is_active ? "פעיל – מוצג באתר" : "לא פעיל – מוסתר"}</span>
         </label>
 
+        {/* Move to past / Restore button */}
+        {!isNew && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => onChange({ ...value, is_active: !value.is_active })}
+            className="w-full rounded-full gap-1.5"
+          >
+            {value.is_active ? "העבר לסדנאות עבר" : "החזר לסדנאות קרובות"}
+          </Button>
+        )}
+
         {/* Actions */}
         <div className="flex gap-2 justify-between pt-3 border-t border-border/30">
           {onDelete && (
