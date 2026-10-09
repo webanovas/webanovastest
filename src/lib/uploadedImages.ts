@@ -45,3 +45,10 @@ export const CONTACT_STUDIO = `${STORAGE}/contact/1773058114111.JPG`;
 
 // Teacher fallback (for new teachers with no image)
 export const TEACHER_FALLBACK = `${STORAGE}/teachers/1772311715250.JPEG`;
+
+/** Convert a public storage URL into a resized/compressed version (huge originals load much faster). */
+export const optimizedImage = (src: string, width = 1920, quality = 75) => {
+  if (!src || !src.includes("/storage/v1/object/public/")) return src;
+  const [base] = src.split("?");
+  return `${base.replace("/storage/v1/object/public/", "/storage/v1/render/image/public/")}?width=${width}&quality=${quality}`;
+};
