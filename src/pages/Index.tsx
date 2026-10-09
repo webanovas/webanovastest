@@ -24,7 +24,7 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 
 import {
-  HERO_IMAGES, optimizedImage, WELCOME_MAIN, WELCOME_SECONDARY,
+  HERO_IMAGES, WELCOME_MAIN, WELCOME_SECONDARY,
   BENEFITS_IMAGE, CTA_BG_IMAGE,
 } from "@/lib/uploadedImages";
 import logo from "@/assets/logo.png";
