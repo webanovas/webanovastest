@@ -7,12 +7,13 @@
 const STORAGE = "https://muhfaqvpnyakhfkcfhkc.supabase.co/storage/v1/object/public/site-images";
 
 // Hero carousel (home page)
+// Pre-compressed, EXIF-rotated copies (~150-200KB instead of 7-14MB originals)
 export const HERO_IMAGES = [
-  `${STORAGE}/hero/1772310183922-0.JPEG`,
-  `${STORAGE}/hero/1772310413769-1.JPEG`,
-  `${STORAGE}/hero/1772310202713-2.JPEG`,
-  `${STORAGE}/hero/1772310521651-3.JPEG`,
-  `${STORAGE}/hero/1772310521651-3.JPEG`, // image 4 reuses image 3 (no separate upload)
+  `${STORAGE}/hero/1772310183922-0-opt.jpg`,
+  `${STORAGE}/hero/1772310413769-1-opt.jpg`,
+  `${STORAGE}/hero/1772310202713-2-opt.jpg`,
+  `${STORAGE}/hero/1772310521651-3-opt.jpg`,
+  `${STORAGE}/hero/1772310521651-3-opt.jpg`, // image 4 reuses image 3 (no separate upload)
 ];
 
 // Welcome section (home page)

@@ -24,7 +24,7 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 
 import {
-  HERO_IMAGES, optimizedImage, WELCOME_MAIN, WELCOME_SECONDARY,
+  HERO_IMAGES, WELCOME_MAIN, WELCOME_SECONDARY,
   BENEFITS_IMAGE, CTA_BG_IMAGE,
 } from "@/lib/uploadedImages";
 import logo from "@/assets/logo.png";
@@ -123,7 +123,7 @@ const Index = () => {
   // Get hero images — always show defaults immediately, swap to DB values once loaded
   const heroImages = defaultHeroImages.map((defaultSrc, i) => {
     const saved = getLoadedText(`hero-image-${i}`, "");
-    return optimizedImage(saved || defaultSrc);
+    return saved || defaultSrc;
   });
 
   // Show carousel once first image is ready, and warm-up the rest in background
